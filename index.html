@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#1b2530" />
+  <title>HappyHome · 3D Construction Timeline</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M8 30 32 10l24 20v24H8z' fill='%23e2703a'/%3E%3Cpath d='M26 54V38h12v16' fill='%23fff'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app"></div>
+  <div id="labels"></div>
+
+  <div id="loading">
+    <div class="spinner"></div>
+    <p data-i18n="loading">Preparing the construction site…</p>
+  </div>
+
+  <header class="panel brand">
+    <div class="brand-row">
+      <div>
+        <h1><span class="logo">⌂</span> <span data-i18n="title">HappyHome</span></h1>
+        <p data-i18n="subtitle">Two-storey villa · PE-233-25</p>
+      </div>
+      <button id="lang" class="chip" title="Language / اللغة">ع</button>
+    </div>
+    <nav class="toolbar" aria-label="View controls">
+      <div class="seg" id="modes">
+        <button data-mode="orbit" class="on" data-i18n="modeOrbit">Orbit</button>
+        <button data-mode="walk" data-i18n="modeWalk">Walk</button>
+        <button data-mode="tour" data-i18n="modeTour">Tour</button>
+      </div>
+      <select id="views" aria-label="Camera views"></select>
+      <div class="seg" id="cut">
+        <button data-cut="all" class="on" data-i18n="cutAll">All</button>
+        <button data-cut="gf" data-i18n="cutGF">Ground</button>
+        <button data-cut="ff" data-i18n="cutFF">First</button>
+      </div>
+      <label class="check"><input type="checkbox" id="labelsToggle" checked /> <span data-i18n="labels">Room labels</span></label>
+      <select id="quality" aria-label="Quality"></select>
+      <button id="helpBtn" class="chip" aria-label="Help">?</button>
+    </nav>
+  </header>
+
+  <aside class="panel card" aria-live="polite">
+    <div class="card-top">
+      <span id="stageNum" class="badge"></span>
+      <span id="stageWeeks" class="muted"></span>
+    </div>
+    <h2 id="stageName"></h2>
+    <p id="stageDesc"></p>
+    <ul id="stageTasks"></ul>
+    <div class="bar"><div id="bar"></div></div>
+    <div class="card-foot">
+      <span id="pct" class="muted"></span>
+      <span id="crew" class="muted"></span>
+    </div>
+  </aside>
+
+  <section class="panel timeline">
+    <div class="tl-row">
+      <button id="play" class="play" aria-label="Play">▶</button>
+      <select id="speed" aria-label="Speed">
+        <option value="0.5">0.5×</option>
+        <option value="1" selected>1×</option>
+        <option value="2">2×</option>
+        <option value="4">4×</option>
+      </select>
+      <div class="slider-wrap">
+        <input id="slider" type="range" min="0" max="14" step="0.001" value="0" aria-label="Construction timeline" />
+        <ol id="ticks"></ol>
+      </div>
+      <span id="weekLabel" class="week"></span>
+    </div>
+  </section>
+
+  <div id="walkUI" hidden>
+    <div class="crosshair"></div>
+    <p id="walkHint" class="panel hint"></p>
+    <div id="joystick"><div id="knob"></div></div>
+  </div>
+
+  <dialog id="help" class="panel">
+    <h3 data-i18n="help">Help</h3>
+    <dl id="helpList"></dl>
+    <form method="dialog"><button class="chip wide" data-i18n="close">Close</button></form>
+  </dialog>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
