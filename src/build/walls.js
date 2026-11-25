@@ -280,6 +280,7 @@ export function buildWalls(ctx) {
       grp.add(glass);
       glass.userData.solid = true;
       ctx.solids.push(glass);
+      grp.traverse((m) => { if (m.isMesh) m.castShadow = false; });
       TL.add(grp, { in: ext ? stagger(Math.random() * 10 | 0, 10, 11.5, 11.85) : [12.55, 12.7], anim: 'rise' });
     } else if (op.kind === 'door') {
       const main = op.mark === 'D1';
@@ -310,6 +311,7 @@ export function buildWalls(ctx) {
           grp.add(leaf);
         }
       }
+      grp.traverse((m) => { if (m.isMesh) m.castShadow = false; });
       TL.add(grp, { in: ext || main || isLift ? [11.8, 11.95] : stagger(Math.random() * 10 | 0, 10, 12.55, 12.7), anim: 'rise' });
     } else if (op.kind === 'shutter') {
       const panel = box(w, h - 0.35, 0.06, M.shutter, 0, 0, (side || 1) * (t / 2 - 0.03));

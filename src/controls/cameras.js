@@ -44,6 +44,7 @@ export class CameraRig {
     this.tween = null;
     this.walk = { pos: new THREE.Vector3(), yaw: 0, pitch: 0, vy: 0, keys: new Set(), joy: new THREE.Vector2(), run: false };
     this.ray = new THREE.Raycaster();
+    this.ray.layers.enableAll(); // static batching moves originals to a hidden layer
     this.tour = { time: 0 };
     this.listeners = [];
 

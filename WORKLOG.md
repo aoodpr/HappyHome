@@ -120,3 +120,17 @@ Mistakes found and fixed:
 - Room labels no longer show through walls when you're inside the house:
   each label is ray-tested against the walls (throttled to ~3×/s) and hidden
   when a wall is in the way (e.g. "Garage" seen from the living room).
+
+#### 10. Static batching (big iPad win)
+- Measured ~2,750 draw calls per frame even after decimation: the cost was
+  thousands of small meshes (blocks, plaster pieces, frames, columns…).
+- New `src/core/baker.js`: when the timeline is still for 0.6 s, every fully
+  built, non-animating element is merged into one mesh per material; the
+  originals move to a hidden render layer (raycasters see all layers, so walk
+  collisions, label occlusion and picking still work). Moving the slider
+  drops the batch instantly. Glass, furniture (distance-culled), skinned
+  workers and instanced meshes are left alone.
+- Draw calls per frame: aerial ~2,750 → ~250, street ~2,800 → ~360,
+  living room ~1,870 → ~470. Visuals, section cuts and collisions verified
+  unchanged.
+- Window/door frames no longer cast shadows (thin, invisible in the shadow map).

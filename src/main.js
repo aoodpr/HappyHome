@@ -4,6 +4,7 @@ import { Stage3D, defaultQuality } from './core/scene.js';
 import { createTextures } from './core/textures.js';
 import { createMaterials } from './core/materials.js';
 import { Timeline } from './core/timeline.js';
+import { Baker } from './core/baker.js';
 import { buildSite } from './build/site.js';
 import { buildStructure } from './build/structure.js';
 import { buildWalls } from './build/walls.js';
@@ -61,6 +62,7 @@ async function init() {
   buildFurniture(ctx);
   const machines = buildMachines(ctx);
   const crew = new Crew(scene);
+  const baker = new Baker(scene, TL);
   TL.update(state.t, true);
 
   /* ---------- room labels ---------- */
@@ -284,6 +286,7 @@ async function init() {
   }
   let lastOcclusion = 0;
   const occluder = new THREE.Raycaster();
+  occluder.layers.enableAll();
 
   setLang(state.lang);
   setCut('all');
@@ -294,9 +297,10 @@ async function init() {
   // Expose a tiny API for debugging / automated screenshots.
   window.happyhome = {
     setT: (t) => { state.target = state.t = t; },
-    setCut, goTo: (v) => rig.goTo(v), setMode: (m) => rig.setMode(m), rig, state, scene, camera, renderer, crew, rooms: ROOMS, toScene, LEVEL,
+    setCut, goTo: (v) => rig.goTo(v), setMode: (m) => rig.setMode(m), rig, state, scene, camera, renderer, crew, baker, rooms: ROOMS, toScene, LEVEL,
     pick: (nx, ny) => {
       const rc = new THREE.Raycaster();
+      rc.layers.enableAll();
       rc.setFromCamera(new THREE.Vector2(nx * 2 - 1, -(ny * 2 - 1)), camera);
       const hit = rc.intersectObjects(scene.children, true).find((h) => { for (let o = h.object; o; o = o.parent) if (!o.visible) return false; return true; });
       if (!hit) return null;
@@ -320,6 +324,7 @@ async function init() {
     if (Math.abs(state.target - state.t) < 1e-4) state.t = state.target;
 
     TL.update(state.t);
+    baker.update(state.t, time);
     machines.update(state.t, time);
     crew.update(state.t, time);
     if (state.cut !== 'all' && time - lastCollect > 1) { lastCollect = time; setCut(state.cut); }
