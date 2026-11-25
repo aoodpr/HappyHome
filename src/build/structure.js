@@ -209,7 +209,8 @@ export function buildStructure(ctx) {
     col.userData.solid = true;
     ctx.solids.push(col);
     if (w.plaster) {
-      const skin = rectBox(c.x - 15, c.y - 15, c.x + c.w + 15, c.y + c.d + 15, y0, h, ctx.plasterMat, { cast: false });
+      // 20 mm render (walls get 15 mm) so column and wall faces never coincide (no z-fighting)
+      const skin = rectBox(c.x - 20, c.y - 20, c.x + c.w + 20, c.y + c.d + 20, y0, h, ctx.plasterMat, { cast: false });
       add(skin, { in: w.plaster, anim: 'rise' });
     }
   }

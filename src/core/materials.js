@@ -9,7 +9,7 @@ export function createMaterials(T) {
     concrete: tex(T.concrete, { color: 0xd8d6d0, roughness: 0.9 }),
     blinding: tex(T.concrete, { color: 0xa8a59e, roughness: 0.95 }),
     blocks: tex(T.blocks, { roughness: 0.95 }),
-    plaster: tex(T.plaster, { roughness: 0.92 }),
+    plaster: tex(T.plaster, { roughness: 0.92, emissive: 0x1e1d1b }),
     render: tex(T.render, { roughness: 0.9 }),
     paint: tex(T.paint, { roughness: 0.8 }),
     stone: tex(T.stone, { roughness: 0.7, normalScale: new THREE.Vector2(1, 1) }),
@@ -41,7 +41,8 @@ export function createMaterials(T) {
     doorWhite: std({ color: 0xf1ede6, roughness: 0.5 }),
     shutter: tex(T.slats, { color: 0xc9ccd0, roughness: 0.4, metalness: 0.6 }),
     white: std({ color: 0xf5f3ef, roughness: 0.9 }),
-    gypsum: tex(T.paint, { color: 0xfbfaf7, roughness: 0.95 }),
+    // slight self-illumination stands in for bounced daylight inside rooms
+    gypsum: tex(T.paint, { color: 0xfbfaf7, roughness: 0.95, emissive: 0x4a4844 }),
     membrane: std({ color: 0x3b3f45, roughness: 0.75 }),
     coolRoof: tex(T.plaster, { color: 0xf7f7f5, roughness: 0.85 }),
     polythene: std({ color: 0x5aa0d8, roughness: 0.35, transparent: true, opacity: 0.75 }),

@@ -187,148 +187,28 @@ export function buildInterior(ctx) {
     };
     glassRun(STAIR.landingX, 8950, STAIR.x1, 8950, 0);
     add(rail, { in: [12.4, 12.5], anim: 'rise' });
-  }
 
-  /* ---------------- sanitary ware, kitchen, furniture ---------------- */
-  const items = [];
-  for (const rm of ROOMS) {
-    const g = furnish(rm);
-    if (g && g.children.length) items.push(g);
-  }
-  items.forEach((g, i) => {
-    g.traverse((m) => { if (m.isMesh) m.castShadow = false; });
-    add(g, { in: stagger(i, items.length, 12.6, 12.98), anim: 'pop' });
-  });
-
-  function furnish(rm) {
-    const [x0, y0, x1, y1] = rm.rect;
-    const ffl = FFL[rm.f];
-    const g = new THREE.Group();
-    const [cx, cz] = toScene((x0 + x1) / 2, (y0 + y1) / 2);
-    const [ax, az] = toScene(x0, y0), [bx, bz] = toScene(x1, y1);
-    const W = bx - ax, D = bz - az;
-    g.position.set(cx, ffl, cz);
-    const P = (x, y) => [x - cx, y - cz]; // scene → group-local
-
-    if (rm.floor === 'wet' && ['bath', 'wash'].includes(rm.key)) {
-      // vanity + basin on the long wall, WC in the corner
-      g.add(box(Math.min(1.6, W - 0.3), 0.85, 0.55, M.counter, 0, 0, -D / 2 + 0.3));
-      g.add(box(0.5, 0.04, 0.38, M.sanitary, 0, 0.85, -D / 2 + 0.3));
-      g.add(box(Math.min(1.6, W - 0.3), 0.9, 0.02, M.glass, 0, 1.1, -D / 2 + 0.02, { cast: false }));
-      if (rm.key === 'bath') {
-        const wc = new THREE.Group();
-        wc.add(box(0.38, 0.4, 0.55, M.sanitary, 0, 0, 0));
-        wc.add(box(0.4, 0.38, 0.18, M.sanitary, 0, 0.4, -0.2));
-        wc.position.set(W / 2 - 0.4, 0, D / 2 - 0.45);
-        g.add(wc);
-        if (rm.f === 1) g.add(box(0.02, 2.0, Math.min(1.2, D - 0.4), M.glass, -W / 2 + 1.0, 0, D / 2 - 0.65, { cast: false }));
-      }
-      return g;
-    }
-    switch (rm.furn) {
-      case 'majlis': {
-        const depth = 0.8;
-        g.add(box(W - 0.4, 0.42, depth, M.fabric, 0, 0, -D / 2 + depth / 2 + 0.15));
-        g.add(box(W - 0.4, 0.45, 0.18, M.fabric, 0, 0.42, -D / 2 + 0.22));
-        for (const s of [-1, 1]) {
-          g.add(box(depth, 0.42, D - 2.2, M.fabric, s * (W / 2 - depth / 2 - 0.15), 0, 0.3));
-          g.add(box(0.18, 0.45, D - 2.2, M.fabric, s * (W / 2 - 0.22), 0.42, 0.3));
-          for (let k = -1; k <= 1; k++) g.add(box(0.12, 0.35, 0.5, M.cushion, s * (W / 2 - 0.35), 0.42, k * 1.2 + 0.3));
+    // Stainless handrails with posts along the inner edge of every flight.
+    STAIR.storeys.forEach(([y0, y1]) => {
+      const g = new THREE.Group();
+      g.position.y = y0;
+      const mid = (y1 - y0) / 2;
+      const run = (xa, xb, py, za, zb) => {
+        const [ax, az] = toScene(xa, py), [bx] = toScene(xb, py);
+        g.add(tube([ax, za + 0.92, az], [bx, zb + 0.92, az], 0.022, M.galvanised, 10));
+        const n = Math.max(2, Math.round(Math.abs(bx - ax) / 0.95));
+        for (let i = 0; i <= n; i++) {
+          const k = i / n;
+          const x = ax + (bx - ax) * k, z = za + (zb - za) * k;
+          g.add(tube([x, z, az], [x, z + 0.92, az], 0.014, M.galvanised, 8));
         }
-        g.add(box(W - 2.4, 0.012, D - 2.6, M.rug, 0, 0, 0.2, { cast: false }));
-        g.add(box(1.2, 0.4, 0.7, M.doorWood, 0, 0, 0.2));
-        break;
-      }
-      case 'dining': {
-        g.add(box(2.6, 0.05, 1.1, M.doorWood, 0, 0.73, 0));
-        g.add(box(0.12, 0.73, 0.8, M.darkSteel, -1.0, 0, 0));
-        g.add(box(0.12, 0.73, 0.8, M.darkSteel, 1.0, 0, 0));
-        for (let k = -1.5; k <= 1.5; k += 1) for (const s of [-1, 1]) {
-          const ch = new THREE.Group();
-          ch.add(box(0.45, 0.46, 0.45, M.fabricDark, 0, 0, 0));
-          ch.add(box(0.45, 0.5, 0.06, M.fabricDark, 0, 0.46, -0.2));
-          ch.position.set(k * 0.65, 0, s * 0.8);
-          ch.rotation.y = s > 0 ? Math.PI : 0;
-          g.add(ch);
-        }
-        break;
-      }
-      case 'living':
-      case 'familyLiving': {
-        const sx = Math.min(3.2, W - 1.5);
-        const s = rm.furn === 'living' ? -1 : 1; // living: TV on the garage wall (+Z), sofa facing it
-        g.add(box(sx, 0.42, 0.95, M.fabricBlue, 0, 0, -s * (D / 2 - 1.6)));
-        g.add(box(sx, 0.45, 0.22, M.fabricBlue, 0, 0.42, -s * (D / 2 - 1.2)));
-        g.add(box(0.95, 0.42, 2.0, M.fabricBlue, -sx / 2 - 0.3, 0, -s * (D / 2 - 2.4)));
-        g.add(box(2.8, 0.012, 2.2, M.rug, 0, 0, -s * (D / 2 - 3.2), { cast: false }));
-        g.add(box(1.3, 0.38, 0.75, M.doorWood, 0, 0, -s * (D / 2 - 3.2)));
-        g.add(box(2.4, 0.45, 0.45, M.counter, 0, 0, s * (D / 2 - 0.35)));
-        g.add(box(2.2, 1.25, 0.06, M.darkSteel, 0, 1.0, s * (D / 2 - 0.2)));
-        break;
-      }
-      case 'bed': {
-        const bed = new THREE.Group();
-        bed.add(box(2.0, 0.45, 2.15, M.fabric, 0, 0, 0));
-        bed.add(box(2.0, 0.12, 2.0, M.white, 0, 0.45, 0.05));
-        bed.add(box(2.3, 1.2, 0.12, M.doorWood, 0, 0, -1.1));
-        bed.add(box(0.6, 0.15, 0.4, M.white, -0.5, 0.57, -0.8));
-        bed.add(box(0.6, 0.15, 0.4, M.white, 0.5, 0.57, -0.8));
-        bed.add(box(2.0, 0.04, 0.9, M.fabricBlue, 0, 0.57, 0.5));
-        for (const s of [-1, 1]) bed.add(box(0.5, 0.5, 0.45, M.doorWood, s * 1.45, 0, -0.85));
-        bed.position.set(0, 0, -D / 2 + 1.25);
-        g.add(bed);
-        g.add(box(Math.min(2.6, W - 1), 0.012, 1.8, M.rug, 0, 0, -D / 2 + 2.8, { cast: false }));
-        g.add(box(0.6, 2.4, Math.min(2.4, D - 2.5), M.cabinet, W / 2 - 0.35, 0, 0.6));
-        break;
-      }
-      case 'kitchen': {
-        g.add(box(W - 0.3, 0.9, 0.62, M.cabinet, 0, 0, -D / 2 + 0.36));
-        g.add(box(W - 0.3, 0.04, 0.64, M.counter, 0, 0.9, -D / 2 + 0.36));
-        g.add(box(W - 0.3, 0.75, 0.35, M.cabinet, 0, 1.55, -D / 2 + 0.2));
-        g.add(box(0.62, 0.9, D - 1.4, M.cabinet, W / 2 - 0.36, 0, 0.3));
-        g.add(box(0.64, 0.04, D - 1.4, M.counter, W / 2 - 0.36, 0.9, 0.3));
-        g.add(box(0.7, 2.1, 0.7, M.galvanised, -W / 2 + 0.5, 0, -D / 2 + 0.4)); // fridge
-        g.add(box(2.4, 0.9, 1.0, M.cabinet, -0.3, 0, 0.3));
-        g.add(box(2.5, 0.05, 1.1, M.counter, -0.3, 0.9, 0.3));
-        break;
-      }
-      case 'outdoor': {
-        for (const z of [-1, 0.5]) {
-          g.add(box(0.7, 0.4, 0.7, M.fabricDark, 0, -0.15, z));
-          g.add(box(0.7, 0.35, 0.12, M.fabricDark, 0, 0.25, z - 0.3));
-        }
-        g.add(cyl(0.35, 0.45, M.darkSteel, 0, -0.15, -0.25, 16));
-        break;
-      }
-      case 'garage': {
-        g.add(car(M.carWhite, 1.5, 0, 0.1));
-        g.add(car(M.carRed, -1.5, 0.3, -0.05));
-        g.position.y = 0.425;
-        break;
-      }
-      default:
-        return null;
-    }
-    return g;
+      };
+      run(STAIR.x1 - 150, STAIR.landingX, STAIR.flight1.y1 - 40, 0.02, mid);
+      run(STAIR.landingX, STAIR.x1 - 150, STAIR.flight2.y0 + 40, mid, y1 - y0 - 0.15);
+      add(g, { in: [12.42, 12.5], anim: 'rise' });
+    });
   }
 
-  function car(mat, x, z, rot) {
-    const c = new THREE.Group();
-    c.add(box(1.85, 0.7, 4.7, mat, 0, 0.3, 0));
-    c.add(box(1.6, 0.55, 2.4, M.glass, 0, 1.0, -0.2, { cast: false }));
-    c.add(box(1.62, 0.06, 2.3, mat, 0, 1.53, -0.2));
-    for (const [wx, wz] of [[-0.85, 1.5], [0.85, 1.5], [-0.85, -1.5], [0.85, -1.5]]) {
-      const w = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.34, 0.24, 18), M.rubber);
-      w.rotation.z = Math.PI / 2;
-      w.position.set(wx, 0.34, wz);
-      w.castShadow = true;
-      c.add(w);
-    }
-    c.add(box(1.6, 0.12, 0.05, M.led, 0, 0.62, 2.36, { cast: false }));
-    c.position.set(x, 0, z);
-    c.rotation.y = rot;
-    return c;
-  }
-  ctx.makeCar = car;
 }
+
 

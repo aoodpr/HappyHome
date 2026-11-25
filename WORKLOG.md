@@ -1,0 +1,62 @@
+# HappyHome — work log
+
+A running record of the review and improvement work on the 3D construction
+timeline. Newest entries at the top of each day.
+
+## 2026-11-25
+
+### Session 2 — review & improvement pass
+
+**Requests:** add a switch to hide the surrounding houses (hidden by default),
+fix the mistakes inside the house, use realistic furniture, keep reviewing and
+improving, log everything here, push to `main` and run the GitHub Action.
+
+#### 1. Neighbouring houses toggle
+- Context buildings now live in their own `neighbours` group.
+- New **Neighbours** checkbox in the toolbar (Arabic: «المباني المجاورة»),
+  **off by default**. `#neighbours=1` in the URL turns them on at load.
+
+#### 2. Furniture source research
+- Most asset hosts (Poly Haven, ambientCG, Kenney, Quaternius) are blocked
+  from the build environment, but GitHub is reachable.
+- Found a GitHub mirror of **Poly Haven** models (CC0 — public domain) and
+  evaluated 30 candidates on a rendered contact sheet.
+- Rejected: Kenney furniture kit (cartoon style, clashes with the realistic
+  look), Khronos/Wayfair samples (3–10 MB each, CC-BY).
+- Selected realistic CC0 pieces (classic armchair, sofas, tufted dining
+  chairs, coffee tables, chandeliers, TV/sideboard cabinet, ottoman, outdoor
+  bistro set, potted plants, vases, pendant lamp). Each is optimised with
+  gltf-transform (meshopt geometry + 512–1024 px WebP textures):
+  200–500 KB per model.
+
+#### 3. Interior review (room-by-room camera sweep)
+Wrote an automated review that renders every room from two opposite corners
+at eye height (`rooms.js` + contact sheets) and a debug picker
+(`happyhome.pick(x, y)`) that reports the mesh/material under a pixel.
+Mistakes found and fixed:
+
+| # | Problem | Cause | Fix |
+|---|---|---|---|
+| 1 | Door leaves standing in the middle of rooms / swinging through walls | every leaf rotated the same fixed way | doors now look up the rooms on both sides, swing into the more private room (bath/dress/store > bedroom/majlis > hall), hinge on the jamb nearest a wall end and open ~85° so the leaf rests against the wall; main entrance D1 is a double door |
+| 2 | Beige strips along the base of first-floor walls and diagonal "planks" on the family-living floor | the slab-edge moulding band of ground-floor external walls stuck 100 mm above the first-floor finished floor wherever an FF room sits over a GF external wall (porch, garage side, diagonal wall) | band lowered so its top stays below the slab top |
+| 3 | Vertical cladding strips inside room corners (e.g. living room by the side yard) | façade cladding was always extended 170 mm past wall ends to wrap corners — at inside corners that ran into the room | extension only when the corner is outside the building outline |
+| 4 | First-floor family living overlapped bedroom 3 (marble over oak, double ceiling) | room rectangle too large | split into family living + upper lobby |
+| 5 | Brown, gloomy ceilings | ceilings only lit by the warm ground bounce | gypsum and plaster get a small emissive term standing in for bounced daylight |
+| 6 | Crude box furniture, beds/sofas ignoring doors and windows | generic per-room-type placement | new hand-placed layouts per room (see 4) |
+| 7 | Stair flights had no handrails | — | stainless handrails + posts on every flight |
+
+#### 4. Furniture overhaul
+- New `src/build/furniture.js`: a hand-placed layout for every room, following
+  the furniture drawn on sheets 3–4 (sofas against the right walls, beds on the
+  walls shown on plan, TV on the garage wall in the living room, etc.).
+- New `src/build/props.js`: detailed procedural pieces for what the CC0 library
+  doesn't cover — upholstered beds with tufted headboards, pillows, duvet and
+  throw; nightstands with lamps; wardrobes; dressing table; dining table;
+  wall TVs; patterned rugs; traditional built-in majlis seating; kitchen runs
+  with sink, hob, hood, uppers and splashback, fridge, island with bar stools;
+  wall-hung WCs, vanities with mirrors and light lines, glass showers, towel
+  rails; washer/dryer; and rounded cars in the garage.
+- Curtains are added automatically to every full-height window of majlis,
+  living, dining and bedroom spaces.
+- Models load in the background after the scene appears, so first paint isn't
+  delayed by the ~6 MB of furniture.

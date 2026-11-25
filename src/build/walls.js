@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { FLOORS, LEVEL, SLAB_T, SLAB_RF, SLAB_UR, WALLS_RF, SLAB_FF, GF_ENCLOSED } from '../data/building.js';
+import { FLOORS, LEVEL, SLAB_T, SLAB_RF, SLAB_UR, WALLS_RF, SLAB_FF, GF_ENCLOSED, ROOMS } from '../data/building.js';
 import { pourMaterial } from '../core/materials.js';
 import { box, inPoly, toScene } from './helpers.js';
 import { stagger } from '../core/timeline.js';
@@ -170,12 +170,21 @@ export function buildWalls(ctx) {
       const off = side * (Math.max(t / 2, 0.135) + 0.03);
       const mat = o.parapet || o.floorKey === 'rf' ? M.texturePaint : facingRoad ? M.stone : M.texturePaint;
       const top = o.slabAbove ? o.H + SLAB_T : o.H;
+      // Wrap the cladding round an outside corner, but never into a room at an inside corner.
+      const endExt = (end) => {
+        if (!o.outline) return 0.17;
+        const sgn = end ? 1 : -1;
+        const ex = (end ? w.b[0] : w.a[0]) + dir[0] * sgn * 120 + outward[0] * 165;
+        const ey = (end ? w.b[1] : w.a[1]) + dir[1] * sgn * 120 + outward[1] * 165;
+        return inPoly(ex, ey, o.outline) ? 0 : 0.17;
+      };
       const bottom = o.floorKey === 'gf' ? -(o.base - 0.15) : 0;
       for (const [u0, u1, y0, y1] of pieces) {
         const yy0 = y0 < 0.001 ? bottom : y0;
         const yy1 = y1 > o.H - 0.001 ? top : y1;
-        const ext = (u0 < 0.001 ? 0.17 : 0) + (u1 > L - 0.001 ? 0.17 : 0);
-        const cx = (u0 + u1) / 2 + (u0 < 0.001 ? -0.085 : 0) + (u1 > L - 0.001 ? 0.085 : 0);
+        const e0 = u0 < 0.001 ? endExt(0) : 0, e1 = u1 > L - 0.001 ? endExt(1) : 0;
+        const ext = e0 + e1;
+        const cx = (u0 + u1) / 2 - e0 / 2 + e1 / 2;
         const sk = box(u1 - u0 + ext, yy1 - yy0, 0.04, mat, cx, yy0, off, { cast: false });
         g.add(sk);
         TL.add(sk, { in: o.facadeWin, anim: 'rise' });
@@ -183,7 +192,8 @@ export function buildWalls(ctx) {
       // horizontal band at slab level + coping on parapets
       const mould = new THREE.Group();
       const ext = 0.34;
-      if (o.slabAbove) mould.add(box(L + ext, 0.45, 0.12, M.texturePaint, L / 2, o.H - 0.05, off + side * 0.06));
+      // band at the slab edge — its top stays just below the slab top so it never pokes into the room above
+      if (o.slabAbove) mould.add(box(L + ext, 0.45, 0.12, M.texturePaint, L / 2, o.H - 0.25, off + side * 0.06));
       if (o.parapet) mould.add(box(L + ext, 0.12, 0.42, M.white, L / 2, o.H, side * 0.06));
       for (const op of openings) {
         if (op.kind === 'gap') continue;
@@ -201,7 +211,32 @@ export function buildWalls(ctx) {
     }
 
     // Openings: windows, doors, shutter
-    for (const op of openings) fillOpening(g, op, t, side, w.ext, o);
+    const fIdx = o.floorKey === 'gf' ? 0 : o.floorKey === 'ff' ? 1 : -1;
+    for (const op of openings) {
+      if (op.kind === 'door') op.swing = doorSwing(w, dir, op, fIdx, L, side);
+      fillOpening(g, op, t, side, w.ext, o);
+    }
+  }
+
+
+  /** Which side a door leaf swings to (+1 = local +Z) and which jamb it hinges on. */
+  function doorSwing(w, dir, op, fIdx, L, side) {
+    const mid = (op.u0 + op.u1) / 2 * 1000;
+    const px = w.a[0] + dir[0] * mid, py = w.a[1] + dir[1] * mid;
+    const n = [-dir[1], dir[0]];
+    const rank = (s) => {
+      const x = px + n[0] * 600 * s, y = py + n[1] * 600 * s;
+      const r = ROOMS.find((rm) => rm.f === fIdx && x >= rm.rect[0] - 50 && x <= rm.rect[2] + 50 && y >= rm.rect[1] - 50 && y <= rm.rect[3] + 50);
+      if (!r) return 0;
+      if (['bath', 'wash', 'dress', 'store', 'laundry'].includes(r.key)) return 3;
+      if (['masterBedroom', 'maleMajlis', 'femaleMajlis'].includes(r.key)) return 2;
+      return 1;
+    };
+    const rp = rank(1), rn = rank(-1);
+    const s = rp === rn ? (side ? -side : 1) : rp > rn ? 1 : -1;
+    // hinge on the jamb nearest a wall end so the open leaf rests against the wall
+    const hingeStart = op.u0 <= L - op.u1;
+    return { s, hingeStart };
   }
 
   function roomSide(w, nx, nz) {
@@ -244,16 +279,23 @@ export function buildWalls(ctx) {
         grp.add(box(w / 2 - 0.05, h - 0.05, 0.04, M.galvanised, -w / 4, 0, t / 2 * (side || 1)));
         grp.add(box(w / 2 - 0.05, h - 0.05, 0.04, M.galvanised, w / 4, 0, t / 2 * (side || 1)));
       } else {
-        const leafW = main ? w - 0.1 : w - 0.1;
-        const leafGeo = new THREE.BoxGeometry(leafW, h - 0.06, main ? 0.07 : 0.045);
-        leafGeo.translate(leafW / 2, (h - 0.06) / 2, 0);
-        const leaf = new THREE.Mesh(leafGeo, main ? M.doorWood : ext ? M.doorWood : M.doorWhite);
-        leaf.castShadow = leaf.receiveShadow = true;
-        leaf.position.set(-w / 2 + 0.05, 0, 0);
-        leaf.rotation.y = main ? -1.1 : -1.35 * (side || 1);
-        if (main) leaf.add(box(0.03, 1.4, 0.06, M.galvanised, leafW - 0.15, (h - 1.4) / 2, 0.05));
-        else leaf.add(box(0.12, 0.02, 0.02, M.galvanised, leafW - 0.1, 1.0, 0.04));
-        grp.add(leaf);
+        // Leaves swing ~85° into the more private room and rest against the wall.
+        const sw = op.swing || { s: side || 1, hingeStart: true };
+        const leaves = main ? [true, false] : [sw.hingeStart];
+        const leafW = (w - 0.1) / leaves.length;
+        for (const hingeStart of leaves) {
+          const leafGeo = new THREE.BoxGeometry(leafW, h - 0.06, main ? 0.07 : 0.045);
+          leafGeo.translate(hingeStart ? leafW / 2 : -leafW / 2, (h - 0.06) / 2, 0);
+          const leaf = new THREE.Mesh(leafGeo, main || ext ? M.doorWood : M.doorWhite);
+          leaf.castShadow = leaf.receiveShadow = true;
+          leaf.position.set(hingeStart ? -w / 2 + 0.05 : w / 2 - 0.05, 0, sw.s * (t / 2 - 0.03));
+          const ang = main ? 1.25 : 1.48;
+          leaf.rotation.y = hingeStart ? -sw.s * ang : sw.s * ang;
+          const hx = hingeStart ? leafW - 0.1 : -leafW + 0.1;
+          if (main) leaf.add(box(0.03, 1.4, 0.06, M.galvanised, hingeStart ? leafW - 0.15 : -leafW + 0.15, (h - 1.4) / 2, 0.05 * sw.s));
+          else for (const zz of [0.035, -0.035]) leaf.add(box(0.12, 0.02, 0.02, M.galvanised, hx, 1.0, zz));
+          grp.add(leaf);
+        }
       }
       TL.add(grp, { in: ext || main || isLift ? [11.8, 11.95] : stagger(Math.random() * 10 | 0, 10, 12.55, 12.7), anim: 'rise' });
     } else if (op.kind === 'shutter') {

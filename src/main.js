@@ -8,6 +8,7 @@ import { buildSite } from './build/site.js';
 import { buildStructure } from './build/structure.js';
 import { buildWalls } from './build/walls.js';
 import { buildInterior } from './build/interior.js';
+import { buildFurniture } from './build/furniture.js';
 import { buildMachines } from './people/machines.js';
 import { Crew } from './people/crew.js';
 import { CameraRig, VIEWS } from './controls/cameras.js';
@@ -31,6 +32,7 @@ const state = {
   cut: 'all',
   labels: true,
   quality: params.get('q') || defaultQuality(),
+  neighbours: params.get('neighbours') === '1',
 };
 state.t = state.target;
 
@@ -55,6 +57,7 @@ async function init() {
   buildStructure(ctx);
   buildWalls(ctx);
   buildInterior(ctx);
+  buildFurniture(ctx);
   const machines = buildMachines(ctx);
   const crew = new Crew(scene);
   TL.update(state.t, true);
@@ -128,6 +131,13 @@ async function init() {
   for (const b of document.querySelectorAll('#cut button')) b.addEventListener('click', () => setCut(b.dataset.cut));
   $('views').addEventListener('change', (e) => { rig.goTo(e.target.value); e.target.selectedIndex = 0; });
   $('labelsToggle').addEventListener('change', (e) => { state.labels = e.target.checked; });
+  const setNeighbours = (on) => {
+    state.neighbours = on;
+    ctx.neighbours.visible = on;
+    $('neighboursToggle').checked = on;
+  };
+  $('neighboursToggle').addEventListener('change', (e) => setNeighbours(e.target.checked));
+  setNeighbours(state.neighbours);
   $('quality').addEventListener('change', (e) => {
     state.quality = e.target.value;
     stage3d.setQuality(state.quality);
@@ -249,7 +259,16 @@ async function init() {
   // Expose a tiny API for debugging / automated screenshots.
   window.happyhome = {
     setT: (t) => { state.target = state.t = t; },
-    setCut, goTo: (v) => rig.goTo(v), setMode: (m) => rig.setMode(m), rig, state, scene, camera,
+    setCut, goTo: (v) => rig.goTo(v), setMode: (m) => rig.setMode(m), rig, state, scene, camera, rooms: ROOMS, toScene, LEVEL,
+    pick: (nx, ny) => {
+      const rc = new THREE.Raycaster();
+      rc.setFromCamera(new THREE.Vector2(nx * 2 - 1, -(ny * 2 - 1)), camera);
+      const hit = rc.intersectObjects(scene.children, true).find((h) => { for (let o = h.object; o; o = o.parent) if (!o.visible) return false; return true; });
+      if (!hit) return null;
+      const o = hit.object, m = o.material;
+      const chain = []; for (let q = o; q && q !== scene; q = q.parent) chain.push(q.type + (q.name ? ':' + q.name : ''));
+      return { point: hit.point.toArray().map((v) => +v.toFixed(3)), mat: Object.entries(M).find(([, v]) => v === m)?.[0] || m.type + '#' + m.color?.getHexString(), geo: o.geometry.type, params: o.geometry.parameters, chain };
+    },
   };
 
   /* ---------- loop ---------- */

@@ -50,6 +50,11 @@ export function buildSite(ctx) {
   }
 
   /* ---------- neighbouring villas (context massing) ------------------ */
+  // Context buildings live in their own group so the UI can hide them (hidden by default).
+  const neighbours = new THREE.Group();
+  neighbours.name = 'neighbours';
+  root.add(neighbours);
+  ctx.neighbours = neighbours;
   const neighbour = (x0, z0, w, d, floors, mat, seed) => {
     const g = new THREE.Group();
     const r = rng(seed);
@@ -66,7 +71,7 @@ export function buildSite(ctx) {
       }
     }
     g.position.set(x0, 0, z0);
-    always(mergeByMaterial(g));
+    neighbours.add(mergeByMaterial(g));
   };
   neighbour(-17, 0, 13, 17, 2, M.neighbour, 3);
   neighbour(17.5, -1.5, 13, 16, 2, M.neighbour2, 5);
