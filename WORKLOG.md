@@ -103,3 +103,5 @@ Mistakes found and fixed:
   doors and fixtures all sit where the drawings show them.
 - Deploys: every push to `main` triggered "Deploy to GitHub Pages"; runs
   #3–#6 all succeeded.
+- Slim vertical façade wall lights on the front piers (ground and first floor),
+  as drawn on the front elevation (sheet 12).

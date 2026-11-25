@@ -101,6 +101,21 @@ export function buildInterior(ctx) {
     add(units, { in: [11.85, 11.95], anim: 'drop' });
   }
 
+  /* ---------------- façade wall lights (front elevation, sheet 12) ------ */
+  {
+    const lights = new THREE.Group();
+    const strip = (x, y, lvl) => {
+      const [sx, sz] = toScene(x, y);
+      lights.add(box(0.05, 1.0, 0.03, M.darkSteel, sx, lvl, sz, { cast: false }));
+      lights.add(box(0.025, 0.9, 0.01, M.led, sx, lvl + 0.05, sz + 0.018, { cast: false }));
+    };
+    // ground floor piers either side of W1, first floor piers between W2 / W3
+    for (const x of [2620, 6700]) strip(x, 18292 + 190, LEVEL.gf + 1.3);
+    for (const x of [2620, 6700, 9450]) strip(x, 19400 + 190, LEVEL.ff + 1.3);
+    for (const x of [10350, 14700]) strip(x, 21291 + 190, LEVEL.ff + 1.3);
+    add(lights, { in: [11.9, 11.97], anim: 'show' });
+  }
+
   /* ---------------- roof build-up (plaster stage) --------------------- */
   {
     const holes = [
