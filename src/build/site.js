@@ -346,19 +346,39 @@ function mergeByMaterial(group) {
   return out;
 }
 
+let barkMat = null;
+function palmBark(M) {
+  if (barkMat) return barkMat;
+  const c = document.createElement('canvas');
+  c.width = 64; c.height = 256;
+  const x = c.getContext('2d');
+  x.fillStyle = '#8a6a48'; x.fillRect(0, 0, 64, 256);
+  for (let y = 0; y < 256; y += 16) {
+    x.fillStyle = 'rgba(60,40,25,0.55)'; x.fillRect(0, y, 64, 4);
+    x.fillStyle = 'rgba(170,140,105,0.35)'; x.fillRect(0, y + 5, 64, 3);
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(2, 3);
+  barkMat = new THREE.MeshStandardMaterial({ map: t, roughness: 1, color: 0xffffff });
+  void M;
+  return barkMat;
+}
+
 function makePalm(M) {
   const g = new THREE.Group();
   const trunkH = 5.2;
-  // slightly curved trunk made of stacked frustums
-  const segs = 10;
-  const parts = [];
-  for (let i = 0; i < segs; i++) {
-    const h = trunkH / segs;
-    const c = new THREE.CylinderGeometry(0.17 - i * 0.004, 0.2 - i * 0.004, h * 1.02, 10);
-    c.translate(Math.sin(i / segs * 1.2) * 0.35, h * i + h / 2, 0);
-    parts.push(c);
+  // single smooth, tapered, gently curved trunk with ring bands (bark texture)
+  const tg = new THREE.CylinderGeometry(0.16, 0.21, trunkH, 12, 24);
+  const tp = tg.attributes.position;
+  for (let i = 0; i < tp.count; i++) {
+    const y = tp.getY(i) + trunkH / 2;
+    tp.setX(i, tp.getX(i) + Math.sin((y / trunkH) * 1.2) * 0.35);
+    tp.setY(i, y);
   }
-  const trunk = new THREE.Mesh(mergeGeometries(parts), M.palmTrunk);
+  tg.computeVertexNormals();
+  const trunk = new THREE.Mesh(tg, palmBark(M));
   trunk.castShadow = true;
   g.add(trunk);
   const topX = Math.sin(1.2) * 0.35;

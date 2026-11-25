@@ -25,6 +25,8 @@ export const STRINGS = {
     qLow: 'Low',
     labels: 'Room labels',
     neighbours: 'Neighbours',
+    day: 'Day — click for dusk',
+    dusk: 'Dusk — click for day',
     help: 'Help',
     close: 'Close',
     workers: 'Workers on site',
@@ -43,6 +45,7 @@ export const STRINGS = {
       ['Walk', 'Walk around and inside the house at eye height. Desktop: click, then W A S D + mouse. iPad: left pad moves, drag to look. Stairs work!'],
       ['Tour', 'A cinematic camera flies around the site.'],
       ['Show', 'Cut away the upper floors to look inside.'],
+      ['☀ / ☾', 'Switch between daylight and dusk with the façade and interior lights on. Neighbours shows the surrounding houses.'],
       ['Keys', '← / → step through stages · Space play/pause · 1–7 camera views · L language'],
     ],
     rooms: {
@@ -77,6 +80,8 @@ export const STRINGS = {
     qLow: 'منخفضة',
     labels: 'أسماء الغرف',
     neighbours: 'المباني المجاورة',
+    day: 'نهار — انقر للغروب',
+    dusk: 'غروب — انقر للنهار',
     help: 'مساعدة',
     close: 'إغلاق',
     workers: 'عمال في الموقع',
@@ -95,6 +100,7 @@ export const STRINGS = {
       ['تجوّل', 'تجوّل حول المنزل وداخله بمستوى النظر. الكمبيوتر: انقر ثم W A S D مع الفأرة. الآيباد: لوحة اليسار للحركة واسحب للنظر. يمكنك صعود الدرج!'],
       ['جولة', 'كاميرا سينمائية تطير حول الموقع.'],
       ['عرض', 'إخفاء الأدوار العليا لرؤية الداخل.'],
+      ['☀ / ☾', 'التبديل بين ضوء النهار والغروب مع تشغيل إنارة الواجهة والداخل. خيار المباني المجاورة يُظهر المنازل المحيطة.'],
       ['المفاتيح', '← / → التنقل بين المراحل · المسافة تشغيل/إيقاف · 1–7 المناظر · L اللغة'],
     ],
     rooms: {

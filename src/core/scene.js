@@ -4,6 +4,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { N8AOPass } from 'n8ao';
 
 /** Quality presets: desktop defaults to high, touch devices (iPad) to medium. */
@@ -57,23 +58,50 @@ export class Stage3D {
     this.sunDir = new THREE.Vector3().setFromSphericalCoords(1, THREE.MathUtils.degToRad(48), THREE.MathUtils.degToRad(35));
     u.sunPosition.value.copy(this.sunDir);
 
-    // Image-based lighting generated from the sky itself.
+    this.timeOfDay = 'day';
+    this._buildEnv();
+    this.scene.environmentIntensity = 0.75;
+
+    this.scene.fog = new THREE.Fog(0xcfd8de, 120, 520);
+  }
+
+  /** Image-based lighting generated from the sky itself (re-run when the sun moves). */
+  _buildEnv(groundColor = 0xa9a49b) {
     const pmrem = new THREE.PMREMGenerator(this.renderer);
     const envScene = new THREE.Scene();
-    const envSky = sky.clone();
-    envSky.material = sky.material.clone();
+    const envSky = this.sky.clone();
+    envSky.material = this.sky.material.clone();
     envSky.material.uniforms.sunPosition.value.copy(this.sunDir);
     envScene.add(envSky);
-    // Simple ground bounce for the environment so reflections aren't black underneath.
-    const groundEnv = new THREE.Mesh(new THREE.CircleGeometry(3000, 16), new THREE.MeshBasicMaterial({ color: 0xa9a49b }));
+    // simple ground bounce so reflections aren't black underneath
+    const groundEnv = new THREE.Mesh(new THREE.CircleGeometry(3000, 16), new THREE.MeshBasicMaterial({ color: groundColor }));
     groundEnv.rotation.x = -Math.PI / 2;
     groundEnv.position.y = -10;
     envScene.add(groundEnv);
+    this.scene.environment?.dispose();
     this.scene.environment = pmrem.fromScene(envScene, 0.02).texture;
-    this.scene.environmentIntensity = 0.75;
     pmrem.dispose();
+  }
 
-    this.scene.fog = new THREE.Fog(0xcfd8de, 120, 520);
+  /** 'day' (late morning) or 'dusk' (low warm sun, lights on). */
+  setTimeOfDay(mode) {
+    this.timeOfDay = mode;
+    const dusk = mode === 'dusk';
+    const u = this.sky.material.uniforms;
+    this.sunDir.setFromSphericalCoords(1, THREE.MathUtils.degToRad(dusk ? 86 : 48), THREE.MathUtils.degToRad(dusk ? 235 : 35));
+    u.sunPosition.value.copy(this.sunDir);
+    u.turbidity.value = dusk ? 9 : 6;
+    u.rayleigh.value = dusk ? 3.2 : 1.6;
+    this.sun.color.setHex(dusk ? 0xff9752 : 0xfff1dc);
+    this.sun.intensity = dusk ? 1.6 : 3.2;
+    this.hemi.color.setHex(dusk ? 0x7486b0 : 0xdfe9f5);
+    this.hemi.groundColor.setHex(dusk ? 0x3b3129 : 0xc9c0b2);
+    this.hemi.intensity = dusk ? 0.22 : 0.6;
+    this._buildEnv(dusk ? 0x2a2622 : 0xa9a49b);
+    this.scene.environmentIntensity = dusk ? 0.35 : 0.75;
+    this.renderer.toneMappingExposure = dusk ? 0.9 : 0.55;
+    this.scene.fog.color.setHex(dusk ? 0x5c5866 : 0xcfd8de);
+    this._buildComposer();
   }
 
   _buildLights() {
@@ -123,6 +151,9 @@ export class Stage3D {
     } else {
       composer.addPass(new RenderPass(this.scene, this.camera));
       this.aoPass = null;
+    }
+    if (this.timeOfDay === 'dusk' && q.pixelRatio > 1) {
+      composer.addPass(new UnrealBloomPass(new THREE.Vector2(w, h), 0.55, 0.5, 0.9));
     }
     composer.addPass(new OutputPass());
     if (q.smaa) composer.addPass(new SMAAPass(w * this.renderer.getPixelRatio(), h * this.renderer.getPixelRatio()));

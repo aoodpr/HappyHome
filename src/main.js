@@ -9,6 +9,7 @@ import { buildStructure } from './build/structure.js';
 import { buildWalls } from './build/walls.js';
 import { buildInterior } from './build/interior.js';
 import { buildFurniture } from './build/furniture.js';
+import { setLampLevel } from './build/props.js';
 import { buildMachines } from './people/machines.js';
 import { Crew } from './people/crew.js';
 import { CameraRig, VIEWS } from './controls/cameras.js';
@@ -144,6 +145,21 @@ async function init() {
   });
   $('lang').addEventListener('click', () => setLang(state.lang === 'en' ? 'ar' : 'en'));
   $('helpBtn').addEventListener('click', () => $('help').showModal());
+
+  // Day / dusk: low warm sun, interior and façade lights on.
+  const gypsumDay = M.gypsum.emissive.clone(), gypsumDusk = new THREE.Color(0x9a8a6e);
+  const setTimeOfDay = (mode) => {
+    state.tod = mode;
+    stage3d.setTimeOfDay(mode);
+    const dusk = mode === 'dusk';
+    M.led.emissiveIntensity = dusk ? 6 : 2.2;
+    M.gypsum.emissive.copy(dusk ? gypsumDusk : gypsumDay);
+    setLampLevel(dusk ? 3.5 : 1);
+    $('tod').textContent = dusk ? '☾' : '☀';
+    $('tod').title = STRINGS[state.lang][dusk ? 'dusk' : 'day'];
+  };
+  $('tod').addEventListener('click', () => setTimeOfDay(state.tod === 'dusk' ? 'day' : 'dusk'));
+  if (params.get('tod') === 'dusk') setTimeOfDay('dusk');
 
   // joystick (touch walk mode)
   {

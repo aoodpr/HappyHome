@@ -10,6 +10,11 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 
 let P = null; // shared prop materials
 
+/** Brightness of lamp shades / light lines (1 = daytime). */
+export function setLampLevel(k) {
+  if (P) P.lampShade.emissiveIntensity = 0.9 * k;
+}
+
 export function initProps(M) {
   const std = (o) => new THREE.MeshStandardMaterial({ roughness: 0.8, ...o });
   P = {

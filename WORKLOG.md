@@ -105,3 +105,14 @@ Mistakes found and fixed:
   #3–#6 all succeeded.
 - Slim vertical façade wall lights on the front piers (ground and first floor),
   as drawn on the front elevation (sheet 12).
+
+#### 9. Day / dusk lighting
+- New ☀/☾ toolbar button (and `#tod=dusk` URL option). Dusk lowers a warm sun
+  in the west, regenerates the sky reflections, dims the ambient light, turns
+  up the façade LEDs, wall lights, ceiling spots and lamp shades and adds a
+  soft bloom (medium/high quality). Help text updated in both languages.
+- Courtyard palm trunk rebuilt as one smooth tapered, curved trunk with a
+  banded bark texture (was visibly stacked cylinders).
+- Full 37-room sweep repeated after all changes. Known minor issue: one faint
+  sub-pixel dashed line in the GF living room at low quality — couldn't be
+  isolated by picking or bisection; not visible at medium/high quality.
