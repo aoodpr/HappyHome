@@ -299,6 +299,19 @@ function slats(N) {
   }, { normalStrength: 4 });
 }
 
+/** Glazed wall tiles 600×300 with 2 mm grout — 1.2 × 1.2 m tile. */
+function wallTiles(N) {
+  const n = fbm(N, { seed: 131, octaves: 4, base: 6 });
+  const px = N / 1.2;
+  return bake(N, (x, y) => {
+    const i = y * N + x;
+    const lx = x % (0.6 * px), ly = y % (0.3 * px);
+    if (lx < 1.5 || ly < 1.5) return [0.72, 0.71, 0.69, 0];
+    const v = 0.93 + (n[i] - 0.5) * 0.04;
+    return [v, v, v * 0.99, 0.55];
+  }, { normalStrength: 2.5 });
+}
+
 /** Real-world size (m) covered by one texture repeat. */
 export const TILE = {
   concrete: 2.0, blocks: 1.2, plaster: 2.0, paint: 2.0, stone: 2.4, marble: 1.2, wood: 1.8,
@@ -328,6 +341,7 @@ export function createTextures(renderer, quality = 'high') {
   T.plywood = toTextures(plywood(N), an);
   T.rebar = rebarGrid(N);
   T.slats = toTextures(slats(256), an);
+  T.wallTiles = toTextures(wallTiles(N), an);
   return T;
 }
 

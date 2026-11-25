@@ -134,3 +134,9 @@ Mistakes found and fixed:
   living room ~1,870 → ~470. Visuals, section cuts and collisions verified
   unchanged.
 - Window/door frames no longer cast shadows (thin, invisible in the shadow map).
+
+#### 11. Wet-area wall tiling
+- Baths, washrooms and the laundry get glazed 600×300 wall tiles (procedural
+  texture with grout) up to 2.4 m. Tiles follow each room edge, stop at door
+  openings and run only up to the sill under windows. Applied during the
+  interior-finishes stage, before the fixtures arrive.

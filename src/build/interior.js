@@ -101,6 +101,52 @@ export function buildInterior(ctx) {
     add(units, { in: [11.85, 11.95], anim: 'drop' });
   }
 
+  /* ---------------- wet-area wall tiling (to 2.4 m) ------------------- */
+  {
+    const TILE_H = 2.4;
+    const wetRooms = ROOMS.filter((r) => ['bath', 'wash', 'laundry'].includes(r.key));
+    wetRooms.forEach((rm, ri) => {
+      const walls = rm.f === 0 ? WALLS_GF : WALLS_FF;
+      const ffl = FFL[rm.f];
+      const [x0, y0, x1, y1] = rm.rect;
+      const g = new THREE.Group();
+      g.position.y = ffl;
+      // each edge: [fixed coord, from, to, horizontal?, inward normal sign]
+      const edges = [[y0, x0, x1, true, 1], [y1, x0, x1, true, -1], [x0, y0, y1, false, 1], [x1, y0, y1, false, -1]];
+      for (const [c, a, b, hor, inward] of edges) {
+        // openings on walls lying along this edge
+        const cuts = [];
+        for (const w of walls) {
+          const wHor = Math.abs(w.a[1] - w.b[1]) < 1, wVer = Math.abs(w.a[0] - w.b[0]) < 1;
+          if (hor ? !wHor : !wVer) continue;
+          const line = hor ? w.a[1] : w.a[0];
+          if (Math.abs(line - c) > w.t / 2 + 40) continue;
+          for (const [from, to, sill, , kind] of w.o || []) {
+            const lo = Math.min(from, to), hi = Math.max(from, to);
+            cuts.push({ lo, hi, top: kind === 'window' && sill > 0 ? sill : 0 });
+          }
+        }
+        // split the edge into tiled pieces
+        const pts = [a, b, ...cuts.flatMap((k) => [k.lo, k.hi])].filter((v) => v >= a && v <= b).sort((p, q) => p - q);
+        for (let i = 0; i < pts.length - 1; i++) {
+          const s0 = pts[i], s1 = pts[i + 1];
+          if (s1 - s0 < 20) continue;
+          const mid = (s0 + s1) / 2;
+          const cut = cuts.find((k) => mid > k.lo && mid < k.hi);
+          const h = cut ? cut.top : TILE_H;
+          if (h < 0.05) continue;
+          const off = 20 * inward;
+          const [px, pz] = hor ? toScene(mid, c + off) : toScene(c + off, mid);
+          const len = (s1 - s0) / 1000;
+          const tile = hor ? box(len, Math.min(h, TILE_H), 0.008, M.wallTile, px, 0, pz, { cast: false })
+            : box(0.008, Math.min(h, TILE_H), len, M.wallTile, px, 0, pz, { cast: false });
+          g.add(tile);
+        }
+      }
+      add(g, { in: stagger(ri, wetRooms.length, 12.05, 12.3), anim: 'rise' });
+    });
+  }
+
   /* ---------------- façade wall lights (front elevation, sheet 12) ------ */
   {
     const lights = new THREE.Group();
