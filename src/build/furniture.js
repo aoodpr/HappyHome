@@ -196,6 +196,8 @@ const CURTAIN_ROOMS = ['femaleMajlis', 'maleMajlis', 'living', 'masterBedroom', 
 export function buildFurniture(ctx) {
   const { TL, M, root } = ctx;
   PR.initProps(M);
+  ctx.furnitureItems = [];
+  ctx.furnitureVersion = 0;
   const groups = [];
   const pending = []; // GLB placements waiting for their model
 
@@ -218,12 +220,26 @@ export function buildFurniture(ctx) {
       if (it.sx) holder.scale.x = it.sx;
       if (it.mirror) holder.scale.x = -1;
       grp.add(holder);
+      // walk-mode collision: skip ceiling pieces and anything hung high
+      holder.userData.collide = !(it.ceiling || it.hang);
+      ctx.furnitureItems.push(holder);
       if (it.fn) holder.add(it.fn());
       else pending.push({ holder, name: it.m });
     }
   }
 
   addCurtains(root, groups);
+
+  // Distance culling: rooms far from the camera can't be seen through the
+  // windows anyway, so their furniture is skipped (big win on iPad).
+  const roomGroups = groups.filter((g) => g.name.startsWith('furniture:')).map((g) => {
+    const r = roomById[g.name.slice(10)];
+    const [cx, cz] = toScene((r.rect[0] + r.rect[2]) / 2, (r.rect[1] + r.rect[3]) / 2);
+    return { g, c: new THREE.Vector3(cx, FFL[r.f] + 1.5, cz) };
+  });
+  ctx.updateFurnitureLOD = (camera, cutActive) => {
+    for (const { g, c } of roomGroups) g.visible = cutActive || camera.position.distanceTo(c) < 24;
+  };
 
   // Furniture appears room by room during the interior-finishes stage.
   groups.forEach((g, i) => {
@@ -250,7 +266,7 @@ export function buildFurniture(ctx) {
       const src = await load(p.name).catch(() => null);
       if (src) p.holder.add(src.clone(true));
     })))
-    .then(() => TL.update(TL.t, true));
+    .then(() => { ctx.furnitureVersion++; TL.update(TL.t, true); });
 }
 
 function withLamp(table) {

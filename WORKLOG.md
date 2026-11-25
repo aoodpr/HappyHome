@@ -60,3 +60,19 @@ Mistakes found and fixed:
   living, dining and bedroom spaces.
 - Models load in the background after the scene appears, so first paint isn't
   delayed by the ~6 MB of furniture.
+
+#### 5. Walk-mode furniture collisions
+- Walking no longer passes through sofas, beds, tables or kitchen units: each
+  furniture piece contributes a world-space footprint box (rugs, chandeliers
+  and pendants excluded). Tested: walking north in the living room stops at
+  the coffee table edge + body radius.
+
+#### 6. Performance pass (iPad)
+- Measured with `renderer.info`: ~2 M triangles/frame at handover, almost all
+  from the CC0 models (plants 60–70k tris, dining chairs 22k, chandelier 27k).
+- Decimated the heavy models with meshoptimizer simplification
+  (chandelier 27k→8k, dining chair 22k→4k, sideboard 25k→11k, plants 62–70k→7–17k,
+  vase 10k→2k) — visually checked on a contact sheet. Furniture folder 5.9 MB → 4.0 MB.
+- Furniture of rooms more than 24 m from the camera is skipped (unless a
+  section cut is active). Triangles per frame: aerial 2 M → 60 k,
+  living room 1 M → 360 k, street 2 M → 130 k.

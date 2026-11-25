@@ -158,6 +158,14 @@ export class CameraRig {
         this.ray.far = dist + RADIUS;
         if (this.ray.intersectObjects(solids, false).length) return;
       }
+      // furniture: footprint boxes (cheap 2D test) at the player's floor level
+      const nx = w.pos.x + dx, nz = w.pos.z + dz;
+      for (const b of this._furnitureBoxes()) {
+        if (b.max.y < w.pos.y + 0.25 || b.min.y > w.pos.y + 1.7) continue;
+        const inNew = nx > b.min.x - RADIUS && nx < b.max.x + RADIUS && nz > b.min.z - RADIUS && nz < b.max.z + RADIUS;
+        const inOld = w.pos.x > b.min.x - RADIUS && w.pos.x < b.max.x + RADIUS && w.pos.z > b.min.z - RADIUS && w.pos.z < b.max.z + RADIUS;
+        if (inNew && !inOld) return; // allow walking out if we ever start inside
+      }
       w.pos.x += dx; w.pos.z += dz;
     };
     tryAxis(move.x, 0);
@@ -179,6 +187,24 @@ export class CameraRig {
     const bob = speed > 0.1 ? Math.sin(performance.now() / (w.run ? 120 : 180)) * 0.025 : 0;
     this.camera.position.set(w.pos.x, w.pos.y + EYE + bob, w.pos.z);
     this.camera.rotation.set(w.pitch, w.yaw, 0, 'YXZ');
+  }
+
+  /** World-space boxes of the visible furniture pieces (rebuilt when the set changes). */
+  _furnitureBoxes() {
+    const items = (this.ctx.furnitureItems || []).filter((h) => shown(h) && h.userData.collide !== false);
+    const key = items.length + ':' + (this.ctx.furnitureVersion || 0);
+    if (key !== this._fbKey) {
+      this._fbKey = key;
+      this._fb = [];
+      for (const h of items) {
+        const b = new THREE.Box3().setFromObject(h);
+        if (b.isEmpty()) continue;
+        const size = b.getSize(new THREE.Vector3());
+        if (size.y < 0.08) continue; // rugs
+        this._fb.push(b.expandByScalar(-0.04));
+      }
+    }
+    return this._fb;
   }
 
   _updateTour(dt) {

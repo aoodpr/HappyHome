@@ -259,7 +259,7 @@ async function init() {
   // Expose a tiny API for debugging / automated screenshots.
   window.happyhome = {
     setT: (t) => { state.target = state.t = t; },
-    setCut, goTo: (v) => rig.goTo(v), setMode: (m) => rig.setMode(m), rig, state, scene, camera, rooms: ROOMS, toScene, LEVEL,
+    setCut, goTo: (v) => rig.goTo(v), setMode: (m) => rig.setMode(m), rig, state, scene, camera, renderer, rooms: ROOMS, toScene, LEVEL,
     pick: (nx, ny) => {
       const rc = new THREE.Raycaster();
       rc.setFromCamera(new THREE.Vector2(nx * 2 - 1, -(ny * 2 - 1)), camera);
@@ -289,6 +289,7 @@ async function init() {
     crew.update(state.t, time);
     if (state.cut !== 'all' && time - lastCollect > 1) { lastCollect = time; setCut(state.cut); }
     rig.update(dt);
+    ctx.updateFurnitureLOD?.(camera, state.cut !== 'all');
     stage3d.followShadow(rig.focus());
     updateCard();
     updateLabels();
