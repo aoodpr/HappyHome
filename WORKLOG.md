@@ -93,3 +93,13 @@ Mistakes found and fixed:
   only the spine bent — fixed, then verified with numeric bone positions and
   close-up renders.
 - The procedural capsule workers remain as a fallback until the models load.
+
+#### 8. Finishing details
+- Skirting boards at the foot of every interior wall (appear with the floor
+  finishes), marble inner window sills, framed abstract wall art (generated
+  canvases) above beds, sofas and the dining sideboard.
+- Ceilings brightened further (bedroom ceilings still read tan).
+- Plan cutaways of both floors re-checked against sheets 3–4: furniture,
+  doors and fixtures all sit where the drawings show them.
+- Deploys: every push to `main` triggered "Deploy to GitHub Pages"; runs
+  #3–#6 all succeeded.

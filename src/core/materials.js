@@ -42,7 +42,7 @@ export function createMaterials(T) {
     shutter: tex(T.slats, { color: 0xc9ccd0, roughness: 0.4, metalness: 0.6 }),
     white: std({ color: 0xf5f3ef, roughness: 0.9 }),
     // slight self-illumination stands in for bounced daylight inside rooms
-    gypsum: tex(T.paint, { color: 0xfbfaf7, roughness: 0.95, emissive: 0x4a4844 }),
+    gypsum: tex(T.paint, { color: 0xfbfaf7, roughness: 0.95, emissive: 0x77746e }),
     membrane: std({ color: 0x3b3f45, roughness: 0.75 }),
     coolRoof: tex(T.plaster, { color: 0xf7f7f5, roughness: 0.85 }),
     polythene: std({ color: 0x5aa0d8, roughness: 0.35, transparent: true, opacity: 0.75 }),

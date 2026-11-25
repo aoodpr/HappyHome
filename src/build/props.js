@@ -413,3 +413,47 @@ function rugMaterial(field, border, accent) {
   t.anisotropy = 4;
   return new THREE.MeshStandardMaterial({ map: t, roughness: 1 });
 }
+
+/* ---------------- wall art ------------------------------------------ */
+const artCache = new Map();
+/** Framed abstract canvas, hung with its back on the wall (origin = centre). */
+export function artwork(w = 1.2, h = 0.8, seed = 1) {
+  const g = new THREE.Group();
+  g.add(at(new THREE.Mesh(new THREE.BoxGeometry(w + 0.08, h + 0.08, 0.04), P.walnut), 0, 0, 0.02));
+  const key = seed % 6;
+  if (!artCache.has(key)) artCache.set(key, artMaterial(key));
+  const canvas = new THREE.Mesh(new THREE.PlaneGeometry(w, h), artCache.get(key));
+  canvas.position.z = 0.042;
+  g.add(canvas);
+  return g;
+}
+
+function artMaterial(seed) {
+  const c = document.createElement('canvas');
+  c.width = 512; c.height = 340;
+  const x = c.getContext('2d');
+  const palettes = [
+    ['#e9dcc7', '#c08a5b', '#6b4b3a', '#2f3e4e', '#d9b77a'],
+    ['#f1ece4', '#8fa6a0', '#3d5a5c', '#c9a36a', '#20272e'],
+    ['#efe7da', '#d07a4f', '#8c3b2e', '#e8c68a', '#3a3a3a'],
+    ['#e7e9ec', '#9bb3c9', '#2d4a6b', '#c7a77a', '#111821'],
+    ['#f3ead9', '#b9a06b', '#7a6a4d', '#3b5244', '#e0d2b4'],
+    ['#ece6de', '#a35c4a', '#5b6f7c', '#d8c3a5', '#2b2b2b'],
+  ][seed];
+  x.fillStyle = palettes[0]; x.fillRect(0, 0, 512, 340);
+  let r = seed * 9301 + 49297;
+  const rnd = () => ((r = (r * 9301 + 49297) % 233280) / 233280);
+  for (let i = 0; i < 9; i++) {
+    x.globalAlpha = 0.55 + rnd() * 0.4;
+    x.fillStyle = palettes[1 + Math.floor(rnd() * 4)];
+    x.beginPath();
+    if (rnd() > 0.5) x.arc(rnd() * 512, rnd() * 340, 30 + rnd() * 110, 0, Math.PI * 2);
+    else x.rect(rnd() * 400, rnd() * 260, 60 + rnd() * 200, 20 + rnd() * 120);
+    x.fill();
+  }
+  x.globalAlpha = 0.9; x.strokeStyle = palettes[4]; x.lineWidth = 3;
+  x.beginPath(); x.moveTo(0, 240 + rnd() * 60); x.bezierCurveTo(170, 120, 340, 330, 512, 180 + rnd() * 80); x.stroke();
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return new THREE.MeshStandardMaterial({ map: t, roughness: 0.85 });
+}

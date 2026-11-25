@@ -32,6 +32,7 @@ const CH = (x, y) => ({ m: 'chandelier_01', x, y, rot: 0, ceiling: true });
 const LAYOUTS = {
   /* ---------------- ground floor ---------------- */
   'gf-femaleMajlis': [
+    F(() => PR.artwork(1.8, 1.0, 2), 4660, 260, 0, { h: 1.6 }),
     F(() => PR.rug(3.8, 2.8, 0), 4660, 2650),
     G('sofa_03', 4660, 720, 0),
     G('sofa_01', 2540, 2550, 90),
@@ -57,6 +58,7 @@ const LAYOUTS = {
     CH(4660, 14000), CH(4660, 16300),
   ],
   'gf-dining': [
+    F(() => PR.artwork(1.8, 1.0, 5), 7390, 3725, 90, { h: 1.35 }),
     F(() => PR.rug(3.6, 2.6, 2), 9300, 3750),
     F(() => PR.diningTable(2.6, 1.1), 9300, 3750),
     ...[-850, 0, 850].flatMap((dx) => [G('dining_chair_02', 9300 + dx, 2980, 0), G('dining_chair_02', 9300 + dx, 4520, 180)]),
@@ -71,6 +73,7 @@ const LAYOUTS = {
     G('potted_plant_01', 9800, 9050, 0),
   ],
   'gf-living': [
+    F(() => PR.artwork(1.6, 1.0, 0), 7390, 12500, 90, { h: 1.6 }),
     F(() => PR.rug(4.2, 3.2, 1), 11300, 11950),
     G('sofa_03', 11300, 10150, 0),
     G('modern_arm_chair_01', 9550, 12150, 90),
@@ -109,6 +112,7 @@ const LAYOUTS = {
 
   /* ---------------- first floor ----------------- */
   'ff-masterBedroom': [
+    F(() => PR.artwork(1.4, 0.8, 1), 4400, 260, 0, { h: 1.75 }),
     F(() => PR.rug(3.0, 2.2, 2), 4400, 2600),
     F(() => PR.bed({ duvet: 'duvetSage' }), 4400, 1270, 0),
     F(() => PR.nightstand(), 3060, 460, 0),
@@ -119,6 +123,7 @@ const LAYOUTS = {
     G('potted_plant_02', 6800, 650, 0),
   ],
   'ff-masterBedroom2': [
+    F(() => PR.artwork(1.4, 0.8, 2), 2197, 16700, 90, { h: 1.75 }),
     F(() => PR.rug(3.0, 2.4, 0), 4400, 16700),
     F(() => PR.bed({ duvet: 'duvet' }), 3207, 16700, 90),
     F(() => PR.nightstand(), 2397, 15360, 90),
@@ -130,6 +135,7 @@ const LAYOUTS = {
     G('potted_plant_01', 2550, 19000, 0),
   ],
   'ff-masterBedroom3': [
+    F(() => PR.artwork(1.4, 0.8, 3), 11300, 260, 0, { h: 1.75 }),
     F(() => PR.rug(3.0, 2.2, 1), 11300, 2650),
     F(() => PR.bed({ duvet: 'duvetBlue' }), 11300, 1270, 0),
     F(() => PR.nightstand(), 9960, 460, 0),
@@ -140,6 +146,7 @@ const LAYOUTS = {
     G('potted_plant_02', 13250, 2600, 0),
   ],
   'ff-masterBedroom4': [
+    F(() => PR.artwork(1.4, 0.8, 4), 15720, 18100, -90, { h: 1.75 }),
     F(() => PR.rug(3.2, 2.4, 2), 12900, 18100),
     F(() => PR.bed({ duvet: 'duvetSage' }), 14710, 18100, -90),
     F(() => PR.nightstand(), 15520, 16760, -90),
@@ -153,6 +160,7 @@ const LAYOUTS = {
     G('potted_plant_01', 15400, 20850, 0),
   ],
   'ff-familyLiving': [
+    F(() => PR.artwork(1.6, 0.9, 3), 11570, 11350, -90, { h: 1.6, skip: true }),
     F(() => PR.rug(3.4, 2.6, 0), 9100, 11350),
     G('modern_wooden_cabinet', 7600, 11400, 90, { sx: 0.8 }),
     F(() => PR.tvWall(1.9), 7350, 11400, 90, { h: 1.05 }),

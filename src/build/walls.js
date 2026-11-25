@@ -13,6 +13,7 @@ export function buildWalls(ctx) {
 
   // Interior plaster that turns into painted finish during the interior stage.
   const plasterMat = ctx.plasterMat;
+  const skirtingMat = new THREE.MeshStandardMaterial({ color: 0xe9e4da, roughness: 0.4 });
   const plasterCol = new THREE.Color(0xd9d4ca), paintCol = new THREE.Color(0xf6f1e8);
   TL.hook((t) => {
     const k = Math.min(1, Math.max(0, (t - 12.45) / 0.2));
@@ -163,6 +164,13 @@ export function buildWalls(ctx) {
       const pl = box(len, h, t + 0.03, plasterMat, (u0 + u1) / 2, y0, 0, { cast: false });
       g.add(pl);
       TL.add(pl, { in: o.plasterWin, anim: 'rise' });
+
+      // Skirting board at the foot of the wall inside the house
+      if (y0 < 0.001 && (o.floorKey === 'gf' || o.floorKey === 'ff')) {
+        const sk = box(len, 0.09, t + 0.05, skirtingMat, (u0 + u1) / 2, fflOff, 0, { cast: false });
+        g.add(sk);
+        TL.add(sk, { in: [12.3, 12.4], anim: 'show' });
+      }
     }
 
     // Façade cladding + mouldings on the exterior face
@@ -264,6 +272,11 @@ export function buildWalls(ctx) {
       for (let i = 1; i < panels; i++) grp.add(box(0.05, h, t * 0.5, M.alu, -w / 2 + (w * i) / panels, 0, 0));
       if (h > 2.2) grp.add(box(w, 0.05, t * 0.5, M.alu, 0, h * 0.22, 0));
       const glass = box(w - 0.08, h - 0.08, 0.016, M.glass, 0, 0.04, 0, { cast: false, receive: false });
+      // marble inner sill on the room side of the window
+      if (op.sill > 0.05 && o.floorKey !== 'roof') {
+        const inner = -(side || 1);
+        grp.add(box(w + 0.1, 0.03, t / 2 + 0.05, M.marble, 0, -0.03, inner * (t / 4 + 0.025)));
+      }
       grp.add(glass);
       glass.userData.solid = true;
       ctx.solids.push(glass);
