@@ -116,3 +116,7 @@ Mistakes found and fixed:
 - Full 37-room sweep repeated after all changes. Known minor issue: one faint
   sub-pixel dashed line in the GF living room at low quality — couldn't be
   isolated by picking or bisection; not visible at medium/high quality.
+- Verified at medium quality (with AO) that the living-room dashed line is not visible.
+- Room labels no longer show through walls when you're inside the house:
+  each label is ray-tested against the walls (throttled to ~3×/s) and hidden
+  when a wall is in the way (e.g. "Garage" seen from the living room).

@@ -263,8 +263,27 @@ async function init() {
       else if (camY > LEVEL.ff && camY < LEVEL.ff + 3.6) floor = 1;
     }
     const built = state.t >= 8.6;
-    for (const l of labels) l.visible = state.labels && built && l.userData.room.f === floor;
+    const inside = state.cut === 'all';
+    // When standing inside, hide labels of rooms hidden behind walls (raycast, throttled).
+    const now = performance.now();
+    if (inside && floor >= 0 && now - lastOcclusion > 300) {
+      lastOcclusion = now;
+      const solids = ctx.solids.filter((o) => o.visible && o.parent?.visible !== false);
+      for (const l of labels) {
+        if (l.userData.room.f !== floor) continue;
+        const to = l.position.clone().sub(camera.position);
+        const dist = to.length();
+        occluder.set(camera.position, to.normalize());
+        occluder.far = dist - 0.3;
+        l.userData.occluded = occluder.intersectObjects(solids, false).length > 0;
+      }
+    }
+    for (const l of labels) {
+      l.visible = state.labels && built && l.userData.room.f === floor && !(inside && l.userData.occluded);
+    }
   }
+  let lastOcclusion = 0;
+  const occluder = new THREE.Raycaster();
 
   setLang(state.lang);
   setCut('all');
