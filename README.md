@@ -11,13 +11,15 @@ The model is built from the project's working drawings: plans, elevations, secti
   - **Structure:** survey, excavation, blinding and footings, neck columns and ground beams, backfill, grade slab, and columns with post-tensioned slabs (shoring → deck → rebar → pour → cure → strip).
   - **Envelope and services:** roof rooms, blockwork laid course by course, MEP rough-in, plaster and roof waterproofing.
   - **Finishing:** stone façade and windows, interior finishes and furniture, then landscaping and handover.
-- **Workers and machinery.** Workers in hard hats and hi-vis vests hammer, shovel, tie rebar, lay blocks, plaster, paint and drill. Each stage has its own crew in the right place and at the right level. The machines are an excavator digging the pit, a dump truck, a concrete mixer, a pump truck with a 3-section boom, a plate compactor, a power float and a total station.
+- **Workers and machinery.** Rigged construction workers (CC0 models with hard hats and hi-vis vests) hammer, shovel, tie rebar, lay blocks, plaster, paint and drill. Each stage has its own crew in the right place and at the right level. The machines are an excavator digging the pit, a dump truck, a concrete mixer, a pump truck with a 3-section boom, a plate compactor, a power float and a total station.
 - **Camera modes.**
   - **Orbit:** rotate, zoom and pan.
   - **Walk:** first person with collisions, and you can climb the stairs. On desktop use the mouse with W A S D. On iPad use the on-screen joystick and drag to look.
   - **Tour:** a cinematic fly-around.
   - **Preset views:** street, aerial, rear, garden, living room, bedroom and roof.
 - **Section cut.** Hide the upper floors to look into the ground or first floor.
+- **Furnished interior.** Every room is furnished following the furniture shown on the plans: realistic CC0 sofas, armchairs, dining chairs, coffee tables, chandeliers, plants and more, plus detailed procedural beds, wardrobes, kitchen, bathrooms, laundry, curtains and rugs. Walk mode collides with furniture.
+- **Neighbours toggle.** The surrounding houses are hidden by default; tick **Neighbours** (or add `#neighbours=1`) to show the street context.
 - **Bilingual interface.** English and Arabic, with a full right-to-left layout and room labels in both languages.
 - **Realistic rendering.** Physically based materials with procedural textures (concrete, blockwork, stone cladding, marble, oak, pavers and more), a physical sky with image-based lighting, soft shadows and N8AO ambient occlusion. There are High, Medium and Low quality presets; iPad defaults to Medium.
 
@@ -86,6 +88,17 @@ The build is a static site in `dist/`, with no server code and no external asset
 1. Open **Settings → Pages** and set **Source** to **GitHub Actions**.
 2. Merge into `main`. The site is published at `https://<owner>.github.io/HappyHome/`.
 
+## Asset credits
+
+All third-party assets are CC0 (public domain); no attribution is required, but credit where due:
+
+- Furniture, lighting and plants: [Poly Haven](https://polyhaven.com/models) (CC0), optimised with gltf-transform.
+- Construction worker characters: [Quaternius](https://quaternius.com/) "Ultimate Modular Men / Women" (CC0).
+
+## Work log
+
+See [WORKLOG.md](WORKLOG.md) for a record of every review and improvement pass.
+
 ## Tech
 
-[three.js](https://threejs.org/) · [N8AO](https://github.com/N8python/n8ao) · [Vite](https://vitejs.dev/). Textures, characters and machines are all procedural, so there are no third-party art assets.
+[three.js](https://threejs.org/) · [N8AO](https://github.com/N8python/n8ao) · [Vite](https://vitejs.dev/). Textures and machines are procedural; furniture and workers are CC0 models (see credits).
