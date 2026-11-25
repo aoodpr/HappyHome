@@ -76,3 +76,20 @@ Mistakes found and fixed:
 - Furniture of rooms more than 24 m from the camera is skipped (unless a
   section cut is active). Triangles per frame: aerial 2 M → 60 k,
   living room 1 M → 360 k, street 2 M → 130 k.
+
+#### 7. Realistic rigged workers
+- Searched GitHub for CC0 characters; found Quaternius "Ultimate Modular
+  Men/Women" construction **Worker** models (hard hat + hi-vis vest, 62-bone
+  rig, 24 animation clips). Converted to meshopt GLB (~740 KB each).
+- New `src/people/rigged.js`: each worker is a skinned clone with its own
+  AnimationMixer (Idle / Walk base clips, cross-faded), plus task motions
+  (hammering, shovelling, kneeling rebar fixing, laying blocks, plastering,
+  painting, drilling, surveying, pointing, vibrating concrete) layered on top
+  as world-space bone rotations — independent of the bones' local axes.
+- Per-worker variation: hard-hat colour, skin tone, trousers; 1 in 3 workers
+  uses the women's model.
+- Bug found while testing: GLTFLoader strips dots from node names
+  (`UpperArm.R` → `UpperArmR`), so arm/leg bones weren't found at first and
+  only the spine bent — fixed, then verified with numeric bone positions and
+  close-up renders.
+- The procedural capsule workers remain as a fallback until the models load.

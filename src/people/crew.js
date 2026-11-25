@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Worker } from './worker.js';
+import { RiggedWorker, loadRiggedWorkers } from './rigged.js';
 import { LEVEL, SLAB_T, toScene } from '../data/building.js';
 
 const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
@@ -176,11 +177,20 @@ export class Crew {
     this.pool = [];
     this.active = 0;
     this.enabled = true;
+    this.assets = null;
+    this.lastTime = 0;
+    // Skinned CC0 workers replace the procedural fallback once loaded.
+    loadRiggedWorkers().then((a) => {
+      this.assets = a;
+      for (const w of this.pool) w.root.removeFromParent();
+      this.pool = [];
+    }).catch((e) => console.warn('rigged workers unavailable', e));
   }
 
   _worker(i) {
     while (this.pool.length <= i) {
-      const w = new Worker(this.pool.length + 3);
+      const n = this.pool.length;
+      const w = this.assets ? new RiggedWorker(this.assets[n % 3 === 2 ? 1 : 0], n + 3) : new Worker(n + 3);
       this.pool.push(w);
       this.root.add(w.root);
     }
@@ -188,6 +198,8 @@ export class Crew {
   }
 
   update(t, time) {
+    const dt = Math.min(0.1, Math.max(0, time - this.lastTime));
+    this.lastTime = time;
     let stage = Math.floor(t);
     let u = t - stage;
     if (stage >= CREW.length) { stage = CREW.length - 1; u = 1; }
@@ -211,7 +223,7 @@ export class Crew {
       const level = typeof k.level === 'function' ? k.level(u) : k.level;
       w.root.position.set(sx, level, sz);
       w.root.rotation.y = face;
-      w.pose(action, time);
+      w.pose(action, time, dt);
     });
     for (let i = tasks.length; i < this.pool.length; i++) this.pool[i].root.visible = false;
     this.active = tasks.length;
