@@ -38,7 +38,7 @@ export function buildWalls(ctx) {
     const build = (w, i, n, kind) => {
       const blockWin = kind === 'rc' ? win.rc : stagger(i, n, ...(kind === 'ext' ? win.ext : win.int));
       wall(w, {
-        base: floor.base, ffl: floor.ffl, H, slabAbove: true, floorKey: floor.key,
+        base: floor.base, ffl: floor.ffl, H: w.h ? Math.min(H, w.h + floor.ffl - floor.base) : H, slabAbove: !w.h, floorKey: floor.key,
         outline: outlines[floor.key],
         blockWin, rc: kind === 'rc', rcMat,
         plasterWin: stagger(i, n, ...win.plaster),

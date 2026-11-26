@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { Worker } from './worker.js';
 import { RiggedWorker, loadRiggedWorkers } from './rigged.js';
-import { LEVEL, SLAB_T, toScene } from '../data/building.js';
+import { LEVEL, SLAB_T, WALLS_GF, WALLS_FF, toScene } from '../data/building.js';
 
 const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
 const PIT = LEVEL.foundationBottom + 0.075;
@@ -170,6 +170,26 @@ export const CREW = [
   ],
 ];
 
+/** Keep a worker clear of walls on their floor (bodies and tools must not poke through). */
+const FACING_WALL = new Set(['paint', 'plaster', 'trowel', 'drill']);
+function clearOfWalls(x, y, level, action, stage) {
+  if (stage < 8) return [x, y];
+  const walls = Math.abs(level - LEVEL.gf) < 0.3 ? WALLS_GF : Math.abs(level - LEVEL.ff) < 0.3 ? WALLS_FF : null;
+  if (!walls) return [x, y];
+  for (let pass = 0; pass < 3; pass++) {
+    for (const w of walls) {
+      const [ax, ay] = w.a, [bx, by] = w.b;
+      const dx = bx - ax, dy = by - ay, L2 = dx * dx + dy * dy;
+      const k = Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / L2));
+      const cx = ax + dx * k, cy = ay + dy * k;
+      const d = Math.hypot(x - cx, y - cy) || 1;
+      const need = w.t / 2 + (FACING_WALL.has(action) ? 650 : 450);
+      if (d < need) { x = cx + ((x - cx) / d) * need; y = cy + ((y - cy) / d) * need; }
+    }
+  }
+  return [x, y];
+}
+
 export class Crew {
   constructor(root) {
     this.root = new THREE.Group();
@@ -219,8 +239,9 @@ export class Crew {
         face = Math.atan2(dx * (s < 1 ? 1 : -1), dy * (s < 1 ? 1 : -1));
         if (action !== 'carry') action = 'walk';
       }
-      const [sx, sz] = toScene(x, y);
       const level = typeof k.level === 'function' ? k.level(u) : k.level;
+      [x, y] = clearOfWalls(x, y, level, action, stage);
+      const [sx, sz] = toScene(x, y);
       w.root.position.set(sx, level, sz);
       w.root.rotation.y = face;
       w.pose(action, time, dt);

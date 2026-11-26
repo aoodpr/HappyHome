@@ -48,7 +48,7 @@ const LAYOUTS = {
   ],
   'gf-maleMajlis': [
     F(() => PR.rug(3.4, 4.4, 1), 4660, 15100),
-    F(() => PR.majlisSeat(4.95), 4663, 12520, 0),
+    F(() => PR.majlisSeat(3.1), 3730, 12610, 0), // stops short of the wash opening (x 5362–6560)
     F(() => PR.majlisSeat(4.2), 2580, 15050, 90),
     F(() => PR.majlisSeat(3.6), 6745, 14750, -90),
     G('coffeetable_01', 4660, 14400, 0),
@@ -184,9 +184,9 @@ const LAYOUTS = {
     F(() => PR.washer(true), 7640, 17750, 90),
     F(() => PR.counterRun(1.8, { sink: 0.2, uppers: true }), 9273, 17900, -90),
   ],
-  'ff-dress': [F(() => PR.wardrobe(2.4), 5900, 7165, 180), F(() => PR.wardrobe(1.4), 6875, 6400, -90)],
-  'ff-dress2': [F(() => PR.wardrobe(2.4), 5900, 10635, 0), F(() => PR.wardrobe(1.3), 6875, 11650, -90)],
-  'ff-dress3': [F(() => PR.wardrobe(2.0), 14740, 540, 0), F(() => PR.wardrobe(1.0), 15440, 1500, -90)],
+  'ff-dress': [F(() => PR.wardrobe(1.7), 6260, 7180, 180), F(() => PR.wardrobe(1.2), 6850, 6250, -90)],
+  'ff-dress2': [F(() => PR.wardrobe(2.3), 5960, 10700, 0), F(() => PR.wardrobe(1.3), 6850, 11800, -90)],
+  'ff-dress3': [F(() => PR.wardrobe(1.7), 14850, 540, 0), F(() => PR.wardrobe(1.0), 15440, 1550, -90)],
   'ff-dress4': [
     F(() => PR.wardrobe(2.4), 10045, 13771, 90),
     F(() => PR.wardrobe(2.1), 11150, 14707, 180),
@@ -196,7 +196,7 @@ const LAYOUTS = {
   'ff-bath': [F(PR.wc, 2560, 7475, 180), F(() => PR.vanity(1.0), 3600, 7235, 180), F(() => PR.shower(1.0, 0.9), 2667, 6075, 0), F(PR.towelRail, 3900, 5625, 0)],
   'ff-bath2': [F(PR.wc, 2560, 10325, 0), F(() => PR.vanity(1.0), 2407, 11650, 90), F(() => PR.shower(1.0, 0.9), 3975, 10775, 0, { mirror: true })],
   'ff-bath3': [F(PR.wc, 15750, 4550, -90), F(() => PR.vanity(1.0), 15510, 3300, -90), F(() => PR.shower(1.0, 0.9), 14225, 4750, 180, { mirror: true })],
-  'ff-bath4': [F(PR.wc, 13750, 10250, -90), F(() => PR.vanity(1.0), 13510, 11450, -90), F(() => PR.shower(1.0, 0.9), 12275, 9800, 0)],
+  'ff-bath4': [F(PR.wc, 13750, 10250, -90), F(() => PR.vanity(1.0), 13510, 11450, -90), F(() => PR.shower(1.0, 0.9), 12400, 9990, 0)],
 };
 
 const CURTAIN_ROOMS = ['femaleMajlis', 'maleMajlis', 'living', 'masterBedroom', 'familyLiving', 'dining'];

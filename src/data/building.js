@@ -98,10 +98,10 @@ export const WALLS_GF = [
   W(9558, 21291, 15950, 21291, { ext: true, o: [shutter(9758, 15750)] }),
   W(15850, 14992, 15850, 21391, { ext: true }),
   W(9558, 15092, 13850, 15092, { ext: true }),
-  W(13850, 15092, 15950, 15092, { ext: true }),
-  W(13850, 9250, 13850, 15092, { ext: true, o: [win(11000, 13600, 0.2, 3.2, 'W1')] }),
-  W(10100, 9250, 13950, 9250, { ext: true, o: [win(10300, 11500, 0.6, 2.8, 'W8'), win(12300, 13500, 0.6, 2.8, 'W8')] }),
-  W(10150, 6450, 10150, 9250, { ext: true, o: [slide(6700, 8950, 'SD1')] }),
+  W(13850, 15092, 15950, 15092, { ext: true, o: [door(14480, 15300, 'D2')] }), // garage side door
+  W(13850, 9390, 13850, 15092, { ext: true, o: [win(11000, 13600, 0.2, 3.2, 'W1')] }),
+  W(10100, 9390, 13950, 9390, { ext: true, o: [win(10300, 11500, 0.6, 2.8, 'W8'), win(12300, 13500, 0.6, 2.8, 'W8')] }),
+  W(10150, 6450, 10150, 9390, { ext: true, o: [slide(6700, 8950, 'SD1')] }),
   W(11300, 5300, 10150, 6450, { ext: true }),
   W(11300, 5300, 15950, 5300, { ext: true, o: [slide(11950, 14650, 'SD3')] }),
   W(15850, 30, 15850, 5400, { ext: true }),
@@ -109,21 +109,23 @@ export const WALLS_GF = [
   W(7260, 130, 7260, 2050, { rc: true }),
   W(9460, 130, 9460, 2050, { rc: true }),
   W(7260, 2050, 9460, 2050, { rc: true, o: [door(7900, 8800, 'LIFT', 2.1)] }),
-  // --- interior partitions
-  W(9460, 2050, 11300, 2050, { t: 150 }),
-  W(11400, 130, 11400, 1200, { t: 150 }),
-  W(11300, 2050, 11300, 5300, { t: 150, o: [slide(3200, 4600, 'SD4')] }),
-  W(7260, 2050, 7260, 5550, { t: 150 }),
-  W(2067, 5550, 7260, 5550, { t: 150, o: [door(5800, 6800, 'D2')] }),
-  W(4550, 5550, 4550, 7550, { t: 150, o: [door(5900, 6700, 'D4')] }),
-  W(7260, 5550, 7260, 7550, { t: 150, o: [gap(5700, 6700)] }),
-  W(2067, 7550, 7260, 7550, { t: 150 }),
-  W(3350, 7550, 3350, 10250, { t: 150, o: [door(9150, 9950, 'D3')] }),
-  W(2067, 10250, 7260, 10250, { t: 150, o: [door(4500, 5300, 'D3')] }),
-  W(4550, 10250, 4550, 12000, { t: 150, o: [door(10800, 11600, 'D4')] }),
-  W(7260, 10250, 7260, 12000, { t: 150 }),
-  W(2067, 12000, 7260, 12000, { t: 150 }),
-  W(7260, 12000, 7260, 16300, { t: 150 }),
+  // --- interior partitions — positions taken from the wall-face lines of
+  // sheet 3 (tools/extract_walls.py); 200 mm block unless noted
+  W(9458, 2190, 11755, 2190),                                         // store / dining
+  W(11655, 130, 11655, 2190, { o: [gap(891, 2090)] }),                 // store opens into the kitchen
+  W(11655, 2190, 11655, 5290, { o: [slide(2692, 4991, 'SD4')] }),      // kitchen / dining
+  W(7260, 2050, 7260, 5590),                                          // female majlis / dining
+  W(2067, 5590, 7260, 5590, { o: [door(5761, 6860, 'D2')] }),          // majlis → wash (D2)
+  W(5262, 5590, 5262, 7590, { o: [door(5700, 6790, 'D4')] }),          // bath / wash
+  W(7260, 5590, 7260, 7590, { o: [gap(5692, 6892)] }),                 // wash opens to the hall
+  W(2067, 7590, 7260, 7590),
+  // under-stair store (100 mm): its wall stops below the landing soffit
+  W(3415, 7590, 3415, 10290, { t: 100, h: 1.85, o: [door(9091, 10190, 'D3', 1.8)] }),
+  W(2067, 10290, 7260, 10290, { o: [door(4800, 5900, 'D3')] }),        // stair → wash
+  W(4664, 10290, 4664, 12090, { o: [door(10990, 11990, 'D4')] }),      // bath / wash
+  W(7260, 10290, 7260, 12090),
+  W(2067, 12090, 7260, 12090, { o: [gap(5362, 6560)] }),               // wash opens to the male majlis
+  W(7260, 12090, 7260, 16290),                                        // male majlis / living
 ];
 
 export const WALLS_FF = [
@@ -135,32 +137,34 @@ export const WALLS_FF = [
   W(9558, 21291, 15950, 21291, { ext: true, o: [win(11050, 14050, 0.1, 3.1, 'W2')] }),
   W(15850, 14992, 15850, 21391, { ext: true }),
   W(13850, 15092, 15950, 15092, { ext: true }),
-  W(13850, 9250, 13850, 15092, { ext: true }),
-  W(11600, 9250, 13950, 9250, { ext: true, o: [win(12100, 12700, 1.6, 2.4, 'W7')] }),
-  W(11700, 5300, 11700, 9250, { ext: true, o: [win(5800, 8800, 0.1, 3.1, 'W2')] }),
+  W(13850, 9390, 13850, 15092, { ext: true }),
+  W(11655, 9390, 13950, 9390, { ext: true, o: [win(12100, 12700, 1.6, 2.4, 'W7')] }),
+  W(11755, 5300, 11755, 9390, { ext: true, o: [win(5800, 8800, 0.1, 3.1, 'W2')] }),
   W(11600, 5300, 15950, 5300, { ext: true, o: [win(12100, 13700, 0.1, 3.1, 'W3'), win(14000, 14600, 1.6, 2.4, 'W7')] }),
   W(15850, 30, 15850, 5400, { ext: true }),
   // --- lift shaft
   W(7260, 130, 7260, 2050, { rc: true }),
   W(9460, 130, 9460, 2050, { rc: true }),
   W(7260, 2050, 9460, 2050, { rc: true, o: [door(7900, 8800, 'LIFT', 2.1)] }),
-  // --- interior partitions
-  W(7260, 2050, 7260, 5550, { t: 150, o: [door(3950, 4850, 'D2')] }),
-  W(2067, 5550, 7260, 5550, { t: 150, o: [gap(5300, 6200)] }),
-  W(4550, 5550, 4550, 7550, { t: 150, o: [door(5900, 6700, 'D4')] }),
-  W(2067, 7550, 7260, 7550, { t: 150 }),
-  W(2067, 10250, 7260, 10250, { t: 150 }),
-  W(4550, 10250, 4550, 12550, { t: 150 }),
-  W(2067, 12550, 7260, 12550, { t: 150, o: [door(3700, 4500, 'D4'), gap(5200, 6400)] }),
-  W(7260, 10250, 7260, 19400, { t: 150, o: [door(12950, 13900, 'D2')] }),
-  W(7260, 16450, 9658, 16450, { t: 150, o: [door(8000, 8800, 'D4')] }),
-  W(9460, 2050, 9460, 5300, { t: 150, o: [door(3950, 4850, 'D2')] }),
-  W(13650, 130, 13650, 5300, { t: 150, o: [gap(1000, 1900)] }),
-  W(13650, 2250, 15850, 2250, { t: 150, o: [door(14000, 14800, 'D4')] }),
-  W(11700, 9250, 11700, 12450, { t: 150 }),
-  W(9558, 12450, 13850, 12450, { t: 150, o: [door(11900, 12700, 'D4')] }),
-  W(9658, 12450, 9658, 19400, { t: 150, o: [door(15200, 16100, 'D2')] }),
-  W(9558, 15092, 13850, 15092, { t: 150, o: [gap(12300, 13200)] }),
+  // --- interior partitions — from the wall-face lines of sheet 4
+  W(7260, 2050, 7260, 5590, { o: [door(3892, 4991, 'D2')] }),          // bedroom 1 door
+  W(2067, 5590, 7260, 5590, { o: [gap(5362, 6560)] }),                 // bedroom 1 → bath/dress
+  W(5262, 5590, 5262, 7590, { o: [door(5700, 6790, 'D4')] }),
+  W(7260, 5590, 7260, 7590),                                          // dress / family living
+  W(2067, 7590, 7260, 7590),
+  W(2067, 10290, 7260, 10290),
+  W(4664, 10290, 4664, 12890, { o: [door(11790, 12622, 'D4')] }),
+  W(2067, 12890, 7260, 12890, { o: [gap(5362, 6560)] }),               // bedroom 2 → bath/dress
+  W(7260, 10290, 7260, 19490, { o: [door(13274, 14374, 'D2')] }),      // bedroom 2 door
+  W(7260, 16490, 9655, 16490, { o: [door(8057, 8958, 'D4')] }),        // laundry
+  W(9455, 2050, 9455, 5290, { o: [door(3892, 4991, 'D2')] }),          // bedroom 3 door
+  W(9455, 5290, 11755, 5290),                                         // bedroom 3 / family living
+  W(13850, 130, 13850, 5290, { o: [gap(993, 2193)] }),                 // bedroom 3 → dress/bath
+  W(13850, 2292, 15850, 2292, { o: [door(13950, 14949, 'D4')] }),
+  W(11755, 9390, 11755, 12490),
+  W(9655, 12490, 13850, 12490, { o: [door(11855, 12951, 'D4')] }),
+  W(9655, 12490, 9655, 19490, { o: [door(15250, 16150, 'D2')] }),      // bedroom 4 door
+  W(9655, 15090, 13850, 15090, { o: [gap(11953, 13152)] }),            // bedroom 4 → dress
 ];
 
 /** Roof-level rooms: stair room and lift room. */
@@ -194,14 +198,14 @@ export const SLAB_UR = [
   { outline: [[7160, 30], [9560, 30], [9560, 3824], [7160, 3824]], holes: [] },
 ];
 /** Enclosed (air-conditioned) ground-floor outline — used to find the outside face of walls. */
-export const GF_ENCLOSED = [[1967, 30], [15950, 30], [15950, 5300], [11300, 5300], [10150, 6450], [10150, 9250],
-  [13850, 9250], [13850, 15092], [15950, 15092], [15950, 21391], [9658, 21391], [9658, 16300], [7260, 16300],
+export const GF_ENCLOSED = [[1967, 30], [15950, 30], [15950, 5300], [11300, 5300], [10150, 6450], [10150, 9390],
+  [13850, 9390], [13850, 15092], [15950, 15092], [15950, 21391], [9658, 21391], [9658, 16300], [7260, 16300],
   [7260, 18292], [1967, 18292]];
 
 /** Hard landscaping at +0.35 (garden, outdoor seating, side yard). */
 export const PAVING = [
-  { outline: [[10150, 5400], [15850, 5400], [15850, 9250], [10150, 9250]], level: 0.35, kind: 'paving' },
-  { outline: [[13950, 9250], [15850, 9250], [15850, 14992], [13950, 14992]], level: 0.25, kind: 'gravel' },
+  { outline: [[10150, 5400], [15850, 5400], [15850, 9390], [10150, 9390]], level: 0.35, kind: 'paving' },
+  { outline: [[13950, 9390], [15850, 9390], [15850, 14992], [13950, 14992]], level: 0.25, kind: 'gravel' },
   { outline: [[167, 30], [1967, 30], [1967, 21290], [167, 21290]], level: 0.2, kind: 'gravel' },
   { outline: [[1967, 18392], [9558, 18392], [9558, 21290], [1967, 21290]], level: 0.2, kind: 'paving' },
 ];
@@ -223,17 +227,17 @@ export const STAIR = {
  * ------------------------------------------------------------------ */
 export const ROOMS = [
   // Ground floor
-  { id: 'gf-femaleMajlis', f: 0, key: 'femaleMajlis', rect: [2167, 230, 7160, 5450], floor: 'marble', furn: 'majlis' },
-  { id: 'gf-bath', f: 0, key: 'bath', rect: [2167, 5650, 4475, 7450], floor: 'wet' },
-  { id: 'gf-wash', f: 0, key: 'wash', rect: [4625, 5650, 7160, 7450], floor: 'wet' },
-  { id: 'gf-stair', f: 0, key: 'stair', rect: [2167, 7650, 7160, 10150], floor: 'marble' },
-  { id: 'gf-bath2', f: 0, key: 'bath', rect: [2167, 10350, 4475, 11900], floor: 'wet' },
-  { id: 'gf-wash2', f: 0, key: 'wash', rect: [4625, 10350, 7160, 11900], floor: 'wet' },
-  { id: 'gf-maleMajlis', f: 0, key: 'maleMajlis', rect: [2167, 12100, 7160, 18192], floor: 'marble', furn: 'majlis' },
+  { id: 'gf-femaleMajlis', f: 0, key: 'femaleMajlis', rect: [2167, 230, 7160, 5490], floor: 'marble', furn: 'majlis' },
+  { id: 'gf-bath', f: 0, key: 'bath', rect: [2167, 5690, 5162, 7490], floor: 'wet' },
+  { id: 'gf-wash', f: 0, key: 'wash', rect: [5362, 5690, 7160, 7490], floor: 'wet' },
+  { id: 'gf-stair', f: 0, key: 'stair', rect: [2167, 7690, 7160, 10190], floor: 'marble' },
+  { id: 'gf-bath2', f: 0, key: 'bath', rect: [2167, 10390, 4564, 11990], floor: 'wet' },
+  { id: 'gf-wash2', f: 0, key: 'wash', rect: [4764, 10390, 7160, 11990], floor: 'wet' },
+  { id: 'gf-maleMajlis', f: 0, key: 'maleMajlis', rect: [2167, 12190, 7160, 18192], floor: 'marble', furn: 'majlis' },
   { id: 'gf-lift', f: 0, key: 'lift', rect: [7360, 230, 9360, 1950], floor: 'none' },
-  { id: 'gf-store', f: 0, key: 'store', rect: [9560, 230, 11300, 1950], floor: 'wet' },
-  { id: 'gf-kitchen', f: 0, key: 'kitchen', rect: [11375, 230, 15750, 5200], floor: 'wet', furn: 'kitchen' },
-  { id: 'gf-dining', f: 0, key: 'dining', rect: [7360, 2150, 11225, 5300], floor: 'marble', furn: 'dining' },
+  { id: 'gf-store', f: 0, key: 'store', rect: [9558, 230, 11555, 2090], floor: 'wet' },
+  { id: 'gf-kitchen', f: 0, key: 'kitchen', rect: [11755, 230, 15750, 5190], floor: 'wet', furn: 'kitchen' },
+  { id: 'gf-dining', f: 0, key: 'dining', rect: [7360, 2290, 11555, 5300], floor: 'marble', furn: 'dining' },
   { id: 'gf-hall', f: 0, key: 'hall', rect: [7360, 5300, 10050, 9350], floor: 'marble' },
   { id: 'gf-outdoorSeating', f: 0, key: 'outdoorSeating', rect: [10250, 5400, 11700, 9150], floor: 'none', furn: 'outdoor' },
   { id: 'gf-garden', f: 0, key: 'garden', rect: [11700, 5400, 15750, 9150], floor: 'none', furn: 'garden' },
@@ -241,24 +245,24 @@ export const ROOMS = [
   { id: 'gf-entrance', f: 0, key: 'entrance', rect: [7360, 16400, 9558, 18292], floor: 'none' },
   { id: 'gf-garage', f: 0, key: 'garage', rect: [9758, 15192, 15750, 21191], floor: 'none', furn: 'garage' },
   // First floor
-  { id: 'ff-masterBedroom', f: 1, key: 'masterBedroom', rect: [2167, 230, 7185, 5475], floor: 'wood', furn: 'bed' },
-  { id: 'ff-bath', f: 1, key: 'bath', rect: [2167, 5625, 4475, 7475], floor: 'wet' },
-  { id: 'ff-dress', f: 1, key: 'dress', rect: [4625, 5625, 7185, 7475], floor: 'wood' },
-  { id: 'ff-stair', f: 1, key: 'stair', rect: [2167, 7650, 7160, 10150], floor: 'marble' },
-  { id: 'ff-bath2', f: 1, key: 'bath', rect: [2167, 10325, 4475, 12475], floor: 'wet' },
-  { id: 'ff-dress2', f: 1, key: 'dress', rect: [4625, 10325, 7185, 12475], floor: 'wood' },
-  { id: 'ff-masterBedroom2', f: 1, key: 'masterBedroom', rect: [2167, 12625, 7185, 19300], floor: 'wood', furn: 'bed' },
+  { id: 'ff-masterBedroom', f: 1, key: 'masterBedroom', rect: [2167, 230, 7160, 5490], floor: 'wood', furn: 'bed' },
+  { id: 'ff-bath', f: 1, key: 'bath', rect: [2167, 5690, 5162, 7490], floor: 'wet' },
+  { id: 'ff-dress', f: 1, key: 'dress', rect: [5362, 5690, 7160, 7490], floor: 'wood' },
+  { id: 'ff-stair', f: 1, key: 'stair', rect: [2167, 7690, 7160, 10190], floor: 'marble' },
+  { id: 'ff-bath2', f: 1, key: 'bath', rect: [2167, 10390, 4564, 12790], floor: 'wet' },
+  { id: 'ff-dress2', f: 1, key: 'dress', rect: [4764, 10390, 7160, 12790], floor: 'wood' },
+  { id: 'ff-masterBedroom2', f: 1, key: 'masterBedroom', rect: [2167, 12990, 7160, 19390], floor: 'wood', furn: 'bed' },
   { id: 'ff-lift', f: 1, key: 'lift', rect: [7360, 230, 9360, 1950], floor: 'none' },
-  { id: 'ff-masterBedroom3', f: 1, key: 'masterBedroom', rect: [9535, 230, 13575, 5200], floor: 'wood', furn: 'bed' },
-  { id: 'ff-dress3', f: 1, key: 'dress', rect: [13725, 230, 15750, 2175], floor: 'wood' },
-  { id: 'ff-bath3', f: 1, key: 'bath', rect: [13725, 2325, 15750, 5200], floor: 'wet' },
-  { id: 'ff-familyLiving', f: 1, key: 'familyLiving', rect: [7335, 5375, 11600, 12375], floor: 'marble', furn: 'familyLiving' },
-  { id: 'ff-lobby', f: 1, key: 'lobby', rect: [7335, 2125, 9385, 5375], floor: 'marble' },
-  { id: 'ff-bath4', f: 1, key: 'bath', rect: [11775, 9350, 13750, 12375], floor: 'wet' },
-  { id: 'ff-dress4', f: 1, key: 'dress', rect: [9735, 12525, 13750, 15017], floor: 'wood' },
-  { id: 'ff-lobby2', f: 1, key: 'lobby', rect: [7335, 12375, 9583, 16375], floor: 'marble' },
-  { id: 'ff-laundry', f: 1, key: 'laundry', rect: [7335, 16525, 9583, 19300], floor: 'wet' },
-  { id: 'ff-masterBedroom4', f: 1, key: 'masterBedroom', rect: [9735, 15167, 15750, 21191], floor: 'wood', furn: 'bed' },
+  { id: 'ff-masterBedroom3', f: 1, key: 'masterBedroom', rect: [9555, 230, 13750, 5190], floor: 'wood', furn: 'bed' },
+  { id: 'ff-dress3', f: 1, key: 'dress', rect: [13950, 230, 15750, 2192], floor: 'wood' },
+  { id: 'ff-bath3', f: 1, key: 'bath', rect: [13950, 2392, 15750, 5190], floor: 'wet' },
+  { id: 'ff-familyLiving', f: 1, key: 'familyLiving', rect: [7360, 5390, 11655, 12390], floor: 'marble', furn: 'familyLiving' },
+  { id: 'ff-lobby', f: 1, key: 'lobby', rect: [7360, 2150, 9355, 5390], floor: 'marble' },
+  { id: 'ff-bath4', f: 1, key: 'bath', rect: [11855, 9490, 13750, 12390], floor: 'wet' },
+  { id: 'ff-dress4', f: 1, key: 'dress', rect: [9755, 12590, 13750, 14990], floor: 'wood' },
+  { id: 'ff-lobby2', f: 1, key: 'lobby', rect: [7360, 12390, 9555, 16390], floor: 'marble' },
+  { id: 'ff-laundry', f: 1, key: 'laundry', rect: [7360, 16590, 9555, 19390], floor: 'wet' },
+  { id: 'ff-masterBedroom4', f: 1, key: 'masterBedroom', rect: [9755, 15190, 15750, 21191], floor: 'wood', furn: 'bed' },
 ];
 
 /** Openings into which a façade window/door is placed get looked up from the wall lists. */

@@ -140,3 +140,64 @@ Mistakes found and fixed:
   texture with grout) up to 2.4 m. Tiles follow each room edge, stop at door
   openings and run only up to the sill under windows. Applied during the
   interior-finishes stage, before the fixtures arrive.
+
+## 2026-11-26
+
+### Session 3 — fixes from the user's screen recording
+
+**Reported:** a worker's hand/tool hitting the camera and spinning; can't walk
+up the stairs ("stair wall"); wall positions not accurate ("no wall between the
+majlis and the hall"); improve the assets with Blender.
+
+#### 1. Workers rebuilt in Blender
+- Installed Blender 4.0 in the build container (`apt-get install blender`).
+- New `tools/blender/worker_anims.py` (run headless):
+  - bakes 11 looping task clips on the worker rig — Hammer, Shovel, Kneel,
+    Trowel, Plaster, Paint, Drill, Survey, Point, Vibrate, Carry — keyed every
+    frame (location, rotation **and scale**), plus the original Idle/Walk/Run;
+  - models the hand tools (hammer, shovel, trowel, paint roller, drill,
+    concrete vibrator, block, clipboard, survey pole) **in their working pose**
+    and maps them back to the rest pose through the inverse wrist deformation,
+    then skins them 100 % to the wrist bone — the tool can never leave the hand;
+  - exports one GLB per character with all clips and tools.
+- Verified every clip with Cycles renders in Blender (contact sheet).
+- Bugs found and fixed on the way: unkeyed bone channels leaking between
+  baked frames (forearm scale ballooned to 16×), source clips' bone scale not
+  being baked, and the exporter skipping actions not on the armature (fixed by
+  registering each clip as a muted NLA strip).
+- `src/people/rigged.js` no longer does any bone maths at runtime (the old
+  runtime bone layering is what produced the half-missing body, spinning
+  roller and arm in the camera in the recording): it just cross-fades to the
+  baked clip and shows the right tool.
+- Workers are now kept ≥ 450 mm (650 mm when facing a wall: painting,
+  plastering, laying blocks, drilling) from every wall on their floor once
+  the walls exist, so bodies and tools don't poke through walls.
+
+#### 2. Stairs
+- Cause: the under-stair store wall ran full storey height right across the
+  top of flight 1 / the landing — a wall in the way of anyone walking up.
+- Its wall now stops at 1.85 m (below the landing soffit), as on sheet 3.
+- Automated walk test: hall → flight 1 → landing (+2.60) → turn → flight 2 →
+  first floor (+4.70). Passes.
+
+#### 3. Wall accuracy — measured from the PDF vectors
+- New `tools/extract_walls.py`: finds pairs of parallel drawn lines 140–260 mm
+  apart (two faces of a wall) on sheets 3–4, merges them and lists solid
+  stretches and gaps (door openings) in plan millimetres.
+- New `tools/check_walls.py`: checks every model wall against the drawn
+  faces every 100 mm and reports stretches with no drawn wall.
+- Rewrote the interior walls of both floors from these measurements
+  (positions were 40–90 mm off, several were wrong):
+  - GF: the wash areas are open — the north wash opens to the hall
+    (1.2 m opening) and the female majlis (D2); the south wash opens straight
+    into the **male majlis** (1.2 m opening, no wall); bath/wash partitions
+    moved to x 5262 / 4664; store/kitchen and kitchen/dining wall moved to
+    x 11655 (store opens into the kitchen, SD4 2.3 m); store wall y 2190;
+    garden/bath wall y 9390; missing garage side door added.
+  - FF: bath/dress walls y 12890 (was 12550); new wall bedroom 3 / family
+    living (y 5290) and dress / family living (x 7260); bath 4 wall x 11755;
+    door and opening positions corrected (bedroom doors, laundry, dressings).
+- After: every interior wall ≥ 80 % matched by drawn faces (the two remaining
+  flags are the hatched rear wall and the lift door — expected).
+- Room rectangles, floor finishes and the furniture of affected rooms
+  (dressing rooms, bath 4) moved to match.
