@@ -248,7 +248,7 @@ export const ROOMS = [
   { id: 'ff-masterBedroom', f: 1, key: 'masterBedroom', rect: [2167, 230, 7160, 5490], floor: 'wood', furn: 'bed' },
   { id: 'ff-bath', f: 1, key: 'bath', rect: [2167, 5690, 5162, 7490], floor: 'wet' },
   { id: 'ff-dress', f: 1, key: 'dress', rect: [5362, 5690, 7160, 7490], floor: 'wood' },
-  { id: 'ff-stair', f: 1, key: 'stair', rect: [2167, 7690, 7160, 10190], floor: 'marble' },
+  { id: 'ff-stair', f: 1, key: 'stair', rect: [2167, 7690, 7160, 10190], floor: 'none' }, // stairwell void — no floor finish
   { id: 'ff-bath2', f: 1, key: 'bath', rect: [2167, 10390, 4564, 12790], floor: 'wet' },
   { id: 'ff-dress2', f: 1, key: 'dress', rect: [4764, 10390, 7160, 12790], floor: 'wood' },
   { id: 'ff-masterBedroom2', f: 1, key: 'masterBedroom', rect: [2167, 12990, 7160, 19390], floor: 'wood', furn: 'bed' },

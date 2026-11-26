@@ -201,3 +201,12 @@ majlis and the hall"); improve the assets with Blender.
   flags are the hatched rear wall and the lift door — expected).
 - Room rectangles, floor finishes and the furniture of affected rooms
   (dressing rooms, bath 4) moved to match.
+
+#### 4. Floor over the stairwell (user screenshot)
+- The first-floor "stair" room had a marble floor finish, so a tiled slab was
+  laid across the stairwell opening (visible from the stair and walkable in
+  walk mode). The stairwell is now a void (`floor: 'none'`), and finishes are
+  never placed over stair/lift voids on upper floors.
+- Verified by casting rays straight up from above both flights and the
+  landing: the first hit is the underside of the next flight, nothing at
+  +4.70; the walk test still climbs hall → landing → first floor.

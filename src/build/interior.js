@@ -194,7 +194,8 @@ export function buildInterior(ctx) {
 
   /* ---------------- floor finishes & ceilings ------------------------ */
   const floorMat = { marble: M.marble, wood: M.wood, wet: M.porcelain };
-  const finRooms = ROOMS.filter((rm) => floorMat[rm.floor]);
+  // never cover the stairwell / lift voids on upper floors with a floor finish
+  const finRooms = ROOMS.filter((rm) => floorMat[rm.floor] && !(rm.f > 0 && ['stair', 'lift'].includes(rm.key)));
   finRooms.forEach((rm, i) => {
     const [x0, y0, x1, y1] = rm.rect;
     const ffl = FFL[rm.f];
