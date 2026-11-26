@@ -302,3 +302,12 @@ majlis and the hall"); improve the assets with Blender.
   instead of sticking, eye height eased on stairs, gentler speed-scaled head
   bob, wider 68° lens in walk mode, and quick jumps — **G** ground-floor hall,
   **F** first-floor living by the stair, **R** roof.
+
+#### 10. Stair balustrade — black iron + wood (user reference picture)
+- Removed the glass guard and stainless rails. New balustrade on the inner
+  edge of every flight, both storeys: black wrought-iron balusters (one per
+  tread, two ornamental knuckles each, rosette at the foot), black newel posts
+  with ball caps and oak collars at the foot, both landing corners and the
+  top, and a warm oak handrail following the pitch (plus a short oak rail
+  across the landing turn). An invisible guard along each balustrade keeps
+  walk mode from stepping into the stair well.

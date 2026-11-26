@@ -3,6 +3,7 @@ import { LEVEL, ROOMS, SLAB_RF, SLAB_T, SLAB_UR, STAIR, WALLS_GF, WALLS_FF } fro
 import { box, cyl, rectBox, slabMesh, rng, toScene, tube } from './helpers.js';
 import { stagger } from '../core/timeline.js';
 import { floorMaterialFor } from './style.js';
+import * as PR from './props.js';
 
 const FFL = [LEVEL.gf, LEVEL.ff];
 const CEIL = [3.3, 3.2];
@@ -236,43 +237,90 @@ export function buildInterior(ctx) {
     }
   });
 
-  /* ---------------- railings ------------------------------------------ */
+  /* ---------------- balustrade: black wrought iron + oak handrail ------- */
+  // (client reference picture: black iron balusters with knuckles, ball-top
+  //  newel posts, warm wooden handrail)
   {
-    const rail = new THREE.Group();
-    rail.position.y = LEVEL.ff;
-    const glassRun = (x0, y0, x1, y1, base) => {
-      const [ax, az] = toScene(x0, y0), [bx, bz] = toScene(x1, y1);
-      const L = Math.hypot(bx - ax, bz - az);
-      const g = new THREE.Group();
-      g.position.set(ax, base, az);
-      g.rotation.y = -Math.atan2(bz - az, bx - ax);
-      const panel = box(L, 0.95, 0.015, M.glass, L / 2, 0.05, 0, { cast: false, receive: false });
-      panel.userData.solid = true;
-      ctx.solids.push(panel);
-      g.add(panel, box(L, 0.04, 0.05, M.galvanised, L / 2, 1.0, 0));
-      rail.add(g);
+    const iron = new THREE.MeshStandardMaterial({ color: 0x161616, roughness: 0.45, metalness: 0.55 });
+    const oak = new THREE.MeshStandardMaterial({ color: 0x9a6538, roughness: 0.42, map: M.wood.map });
+    const blocker = new THREE.MeshBasicMaterial({ visible: false });
+    const RAIL_H = 0.9;
+    const V3 = (a) => new THREE.Vector3(...a);
+    const bar = (g, a, b, w, h, mat) => {
+      const va = V3(a), vb = V3(b), len = va.distanceTo(vb);
+      const m = new THREE.Mesh(PR.roundedBox(w, h, len, Math.min(w, h) * 0.45), mat);
+      m.position.copy(va).add(vb).multiplyScalar(0.5);
+      m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), vb.clone().sub(va).normalize());
+      m.castShadow = true;
+      g.add(m);
+      return m;
     };
-    glassRun(STAIR.landingX, 8950, STAIR.x1, 8950, 0);
-    add(rail, { in: [12.4, 12.5], anim: 'rise' });
+    const knuckle = new THREE.SphereGeometry(0.022, 12, 8);
+    const ball = new THREE.SphereGeometry(0.055, 18, 12);
+    const rosette = new THREE.CylinderGeometry(0.035, 0.035, 0.012, 16);
+    const baluster = (g, x, z, y0, y1) => {
+      g.add(tube([x, y0, z], [x, y1, z], 0.009, iron, 6));
+      for (const k of [0.28, 0.62]) {
+        const kn = new THREE.Mesh(knuckle, iron);
+        kn.scale.set(1, 2.4, 1);
+        kn.position.set(x, y0 + (y1 - y0) * k, z);
+        g.add(kn);
+      }
+      const r = new THREE.Mesh(rosette, iron);
+      r.position.set(x, y0 + 0.006, z);
+      g.add(r);
+    };
+    const newel = (g, x, z, y0, top) => {
+      g.add(cyl(0.032, top - y0, iron, x, y0, z, 14));
+      g.add(cyl(0.05, 0.015, iron, x, y0, z, 18));                       // base plate
+      g.add(cyl(0.042, 0.05, oak, x, top - 0.06, z, 16));                  // wooden collar
+      const b = new THREE.Mesh(ball, iron);
+      b.position.set(x, top + 0.04, z);
+      b.castShadow = true;
+      g.add(b);
+    };
 
-    // Stainless handrails with posts along the inner edge of every flight.
-    STAIR.storeys.forEach(([y0, y1]) => {
+    STAIR.storeys.forEach(([y0, y1], si) => {
       const g = new THREE.Group();
-      g.position.y = y0;
-      const mid = (y1 - y0) / 2;
-      const run = (xa, xb, py, za, zb) => {
-        const [ax, az] = toScene(xa, py), [bx] = toScene(xb, py);
-        g.add(tube([ax, za + 0.92, az], [bx, zb + 0.92, az], 0.022, M.galvanised, 10));
-        const n = Math.max(2, Math.round(Math.abs(bx - ax) / 0.95));
-        for (let i = 0; i <= n; i++) {
-          const k = i / n;
-          const x = ax + (bx - ax) * k, z = za + (zb - za) * k;
-          g.add(tube([x, z, az], [x, z + 0.92, az], 0.014, M.galvanised, 8));
+      const H = y1 - y0, mid = H / 2;
+      const n = STAIR.risersPerFlight, r = mid / n;
+      const run = (STAIR.x1 - STAIR.landingX) / 1000, tr = run / n;
+      const slope = mid / run;
+      // flight runs: [x start, x end] in plan, edge y, base level
+      const flights = [
+        { xs: STAIR.x1, xe: STAIR.landingX, ey: STAIR.flight1.y1 - 45, z0: y0 },
+        { xs: STAIR.landingX, xe: STAIR.x1, ey: STAIR.flight2.y0 + 45, z0: y0 + mid },
+      ];
+      for (const f of flights) {
+        const [ax, ez] = toScene(f.xs, f.ey), [bx] = toScene(f.xe, f.ey);
+        const dir = Math.sign(bx - ax);
+        const railAt = (u) => f.z0 + r + u * slope + RAIL_H;   // u = metres along the flight
+        // one baluster per tread, at the middle of the going
+        for (let i = 0; i < n; i++) {
+          const u = (i + 0.5) * tr;
+          baluster(g, ax + dir * u, ez, f.z0 + (i + 1) * r, railAt(u) - 0.03);
         }
-      };
-      run(STAIR.x1 - 150, STAIR.landingX, STAIR.flight1.y1 - 40, 0.02, mid);
-      run(STAIR.landingX, STAIR.x1 - 150, STAIR.flight2.y0 + 40, mid, y1 - y0 - 0.15);
-      add(g, { in: [12.42, 12.5], anim: 'rise' });
+        // oak handrail on top + a slim iron core rail below it
+        bar(g, [ax, railAt(0) + 0.02, ez], [bx, railAt(run) + 0.02, ez], 0.065, 0.05, oak);
+        // invisible guard so walk mode can't step into the stair well
+        const gb = bar(g, [ax, f.z0 + 0.6, ez], [bx, f.z0 + mid + 0.6, ez], 0.04, 1.0, blocker);
+        gb.castShadow = false;
+        gb.userData.solid = true;
+        ctx.solids.push(gb);
+      }
+      // newel posts: foot of the stair, both landing corners, top of the flight
+      const P = (x, y) => toScene(x, y);
+      const [fx, fz] = P(STAIR.x1 - 40, STAIR.flight1.y1 - 45);
+      if (si === 0) newel(g, fx, fz, y0, y0 + r + RAIL_H + 0.08);
+      const [lx, lz1] = P(STAIR.landingX, STAIR.flight1.y1 - 45), [, lz2] = P(STAIR.landingX, STAIR.flight2.y0 + 45);
+      newel(g, lx, lz1, y0 + mid, y0 + mid + RAIL_H + 0.08);
+      newel(g, lx, lz2, y0 + mid, y0 + mid + RAIL_H + 0.08);
+      bar(g, [lx, y0 + mid + RAIL_H + 0.02, lz1], [lx, y0 + mid + RAIL_H + 0.02, lz2], 0.065, 0.05, oak);
+      const [tx, tz] = P(STAIR.x1 - 40, STAIR.flight2.y0 + 45);
+      newel(g, tx, tz, y1, y1 + RAIL_H + 0.08);
+      // upper storey starts from the first floor: its foot post sits on the FF slab
+      if (si === 1) newel(g, fx, fz, y0, y0 + r + RAIL_H + 0.08);
+      add(g, { in: [12.4, 12.5], anim: 'show' });
     });
   }
 
