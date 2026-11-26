@@ -113,7 +113,7 @@ export const WALLS_GF = [
   // sheet 3 (tools/extract_walls.py); 200 mm block unless noted
   W(9458, 2190, 11755, 2190),                                         // store / dining
   W(11655, 130, 11655, 2190, { o: [gap(891, 2090)] }),                 // store opens into the kitchen
-  W(11655, 2190, 11655, 5290, { o: [slide(2692, 4991, 'SD4')] }),      // kitchen / dining
+  W(11655, 2190, 11655, 5290, { o: [slide(2692, 4991, 'SD4', 2.6)] }),      // kitchen / dining
   W(7260, 2050, 7260, 5590),                                          // female majlis / dining
   W(2067, 5590, 7260, 5590, { o: [door(5761, 6860, 'D2')] }),          // majlis → wash (D2)
   W(5262, 5590, 5262, 7590, { o: [door(5790, 6590, 'D4')] }),          // bath / wash

@@ -70,7 +70,7 @@ const LAYOUTS = {
     CH(9300, 3750),
   ],
   'gf-hall': [
-    G('potted_plant_01', 9800, 9050, 0),
+    G('potted_plant_01', 9750, 5700, 0), // corner, clear of the garden slider (SD1)
   ],
   'gf-living': [
     F(() => PR.artwork(1.6, 1.0, 0), 7390, 12500, 90, { h: 1.6 }),
@@ -97,8 +97,8 @@ const LAYOUTS = {
   ],
   'gf-store': [F(() => PR.wardrobe(1.6, 2.2, 0.45), 10430, 455, 0)],
   'gf-outdoorSeating': [
-    G('outdoor_table_chair_set_01', 10975, 7300, 0),
-    G('potted_plant_02', 10550, 8800, 0),
+    G('outdoor_table_chair_set_01', 11100, 7000, 0),
+    G('potted_plant_02', 10600, 5800, 0), // corner — keeps the garden slider (SD1) clear
   ],
   'gf-garden': [
     G('potted_plant_01', 15400, 5750, 0),

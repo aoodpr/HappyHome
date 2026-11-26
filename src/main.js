@@ -299,7 +299,7 @@ async function init() {
   // Expose a tiny API for debugging / automated screenshots.
   window.happyhome = {
     setT: (t) => { state.target = state.t = t; },
-    setCut, goTo: (v) => rig.goTo(v), setMode: (m) => rig.setMode(m), rig, state, scene, camera, renderer, crew, baker, rooms: ROOMS, toScene, LEVEL,
+    setCut, goTo: (v) => rig.goTo(v), setMode: (m) => rig.setMode(m), rig, state, scene, camera, renderer, crew, baker, doors: ctx.doors, toggleDoor: (i) => { const d = ctx.doors[i]; d.isOpen = !d.isOpen; }, rooms: ROOMS, toScene, LEVEL,
     pick: (nx, ny) => {
       const rc = new THREE.Raycaster();
       rc.layers.enableAll();
@@ -310,6 +310,62 @@ async function init() {
       const chain = []; for (let q = o; q && q !== scene; q = q.parent) chain.push(q.type + (q.name ? ':' + q.name : ''));
       return { point: hit.point.toArray().map((v) => +v.toFixed(3)), mat: Object.entries(M).find(([, v]) => v === m)?.[0] || m.type + '#' + m.color?.getHexString(), geo: o.geometry.type, params: o.geometry.parameters, chain };
     },
+  };
+
+  /* ---------- interactive doors ---------- */
+  const doors = ctx.doors || [];
+  const tmpV = new THREE.Vector3(), fwd = new THREE.Vector3();
+  doors.forEach((d, i) => d.obj.traverse((o) => { o.userData.doorIndex = i; }));
+  const toggleDoor = (d) => { if (d) d.isOpen = !d.isOpen; };
+  /** Door in front of the walker within reach (2.2 m), or null. */
+  const doorInReach = () => {
+    camera.getWorldDirection(fwd); fwd.y = 0; fwd.normalize();
+    let best = null, bestD = 2.2;
+    for (const d of doors) {
+      let vis = true; for (let q = d.anchor; q; q = q.parent) if (!q.visible) { vis = false; break; }
+      if (!vis) continue;
+      d.anchor.getWorldPosition(tmpV); tmpV.y += 1.0;
+      const dist = tmpV.distanceTo(camera.position);
+      if (dist > bestD || Math.abs(tmpV.y - camera.position.y) > 1.6) continue;
+      tmpV.sub(camera.position).setY(0).normalize();
+      if (tmpV.dot(fwd) < 0.35) continue;
+      best = d; bestD = dist;
+    }
+    return best;
+  };
+  const doorBtn = $('doorBtn');
+  let reachDoor = null;
+  doorBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleDoor(reachDoor); });
+  addEventListener('keydown', (e) => { if (e.code === 'KeyE' && rig.mode === 'walk') toggleDoor(doorInReach()); });
+  renderer.domElement.addEventListener('mousedown', () => {
+    if (rig.mode === 'walk' && document.pointerLockElement === renderer.domElement) toggleDoor(doorInReach());
+  });
+  // orbit / tour: click (not drag) on a door toggles it
+  let downAt = null;
+  renderer.domElement.addEventListener('pointerdown', (e) => { downAt = [e.clientX, e.clientY]; });
+  renderer.domElement.addEventListener('pointerup', (e) => {
+    if (!downAt || rig.mode === 'walk') return;
+    if (Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 5) return;
+    const rc = new THREE.Raycaster();
+    rc.layers.enableAll();
+    rc.setFromCamera(new THREE.Vector2((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1), camera);
+    const hit = rc.intersectObjects(scene.children, true).find((h) => { for (let q = h.object; q; q = q.parent) if (!q.visible) return false; return true; });
+    if (hit && hit.object.userData.doorIndex !== undefined) toggleDoor(doors[hit.object.userData.doorIndex]);
+  });
+  const updateDoors = (dt) => {
+    for (const d of doors) {
+      const target = d.isOpen ? 1 : 0;
+      if (d.k === target) continue;
+      d.k = target > d.k ? Math.min(1, d.k + dt / 0.8) : Math.max(0, d.k - dt / 0.8);
+      const e = d.k * d.k * (3 - 2 * d.k);
+      const v = d.closed + (d.open - d.closed) * e;
+      if (d.prop === 'rotY') d.obj.rotation.y = v; else d.obj.position.x = v;
+    }
+    if (rig.mode === 'walk') {
+      reachDoor = doorInReach();
+      doorBtn.hidden = !reachDoor;
+      if (reachDoor) doorBtn.textContent = STRINGS[state.lang][reachDoor.isOpen ? 'doorClose' : 'doorOpen'] + (isTouch ? '' : '  (E)');
+    } else doorBtn.hidden = true;
   };
 
   /* ---------- loop ---------- */
@@ -331,6 +387,7 @@ async function init() {
     crew.update(state.t, time);
     if (state.cut !== 'all' && time - lastCollect > 1) { lastCollect = time; setCut(state.cut); }
     rig.update(dt);
+    updateDoors(dt);
     ctx.updateFurnitureLOD?.(camera, state.cut !== 'all');
     stage3d.followShadow(rig.focus());
     updateCard();

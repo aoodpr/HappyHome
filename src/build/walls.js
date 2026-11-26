@@ -10,6 +10,7 @@ import { stagger } from '../core/timeline.js';
  */
 export function buildWalls(ctx) {
   const { TL, M, root } = ctx;
+  ctx.doors = ctx.doors || [];
 
   // Interior plaster that turns into painted finish during the interior stage.
   const plasterMat = ctx.plasterMat;
@@ -256,6 +257,48 @@ export function buildWalls(ctx) {
     return dot > 0 ? -1 : 1;
   }
 
+  /** Two-panel sliding door: one fixed panel, one that slides behind it. */
+  function buildSlider(grp, op, w, h, t, ext) {
+    const wood = op.mark === 'SD4'; // wooden sliding door between dining and kitchen
+    const fr = 0.05;
+    const frameMat = wood ? M.doorWood : M.alu;
+    grp.add(box(w, 0.06, t * 0.75, frameMat, 0, h - 0.06, 0));            // head / track
+    grp.add(box(fr, h, t * 0.75, frameMat, -w / 2 + fr / 2, 0, 0));
+    grp.add(box(fr, h, t * 0.75, frameMat, w / 2 - fr / 2, 0, 0));
+    grp.add(box(w, 0.015, t * 0.75, wood ? M.darkSteel : M.alu, 0, 0, 0));   // threshold track
+    const pw = (w - 2 * fr) / 2 + 0.03;
+    const ph = h - 0.08;
+    const panel = (x, z) => {
+      const p = new THREE.Group();
+      p.position.set(x, 0.015, z);
+      if (wood) {
+        p.add(box(pw, ph, 0.045, M.doorWood, 0, 0, 0));
+        for (let gx = -pw / 2 + 0.12; gx < pw / 2 - 0.08; gx += 0.12) p.add(box(0.008, ph - 0.24, 0.05, M.darkSteel, gx, 0.12, 0));
+        p.add(box(0.025, 0.9, 0.07, M.darkSteel, -pw / 2 + 0.07, 0.6, 0));   // recessed pull
+      } else {
+        p.add(box(pw, 0.07, 0.05, M.alu, 0, 0, 0));
+        p.add(box(pw, 0.07, 0.05, M.alu, 0, ph - 0.07, 0));
+        p.add(box(0.07, ph, 0.05, M.alu, -pw / 2 + 0.035, 0, 0));
+        p.add(box(0.07, ph, 0.05, M.alu, pw / 2 - 0.035, 0, 0));
+        const gl = box(pw - 0.12, ph - 0.14, 0.012, M.glass, 0, 0.07, 0, { cast: false, receive: false });
+        gl.userData.solid = true;
+        ctx.solids.push(gl);
+        p.add(gl);
+        p.add(box(0.03, 0.5, 0.08, M.darkSteel, -pw / 2 + 0.09, 0.95, 0));    // handle
+      }
+      p.traverse((m) => { if (m.isMesh) { m.castShadow = false; m.userData.dynamic = true; } });
+      p.userData.dynamic = true;
+      grp.add(p);
+      return p;
+    };
+    // the panel at the far end slides back over the fixed one at the start of the wall
+    const fixedX = -w / 2 + fr + pw / 2 - 0.015, slideX = w / 2 - fr - pw / 2 + 0.015;
+    panel(fixedX, -0.03);
+    const moving = panel(slideX, 0.03);
+    if (wood) { const blocker = moving.children[0]; blocker.userData.solid = true; ctx.solids.push(blocker); }
+    ctx.doors.push({ type: 'slide', obj: moving, prop: 'x', closed: slideX, open: fixedX + 0.04, k: 0, isOpen: false, anchor: grp });
+  }
+
   function fillOpening(g, op, t, side, ext, o) {
     const w = op.u1 - op.u0, h = op.head - op.sill, cx = (op.u0 + op.u1) / 2;
     if (op.kind === 'gap') return;
@@ -263,7 +306,10 @@ export function buildWalls(ctx) {
     grp.position.set(cx, op.sill, 0);
     g.add(grp);
     const fr = 0.06;
-    if (op.kind === 'window' || op.kind === 'slide') {
+    if (op.kind === 'slide') {
+      buildSlider(grp, op, w, h, t, ext);
+      TL.add(grp, { in: ext ? [11.8, 11.95] : [12.55, 12.7], anim: 'rise' });
+    } else if (op.kind === 'window') {
       grp.add(box(w, fr, t * 0.6, M.alu, 0, 0, 0));
       grp.add(box(w, fr, t * 0.6, M.alu, 0, h - fr, 0));
       grp.add(box(fr, h, t * 0.6, M.alu, -w / 2 + fr / 2, 0, 0));
@@ -308,7 +354,11 @@ export function buildWalls(ctx) {
           const hx = hingeStart ? leafW - 0.1 : -leafW + 0.1;
           if (main) leaf.add(box(0.03, 1.4, 0.06, M.galvanised, hingeStart ? leafW - 0.15 : -leafW + 0.15, (h - 1.4) / 2, 0.05 * sw.s));
           else for (const zz of [0.035, -0.035]) leaf.add(box(0.12, 0.02, 0.02, M.galvanised, hx, 1.0, zz));
+          leaf.userData.solid = true;
+          leaf.userData.dynamic = true;
+          ctx.solids.push(leaf);
           grp.add(leaf);
+          ctx.doors.push({ type: 'hinge', obj: leaf, prop: 'rotY', closed: 0, open: leaf.rotation.y, k: 1, isOpen: true, anchor: grp });
         }
       }
       grp.traverse((m) => { if (m.isMesh) m.castShadow = false; });

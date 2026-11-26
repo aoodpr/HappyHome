@@ -31,6 +31,7 @@ The model is built from the project's working drawings: plans, elevations, secti
 | Play / pause | ▶ button · Space | ▶ button |
 | Orbit / zoom / pan | Left-drag / wheel / right-drag | One finger / pinch / two fingers |
 | Walk mode | Click the scene, then W A S D + mouse, Shift to run, Esc to release | Left joystick to move, drag to look |
+| Open / close doors | Walk mode: E or click when the door hint shows · Orbit: click a door | Tap the door button |
 | Camera views | Views menu · keys 1–7 | Views menu |
 | Language | ع / EN button · L | ع / EN button |
 

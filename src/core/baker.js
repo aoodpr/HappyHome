@@ -59,6 +59,7 @@ export class Baker {
       root.traverse((o) => {
         if (!o.isMesh || o.isInstancedMesh || o.isSkinnedMesh) return;
         if (!isShown(o) || o.layers.mask !== 1) return;
+        for (let q = o; q; q = q.parent) if (q.userData.dynamic) return; // doors keep moving
         const mats = Array.isArray(o.material) ? o.material : [o.material];
         if (mats.length !== 1) return;
         const mat = mats[0];

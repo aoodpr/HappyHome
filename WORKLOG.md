@@ -246,3 +246,20 @@ majlis and the hall"); improve the assets with Blender.
   (80 cm doors 10 cm from the corner; bath 4 window 40 cm from the corner).
 - The window-details sheet (Balexco aluminium, DG1 double glazing) was
   noted; frames are already modelled as black aluminium.
+
+#### 7. Doors you can open and close
+- **Sliding doors rebuilt** (were drawn as fixed windows with a transom):
+  two-panel sliders — aluminium frame + glass for SD1 (hall ↔ garden /
+  outdoor seating), SD2, SD3; the **dining ↔ kitchen door SD4 is now a
+  wooden sliding door** (walnut panels with vertical grooves, recessed pull,
+  2.6 m). One panel slides back over the fixed one.
+- **Every door is interactive**: walk mode shows a "Open door (E)" /
+  "Close door" hint when a door is in front within 2.2 m — press E, click, or
+  tap the button on iPad; in orbit mode click a door. Doors animate in 0.8 s.
+  Hinged doors start open, sliders start closed; closed doors block you.
+- Door leaves / panels are excluded from static batching so they keep moving.
+- Moved the hall plant and the outdoor seating set/plant so the garden slider
+  has a clear path. Verified: closed slider stops the walker at the glass;
+  opened, the walker passes into the outdoor seating area.
+- The interior-design reference PDF ("13 SEP- Ahmed Ghazi") is on the user's
+  PC and > 30 MB — waiting for an upload to apply the interior style.
