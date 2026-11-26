@@ -78,13 +78,15 @@ export function createMaterials(T) {
     kerb: std({ color: 0xbdbab4, roughness: 0.9 }),
     lineWhite: std({ color: 0xf0f0f0, roughness: 0.8 }),
     wallTile: tex(T.wallTiles, { roughness: 0.18 }),
+    travertine: tex(T.travertine, { roughness: 0.42 }),
+    travertineFloor: tex(T.travertine, { roughness: 0.38, color: 0xfff1da }),
   };
 
   // Real-world texture repeat size (m) used when generating UVs.
   const tiles = {
     concrete: 2, blinding: 2, blocks: 1.2, plaster: 2, render: 2, paint: 2, stone: 2.4, texturePaint: 2,
     marble: 1.2, porcelain: 1.2, wood: 1.8, soil: 4, soilDark: 4, sand: 3, gravel: 1.5, grass: 3, pavers: 1.2,
-    asphalt: 4, plywood: 2.44, wallTile: 1.2, rebar: 1.2, doorWood: 1.8, shutter: 1, gypsum: 2, coolRoof: 2,
+    asphalt: 4, plywood: 2.44, wallTile: 1.2, travertine: 1.2, travertineFloor: 1.2, rebar: 1.2, doorWood: 1.8, shutter: 1, gypsum: 2, coolRoof: 2,
   };
   for (const [k, v] of Object.entries(tiles)) M[k].userData.tile = v;
   return M;

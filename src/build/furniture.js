@@ -104,9 +104,7 @@ const LAYOUTS = {
     G('potted_plant_01', 15400, 5750, 0),
     G('potted_plant_02', 12050, 8850, 0),
   ],
-  'gf-bath': [F(PR.wc, 2560, 7450, 180), F(() => PR.vanity(1.0), 3550, 7210, 180), F(PR.towelRail, 3700, 5650, 0)],
   'gf-wash': [F(() => PR.vanity(1.9, true), 5900, 7210, 180)],
-  'gf-bath2': [F(PR.wc, 2560, 10350, 0), F(() => PR.vanity(1.0), 3550, 10590, 0), F(PR.towelRail, 2167, 11300, 90)],
   'gf-wash2': [F(() => PR.vanity(1.3, true), 6920, 11100, -90)],
   'gf-garage': [F(() => car('carWhite'), 11300, 18200, 0), F(() => car('carRed'), 14200, 18300, 180)],
 
@@ -193,10 +191,6 @@ const LAYOUTS = {
     F(() => PR.wardrobe(1.7), 10950, 12835, 0),
     G('ottoman_01', 12300, 13800, 0),
   ],
-  'ff-bath': [F(PR.wc, 2560, 7475, 180), F(() => PR.vanity(1.0), 3600, 7235, 180), F(() => PR.shower(1.0, 0.9), 2667, 6075, 0), F(PR.towelRail, 3900, 5625, 0)],
-  'ff-bath2': [F(PR.wc, 2560, 10325, 0), F(() => PR.vanity(1.0), 2407, 11650, 90), F(() => PR.shower(1.0, 0.9), 3975, 10775, 0, { mirror: true })],
-  'ff-bath3': [F(PR.wc, 15750, 4550, -90), F(() => PR.vanity(1.0), 15510, 3300, -90), F(() => PR.shower(1.0, 0.9), 14225, 4750, 180, { mirror: true })],
-  'ff-bath4': [F(PR.wc, 13750, 10250, -90), F(() => PR.vanity(1.0), 13510, 11450, -90), F(() => PR.shower(1.0, 0.9), 12400, 9990, 0)],
 };
 
 const CURTAIN_ROOMS = ['femaleMajlis', 'maleMajlis', 'living', 'masterBedroom', 'familyLiving', 'dining'];

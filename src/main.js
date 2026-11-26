@@ -10,6 +10,7 @@ import { buildStructure } from './build/structure.js';
 import { buildWalls } from './build/walls.js';
 import { buildInterior } from './build/interior.js';
 import { buildFurniture } from './build/furniture.js';
+import { buildBathrooms } from './build/bathrooms.js';
 import { setLampLevel } from './build/props.js';
 import { buildMachines } from './people/machines.js';
 import { Crew } from './people/crew.js';
@@ -60,6 +61,7 @@ async function init() {
   buildWalls(ctx);
   buildInterior(ctx);
   buildFurniture(ctx);
+  buildBathrooms(ctx);
   const machines = buildMachines(ctx);
   const crew = new Crew(scene);
   const baker = new Baker(scene, TL);

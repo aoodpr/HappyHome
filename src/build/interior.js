@@ -5,6 +5,7 @@ import { stagger } from '../core/timeline.js';
 
 const FFL = [LEVEL.gf, LEVEL.ff];
 const CEIL = [3.3, 3.2];
+const BATH_CEIL = 2.85; // bathroom false ceiling (SHC drawings: 300 − 15 bulkhead)
 
 /** MEP rough-in, roof build-up, finishes, sanitary ware and furniture. */
 export function buildInterior(ctx) {
@@ -103,9 +104,11 @@ export function buildInterior(ctx) {
 
   /* ---------------- wet-area wall tiling (to 2.4 m) ------------------- */
   {
-    const TILE_H = 2.4;
     const wetRooms = ROOMS.filter((r) => ['bath', 'wash', 'laundry'].includes(r.key));
     wetRooms.forEach((rm, ri) => {
+      // bathrooms: travertine full height to the 2.85 m false ceiling (SHC bathroom drawings)
+      const TILE_H = rm.key === 'bath' ? BATH_CEIL : 2.4;
+      const tileMat = rm.key === 'bath' ? M.travertine : M.wallTile;
       const walls = rm.f === 0 ? WALLS_GF : WALLS_FF;
       const ffl = FFL[rm.f];
       const [x0, y0, x1, y1] = rm.rect;
@@ -138,8 +141,8 @@ export function buildInterior(ctx) {
           const off = 20 * inward;
           const [px, pz] = hor ? toScene(mid, c + off) : toScene(c + off, mid);
           const len = (s1 - s0) / 1000;
-          const tile = hor ? box(len, Math.min(h, TILE_H), 0.008, M.wallTile, px, 0, pz, { cast: false })
-            : box(0.008, Math.min(h, TILE_H), len, M.wallTile, px, 0, pz, { cast: false });
+          const tile = hor ? box(len, Math.min(h, TILE_H), 0.008, tileMat, px, 0, pz, { cast: false })
+            : box(0.008, Math.min(h, TILE_H), len, tileMat, px, 0, pz, { cast: false });
           g.add(tile);
         }
       }
@@ -193,13 +196,13 @@ export function buildInterior(ctx) {
   }
 
   /* ---------------- floor finishes & ceilings ------------------------ */
-  const floorMat = { marble: M.marble, wood: M.wood, wet: M.porcelain };
+  const floorMat = { marble: M.marble, wood: M.wood, wet: M.porcelain, travertine: M.travertine };
   // never cover the stairwell / lift voids on upper floors with a floor finish
   const finRooms = ROOMS.filter((rm) => floorMat[rm.floor] && !(rm.f > 0 && ['stair', 'lift'].includes(rm.key)));
   finRooms.forEach((rm, i) => {
     const [x0, y0, x1, y1] = rm.rect;
     const ffl = FFL[rm.f];
-    const fin = rectBox(x0 - 40, y0 - 40, x1 + 40, y1 + 40, ffl - 0.075, 0.075, floorMat[rm.floor], { cast: false });
+    const fin = rectBox(x0 - 40, y0 - 40, x1 + 40, y1 + 40, ffl - 0.075, 0.075, rm.key === 'bath' ? M.travertineFloor : floorMat[rm.floor], { cast: false });
     add(fin, { in: stagger(i, finRooms.length, 12.0, 12.35), anim: 'rise' });
     ctx.walkables.push(fin);
   });
@@ -207,14 +210,15 @@ export function buildInterior(ctx) {
   ceilRooms.forEach((rm, i) => {
     const [x0, y0, x1, y1] = rm.rect;
     const ffl = FFL[rm.f];
-    const c = rectBox(x0 - 40, y0 - 40, x1 + 40, y1 + 40, ffl + CEIL[rm.f], 0.03, M.gypsum, { cast: false });
+    const ch = rm.key === 'bath' ? BATH_CEIL : CEIL[rm.f];
+    const c = rectBox(x0 - 40, y0 - 40, x1 + 40, y1 + 40, ffl + ch, 0.03, M.gypsum, { cast: false });
     add(c, { in: stagger(i, ceilRooms.length, 12.3, 12.5), anim: 'show' });
     // recessed spot lights
     const lights = new THREE.Group();
     for (let x = x0 + 900; x < x1 - 500; x += 1500) {
       for (let y = y0 + 900; y < y1 - 500; y += 1500) {
         const [sx, sz] = toScene(x, y);
-        lights.add(cyl(0.05, 0.01, M.led, sx, ffl + CEIL[rm.f] - 0.005, sz, 10, { cast: false }));
+        lights.add(cyl(0.05, 0.01, M.led, sx, ffl + ch - 0.005, sz, 10, { cast: false }));
       }
     }
     if (lights.children.length) add(lights, { in: [12.48, 12.5], anim: 'show' });

@@ -312,6 +312,28 @@ function wallTiles(N) {
   }, { normalStrength: 2.5 });
 }
 
+/** Travertine 600×1200 (portrait) with fine grout and banded veining — 1.2 × 1.2 m tile. */
+function travertine(N) {
+  const n = fbm(N, { seed: 141, octaves: 6, base: 4 });
+  const band = fbm(N, { seed: 142, octaves: 5, base: 3 });
+  const pores = mulberry32(143);
+  const holes = new Uint8Array(N * N);
+  for (let i = 0; i < N * N * 0.0025; i++) holes[Math.floor(pores() * N * N)] = 1;
+  const tint = mulberry32(144);
+  const bt = [tint() - 0.5, tint() - 0.5].map((v) => v * 0.05);
+  const px = N / 1.2;
+  return bake(N, (x, y) => {
+    const i = y * N + x;
+    const tile = Math.floor(x / (0.6 * px));
+    if (x % (0.6 * px) < 1.2 || y < 1.2) return [0.78, 0.74, 0.67, 0];
+    // fine straight streaks along the long (vertical) side of the tile, slightly broken up
+    const streak = Math.sin((x / N) * 220 + band[i] * 4) * 0.5 + Math.sin((x / N) * 95 + n[i] * 2.5) * 0.5;
+    const vein = Math.max(0, streak) ** 4 * 0.05;
+    const v = 1 + (n[i] - 0.5) * 0.06 - vein + bt[tile % 2] - holes[i] * 0.08;
+    return [0.92 * v, 0.85 * v, 0.73 * v, 0.6 - vein * 3 - holes[i] * 0.4];
+  }, { normalStrength: 2 });
+}
+
 /** Real-world size (m) covered by one texture repeat. */
 export const TILE = {
   concrete: 2.0, blocks: 1.2, plaster: 2.0, paint: 2.0, stone: 2.4, marble: 1.2, wood: 1.8,
@@ -342,6 +364,7 @@ export function createTextures(renderer, quality = 'high') {
   T.rebar = rebarGrid(N);
   T.slats = toTextures(slats(256), an);
   T.wallTiles = toTextures(wallTiles(N), an);
+  T.travertine = toTextures(travertine(N), an);
   return T;
 }
 

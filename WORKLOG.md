@@ -225,3 +225,24 @@ majlis and the hall"); improve the assets with Blender.
 - The dark concrete band under the stair window was the first-floor edge beam
   (270 mm) poking out of the 230 mm plastered wall — visible only in the
   stairwell, which has no ceiling. Beams are now 190 mm, hidden by plaster.
+
+#### 6. Bathrooms from the SHC travertine bathroom drawings
+- Read the five Alshehab Ceramica bathroom packages (plans, elevations, tile
+  layouts) and mapped each to its room (all drawn north-up):
+  3 × 1.8 → GF + FF north baths, 2.4 × 1.6 → GF south bath, 2.5 × 2.4 →
+  FF bath 2, 1.8 × 2.8 → FF bath 3, 1.9 × 2.9 → FF bath 4.
+- New procedural **travertine** texture (600 × 1200 portrait tiles, cream with
+  fine straight streaks and pores); floors and walls tiled up to the
+  **2.85 m false ceiling** shown on the elevations (300 − 15 bulkhead).
+- New `src/build/bathrooms.js` builds every bathroom from its drawing
+  (positions in cm from the room's NW corner): 20 cm × 1.2 m tiled WC
+  ledges with black glass top, wall-hung WC, black dual flush plate, bidet
+  spray, paper holder; floating vanity (oak, dark fluted walnut in the GF
+  south bath) with stone top and vessel basin (black round / white
+  rectangular), black wall mixer, capsule mirror; glass shower screen with
+  black profiles, 30 cm rain head, shower column / hand shower, black linear
+  drain, black shelf; backlit niche with shelves (GF south bath).
+- Bathroom doors / windows moved to the positions on these drawings
+  (80 cm doors 10 cm from the corner; bath 4 window 40 cm from the corner).
+- The window-details sheet (Balexco aluminium, DG1 double glazing) was
+  noted; frames are already modelled as black aluminium.
