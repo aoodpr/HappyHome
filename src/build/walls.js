@@ -15,7 +15,7 @@ export function buildWalls(ctx) {
   // Interior plaster that turns into painted finish during the interior stage.
   const plasterMat = ctx.plasterMat;
   const skirtingMat = new THREE.MeshStandardMaterial({ color: 0xe9e4da, roughness: 0.4 });
-  const plasterCol = new THREE.Color(0xd9d4ca), paintCol = new THREE.Color(0xf6f1e8);
+  const plasterCol = new THREE.Color(0xd9d4ca), paintCol = new THREE.Color(0xe9dcc7); // warm greige (interior mood board)
   TL.hook((t) => {
     const k = Math.min(1, Math.max(0, (t - 12.45) / 0.2));
     plasterMat.color.copy(plasterCol).lerp(paintCol, k);
@@ -238,7 +238,7 @@ export function buildWalls(ctx) {
       const r = ROOMS.find((rm) => rm.f === fIdx && x >= rm.rect[0] - 50 && x <= rm.rect[2] + 50 && y >= rm.rect[1] - 50 && y <= rm.rect[3] + 50);
       if (!r) return 0;
       if (['bath', 'wash', 'dress', 'store', 'laundry'].includes(r.key)) return 3;
-      if (['masterBedroom', 'maleMajlis', 'femaleMajlis'].includes(r.key)) return 2;
+      if (['masterBedroom', 'girlBedroom', 'boyBedroom', 'doubleBedroom', 'maleMajlis', 'office'].includes(r.key)) return 2;
       return 1;
     };
     const rp = rank(1), rn = rank(-1);

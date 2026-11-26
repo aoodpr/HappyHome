@@ -9,7 +9,7 @@ export function createMaterials(T) {
     concrete: tex(T.concrete, { color: 0xd8d6d0, roughness: 0.9 }),
     blinding: tex(T.concrete, { color: 0xa8a59e, roughness: 0.95 }),
     blocks: tex(T.blocks, { roughness: 0.95 }),
-    plaster: tex(T.plaster, { roughness: 0.92, emissive: 0x1e1d1b }),
+    plaster: tex(T.plaster, { roughness: 0.92, emissive: 0x2a2116 }),
     render: tex(T.render, { roughness: 0.9 }),
     paint: tex(T.paint, { roughness: 0.8 }),
     stone: tex(T.stone, { roughness: 0.7, normalScale: new THREE.Vector2(1, 1) }),
@@ -42,7 +42,7 @@ export function createMaterials(T) {
     shutter: tex(T.slats, { color: 0xc9ccd0, roughness: 0.4, metalness: 0.6 }),
     white: std({ color: 0xf5f3ef, roughness: 0.9 }),
     // slight self-illumination stands in for bounced daylight inside rooms
-    gypsum: tex(T.paint, { color: 0xfbfaf7, roughness: 0.95, emissive: 0x77746e }),
+    gypsum: tex(T.paint, { color: 0xfbf7f0, roughness: 0.95, emissive: 0x7a7060 }),
     membrane: std({ color: 0x3b3f45, roughness: 0.75 }),
     coolRoof: tex(T.plaster, { color: 0xf7f7f5, roughness: 0.85 }),
     polythene: std({ color: 0x5aa0d8, roughness: 0.35, transparent: true, opacity: 0.75 }),
@@ -80,13 +80,23 @@ export function createMaterials(T) {
     wallTile: tex(T.wallTiles, { roughness: 0.18 }),
     travertine: tex(T.travertine, { roughness: 0.42 }),
     travertineFloor: tex(T.travertine, { roughness: 0.38, color: 0xfff1da }),
+    greyMarble: tex(T.greyMarble, { roughness: 0.16, color: 0xfff6ea }),
+    neroMarble: tex(T.neroMarble, { roughness: 0.14 }),
+    creamMarble: tex(T.creamMarble, { roughness: 0.16, emissive: 0x1a1510 }),
+    lightOak: tex(T.wood, { color: 0xf5dcb8, roughness: 0.45, emissive: 0x15100a }),
+    walnut: tex(T.wood, { color: 0x7a5a42, roughness: 0.5 }),
+    greige: tex(T.paint, { color: 0xe5dccd, roughness: 0.85 }),
+    linenPanel: tex(T.plaster, { color: 0xe2d6c4, roughness: 0.95, normalScale: new THREE.Vector2(1.4, 1.4) }),
+    navyPanel: tex(T.plaster, { color: 0x2f3a4f, roughness: 0.9 }),
+    brass: std({ color: 0xc9a56a, roughness: 0.28, metalness: 0.95 }),
+    covedLed: new THREE.MeshStandardMaterial({ color: 0xfff3dc, emissive: 0xffd9a0, emissiveIntensity: 1.6 }),
   };
 
   // Real-world texture repeat size (m) used when generating UVs.
   const tiles = {
     concrete: 2, blinding: 2, blocks: 1.2, plaster: 2, render: 2, paint: 2, stone: 2.4, texturePaint: 2,
     marble: 1.2, porcelain: 1.2, wood: 1.8, soil: 4, soilDark: 4, sand: 3, gravel: 1.5, grass: 3, pavers: 1.2,
-    asphalt: 4, plywood: 2.44, wallTile: 1.2, travertine: 1.2, travertineFloor: 1.2, rebar: 1.2, doorWood: 1.8, shutter: 1, gypsum: 2, coolRoof: 2,
+    asphalt: 4, plywood: 2.44, wallTile: 1.2, travertine: 1.2, travertineFloor: 1.2, greyMarble: 1.2, neroMarble: 1.2, creamMarble: 1.2, lightOak: 1.8, walnut: 1.8, greige: 2, linenPanel: 2, navyPanel: 2, rebar: 1.2, doorWood: 1.8, shutter: 1, gypsum: 2, coolRoof: 2,
   };
   for (const [k, v] of Object.entries(tiles)) M[k].userData.tile = v;
   return M;

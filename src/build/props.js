@@ -21,13 +21,14 @@ export function initProps(M) {
     M,
     linen: std({ color: 0xf3efe8, roughness: 0.95 }),
     duvet: std({ color: 0xd9cdbb, roughness: 0.95 }),
-    duvetBlue: std({ color: 0x5d7088, roughness: 0.95 }),
-    duvetSage: std({ color: 0x8f9c84, roughness: 0.95 }),
-    upholstery: std({ color: 0xb7a58f, roughness: 0.95 }),
+    duvetBlue: std({ color: 0x8b95a1, roughness: 0.95 }),   // grey-blue (boy bedroom)
+    duvetSage: std({ color: 0x9f8f7c, roughness: 0.95 }),   // taupe (master)
+    duvetGrey: std({ color: 0xa6a4a0, roughness: 0.95 }),
+    upholstery: std({ color: 0xc7b49b, roughness: 0.95 }),
     upholsteryGrey: std({ color: 0x8c8a86, roughness: 0.95 }),
     walnut: std({ color: 0x5b3a26, roughness: 0.55 }),
     oak: std({ color: 0xa57a4f, roughness: 0.55 }),
-    lacquer: std({ color: 0xf2efe9, roughness: 0.35 }),
+    lacquer: std({ color: 0xdcccb4, roughness: 0.4 }),   // warm beige joinery (interior design)
     lacquerGrey: std({ color: 0xc9c5bf, roughness: 0.4 }),
     handle: std({ color: 0xb8b1a3, roughness: 0.3, metalness: 0.9 }),
     chrome: std({ color: 0xe8eaec, roughness: 0.12, metalness: 1 }),
@@ -41,8 +42,8 @@ export function initProps(M) {
     lampShade: new THREE.MeshStandardMaterial({ color: 0xfff4e0, emissive: 0xffd9a0, emissiveIntensity: 0.9, roughness: 0.9, side: THREE.DoubleSide }),
     screen: std({ color: 0x050607, roughness: 0.12, metalness: 0.5 }),
     rubber: std({ color: 0x222222, roughness: 0.9 }),
-    curtain: std({ color: 0xe8dfcf, roughness: 1, side: THREE.DoubleSide }),
-    curtainDark: std({ color: 0x8a7a66, roughness: 1, side: THREE.DoubleSide }),
+    curtain: std({ color: 0x9c8a74, roughness: 1, side: THREE.DoubleSide }),
+    curtainDark: std({ color: 0x8f7d68, roughness: 1, side: THREE.DoubleSide }),
     rugs: [rugMaterial(0x7d2a22, 0xd9b97a, 0x1f2f4a), rugMaterial(0x2f3d52, 0xc9b48c, 0x8a2f25), rugMaterial(0xd8cfc0, 0x8a7a66, 0x5a6b5a)],
   };
   return P;
@@ -166,10 +167,10 @@ export function tvWall(w = 1.9) {
 
 export function diningTable(l = 2.6, w = 1.1) {
   const g = new THREE.Group();
-  g.add(at(rbox(l, 0.05, w, 0.02, P.darkQuartz), 0, 0.745, 0));
+  g.add(at(rbox(l, 0.05, w, 0.02, WHITE_MARBLE()), 0, 0.745, 0));
   for (const x of [-l / 2 + 0.45, l / 2 - 0.45]) {
-    g.add(blk(0.1, 0.72, w * 0.6, P.walnut, x, 0, 0));
-    g.add(blk(0.5, 0.04, w * 0.7, P.walnut, x, 0, 0));
+    g.add(blk(0.1, 0.72, w * 0.6, P.handle, x, 0, 0));
+    g.add(blk(0.5, 0.04, w * 0.7, P.handle, x, 0, 0));
   }
   g.add(blk(l - 1.0, 0.06, 0.08, P.walnut, 0, 0.6, 0));
   return g;
@@ -461,4 +462,152 @@ function artMaterial(seed) {
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
   return new THREE.MeshStandardMaterial({ map: t, roughness: 0.85 });
+}
+
+/* ================= interior-design package pieces ===================== */
+const mats = {};
+function m(key, o) { return (mats[key] ||= new THREE.MeshStandardMaterial({ roughness: 0.9, ...o })); }
+const BOUCLE = () => m('boucle', { color: 0xece6dc, roughness: 1 });
+const TAUPE = () => m('taupe', { color: 0x9a8670, roughness: 1 });
+const CARAMEL = () => m('caramel', { color: 0xa45a32, roughness: 1 });
+const VELVET = () => m('velvetBrown', { color: 0x6e5443, roughness: 0.85 });
+const BRASS = () => m('brass', { color: 0xc9a56a, roughness: 0.28, metalness: 0.95 });
+const WHITE_MARBLE = () => m('whiteMarble', { color: 0xf3f1ec, roughness: 0.12 });
+
+/** Modern sofa with rounded edges, back cushions and accent pillows (front +Z). */
+export function modernSofa(len = 2.6, { color = 'boucle', depth = 0.95, pillows = 4, curved = false } = {}) {
+  const g = new THREE.Group();
+  const mat = color === 'taupe' ? TAUPE() : color === 'velvet' ? VELVET() : BOUCLE();
+  const r = curved ? 0.3 : 0.08;
+  g.add(at(rbox(len, 0.42, depth, r, mat), 0, 0.21, 0));
+  g.add(at(rbox(len, 0.4, 0.24, Math.min(0.12, r), mat), 0, 0.6, -depth / 2 + 0.12));
+  for (const s of [-1, 1]) g.add(at(rbox(0.22, 0.6, depth, Math.min(0.1, r), mat), s * (len / 2 - 0.11), 0.3, 0));
+  const n = Math.max(2, Math.round((len - 0.5) / 0.75));
+  for (let i = 0; i < n; i++) g.add(at(rbox((len - 0.5) / n - 0.04, 0.12, depth - 0.3, 0.05, mat), -len / 2 + 0.25 + (i + 0.5) * ((len - 0.5) / n), 0.48, 0.08));
+  for (let i = 0; i < pillows; i++) {
+    const x = -len / 2 + 0.4 + (i * (len - 0.8)) / Math.max(1, pillows - 1);
+    const p = at(rbox(0.42, 0.4, 0.13, 0.06, i % 2 ? CARAMEL() : TAUPE()), x, 0.72, -depth / 2 + 0.3);
+    p.rotation.x = -0.25;
+    g.add(p);
+  }
+  return g;
+}
+
+/** Brown velvet tub chair (front +Z). */
+export function tubChair(color = 'velvet') {
+  const g = new THREE.Group();
+  const VELVET = () => (color === 'beige' ? m('beigeVelvet', { color: 0xc8b49a, roughness: 0.9 }) : m('velvetBrown', { color: 0x6e5443, roughness: 0.85 }));
+  const seat = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.38, 0.42, 32), VELVET());
+  seat.position.y = 0.21; g.add(seat);
+  const back = new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.11, 12, 32, Math.PI * 1.25), VELVET());
+  back.rotation.x = Math.PI / 2; back.rotation.z = Math.PI * 0.875; back.position.y = 0.55;
+  g.add(back);
+  g.add(at(new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.34, 0.1, 28), VELVET()), 0, 0.47, 0.03));
+  return g;
+}
+
+/** Organic white-marble coffee table on a brushed-brass base. */
+export function marbleTable(w = 1.3, d = 0.8, h = 0.38) {
+  const g = new THREE.Group();
+  const top = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.04, 40), WHITE_MARBLE());
+  top.scale.set(w, 1, d); top.position.y = h - 0.02; g.add(top);
+  const base = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.26, h - 0.04, 32), BRASS());
+  base.scale.set(w * 0.9, 1, d * 0.9); base.position.y = (h - 0.04) / 2; g.add(base);
+  return g;
+}
+
+/** Brass ring chandelier (two interlaced LED rings) hanging from the ceiling (origin at ceiling). */
+export function ringChandelier(r = 0.6) {
+  const g = new THREE.Group();
+  const led = m('ringLed', { color: 0xfff4e0, emissive: 0xffd9a0, emissiveIntensity: 1.2 });
+  for (const [tilt, y] of [[0.25, -0.75], [-0.35, -0.85]]) {
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(r, 0.025, 10, 64), BRASS());
+    ring.rotation.x = Math.PI / 2 + tilt; ring.position.y = y; g.add(ring);
+    const glow = new THREE.Mesh(new THREE.TorusGeometry(r, 0.012, 6, 64), led);
+    glow.rotation.copy(ring.rotation); glow.position.set(0, y - 0.02, 0); g.add(glow);
+  }
+  g.add(at(new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.7, 4), BRASS()), 0, -0.35, 0));
+  return g;
+}
+
+/** Cluster of white glass globe pendants (origin at ceiling). */
+export function globePendants(n = 5, spread = 0.9) {
+  const g = new THREE.Group();
+  const glass = m('globe', { color: 0xfffaf0, emissive: 0xffe6c0, emissiveIntensity: 0.8, roughness: 0.3 });
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2, rr = i % 2 ? spread * 0.5 : spread * 0.25;
+    const x = Math.cos(a) * rr, z = Math.sin(a) * rr * 0.5, drop = 0.9 + (i % 3) * 0.25;
+    g.add(at(new THREE.Mesh(new THREE.CylinderGeometry(0.003, 0.003, drop, 4), BRASS()), x, -drop / 2, z));
+    g.add(at(new THREE.Mesh(new THREE.SphereGeometry(0.11 + (i % 2) * 0.04, 20, 14), glass), x, -drop - 0.1, z));
+  }
+  return g;
+}
+
+/** Executive desk: marble top on a dark base and a leather chair behind it (desk front +Z). */
+export function officeDesk() {
+  const g = new THREE.Group();
+  g.add(at(rbox(1.9, 0.05, 0.85, 0.02, WHITE_MARBLE()), 0, 0.75, 0));
+  g.add(blk(1.2, 0.72, 0.6, P.darkQuartz, -0.2, 0, -0.05));
+  g.add(blk(0.05, 0.72, 0.7, P.handle, 0.85, 0, 0));
+  g.add(blk(0.55, 0.38, 0.03, P.screen, 0.45, 0.78, -0.25));      // monitor
+  g.add(blk(0.08, 0.05, 0.08, P.handle, 0.45, 0.78, -0.22));
+  const lamp = tableLamp(); lamp.position.set(-0.75, 0.78, -0.2); lamp.scale.setScalar(0.8); g.add(lamp);
+  const chair = new THREE.Group();
+  chair.add(at(rbox(0.6, 0.12, 0.55, 0.05, m('beigeLeather', { color: 0xd8c8b0, roughness: 0.5 })), 0, 0.5, 0));
+  chair.add(at(rbox(0.56, 0.75, 0.1, 0.05, m('beigeLeather', { color: 0xd8c8b0, roughness: 0.5 })), 0, 0.95, -0.25));
+  chair.add(cylY(0.03, 0.45, P.chrome, 0, 0.02, 0));
+  chair.add(cylY(0.3, 0.02, P.chrome, 0, 0, 0, 24));
+  chair.position.z = -0.75; g.add(chair);
+  return g;
+}
+
+/** Black metal shelving with walnut shelves and LED (back on the wall, front +Z). */
+export function shelving(w = 3.0, h = 2.7, d = 0.38) {
+  const g = new THREE.Group();
+  const frame = m('blackFrame', { color: 0x181818, roughness: 0.5, metalness: 0.4 });
+  const wood = m('walnutShelf', { color: 0x6b4c36, roughness: 0.55 });
+  const led = m('shelfLed', { color: 0xfff3dc, emissive: 0xffd9a0, emissiveIntensity: 1.1 });
+  g.add(blk(w, h, 0.03, frame, 0, 0, -d / 2 + 0.015));
+  const cols = Math.max(2, Math.round(w / 0.9));
+  for (let i = 0; i <= cols; i++) g.add(blk(0.03, h, d, frame, -w / 2 + (i * w) / cols, 0, 0));
+  for (let y = 0.4; y < h; y += 0.45) {
+    g.add(blk(w, 0.03, d, wood, 0, y, 0));
+    g.add(blk(w - 0.06, 0.01, 0.02, led, 0, y - 0.012, d / 2 - 0.03));
+  }
+  g.add(blk(w, 0.4, d, wood, 0, 0, 0)); // low cabinet
+  // a few books / objects
+  for (let y = 0.43; y < h - 0.3; y += 0.9) for (let i = 0; i < cols; i += 2) {
+    g.add(blk(0.3, 0.26, 0.2, m('books' + (i % 3), { color: [0xcbb89a, 0x8c6f52, 0x40403e][i % 3] }), -w / 2 + (i + 0.5) * (w / cols), y + 0.03, 0));
+  }
+  return g;
+}
+
+/** Linear bio-ethanol fireplace in a black stone surround (front +Z). */
+export function linearFireplace(w = 1.8) {
+  const g = new THREE.Group();
+  g.add(blk(w + 0.4, 0.45, 0.35, m('blackStone', { color: 0x1e1e1f, roughness: 0.3 }), 0, 0, 0));
+  g.add(blk(w, 0.14, 0.02, m('flame', { color: 0xffb060, emissive: 0xff7a1a, emissiveIntensity: 3 }), 0, 0.17, 0.17));
+  return g;
+}
+
+/** Sheer full-width curtain (semi-transparent white). */
+export function sheer(w, h) {
+  const segs = Math.max(12, Math.round(w * 18));
+  const geo = new THREE.PlaneGeometry(w, h, segs, 1);
+  const pos = geo.attributes.position;
+  for (let i = 0; i < pos.count; i++) pos.setZ(i, Math.sin((pos.getX(i) / w) * segs * Math.PI) * 0.02);
+  geo.computeVertexNormals();
+  geo.translate(0, -h / 2, 0);
+  const mesh = new THREE.Mesh(geo, m('sheer', { color: 0xfbf8f2, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false, roughness: 1 }));
+  const g = new THREE.Group(); g.add(mesh); return g;
+}
+
+/** Extra rug palettes used by the interior design (cream floral, grey geometric, persian). */
+export function rugStyled(w, d, style) {
+  const pal = { cream: [0xe9e0d0, 0xd3c4ab, 0xb89a74], grey: [0x9a9792, 0xd2cfca, 0x6c6a66], persian: [0x8b3a2b, 0xd2b07c, 0x3b2a22] }[style];
+  const key = 'rug_' + style;
+  mats[key] ||= rugMaterial(...pal);
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, 0.012, d), mats[key]);
+  mesh.position.y = 0.006; mesh.receiveShadow = true;
+  const g = new THREE.Group(); g.add(mesh); return g;
 }

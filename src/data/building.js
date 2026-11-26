@@ -227,7 +227,7 @@ export const STAIR = {
  * ------------------------------------------------------------------ */
 export const ROOMS = [
   // Ground floor
-  { id: 'gf-femaleMajlis', f: 0, key: 'femaleMajlis', rect: [2167, 230, 7160, 5490], floor: 'marble', furn: 'majlis' },
+  { id: 'gf-femaleMajlis', f: 0, key: 'office', rect: [2167, 230, 7160, 5490], floor: 'marble', furn: 'majlis' },
   { id: 'gf-bath', f: 0, key: 'bath', rect: [2167, 5690, 5162, 7490], floor: 'wet' },
   { id: 'gf-wash', f: 0, key: 'wash', rect: [5362, 5690, 7160, 7490], floor: 'wet' },
   { id: 'gf-stair', f: 0, key: 'stair', rect: [2167, 7690, 7160, 10190], floor: 'marble' },
@@ -245,15 +245,15 @@ export const ROOMS = [
   { id: 'gf-entrance', f: 0, key: 'entrance', rect: [7360, 16400, 9558, 18292], floor: 'none' },
   { id: 'gf-garage', f: 0, key: 'garage', rect: [9758, 15192, 15750, 21191], floor: 'none', furn: 'garage' },
   // First floor
-  { id: 'ff-masterBedroom', f: 1, key: 'masterBedroom', rect: [2167, 230, 7160, 5490], floor: 'wood', furn: 'bed' },
+  { id: 'ff-masterBedroom', f: 1, key: 'girlBedroom', rect: [2167, 230, 7160, 5490], floor: 'wood', furn: 'bed' },
   { id: 'ff-bath', f: 1, key: 'bath', rect: [2167, 5690, 5162, 7490], floor: 'wet' },
   { id: 'ff-dress', f: 1, key: 'dress', rect: [5362, 5690, 7160, 7490], floor: 'wood' },
   { id: 'ff-stair', f: 1, key: 'stair', rect: [2167, 7690, 7160, 10190], floor: 'none' }, // stairwell void — no floor finish
   { id: 'ff-bath2', f: 1, key: 'bath', rect: [2167, 10390, 4564, 12790], floor: 'wet' },
   { id: 'ff-dress2', f: 1, key: 'dress', rect: [4764, 10390, 7160, 12790], floor: 'wood' },
-  { id: 'ff-masterBedroom2', f: 1, key: 'masterBedroom', rect: [2167, 12990, 7160, 19390], floor: 'wood', furn: 'bed' },
+  { id: 'ff-masterBedroom2', f: 1, key: 'doubleBedroom', rect: [2167, 12990, 7160, 19390], floor: 'wood', furn: 'bed' },
   { id: 'ff-lift', f: 1, key: 'lift', rect: [7360, 230, 9360, 1950], floor: 'none' },
-  { id: 'ff-masterBedroom3', f: 1, key: 'masterBedroom', rect: [9555, 230, 13750, 5190], floor: 'wood', furn: 'bed' },
+  { id: 'ff-masterBedroom3', f: 1, key: 'boyBedroom', rect: [9555, 230, 13750, 5190], floor: 'wood', furn: 'bed' },
   { id: 'ff-dress3', f: 1, key: 'dress', rect: [13950, 230, 15750, 2192], floor: 'wood' },
   { id: 'ff-bath3', f: 1, key: 'bath', rect: [13950, 2392, 15750, 5190], floor: 'wet' },
   { id: 'ff-familyLiving', f: 1, key: 'familyLiving', rect: [7360, 5390, 11655, 12390], floor: 'marble', furn: 'familyLiving' },

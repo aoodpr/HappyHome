@@ -31,60 +31,59 @@ const CH = (x, y) => ({ m: 'chandelier_01', x, y, rot: 0, ceiling: true });
 
 const LAYOUTS = {
   /* ---------------- ground floor ---------------- */
+  // OFFICE (interior design pkg, pages 8–9): marble desk, velvet tub chairs, black shelving wall
   'gf-femaleMajlis': [
-    F(() => PR.artwork(1.8, 1.0, 2), 4660, 260, 0, { h: 1.6 }),
-    F(() => PR.rug(3.8, 2.8, 0), 4660, 2650),
-    G('sofa_03', 4660, 720, 0),
-    G('sofa_01', 2540, 2550, 90),
-    G('sofa_01', 6780, 2550, -90),
-    G('armchair_01', 3500, 4350, 165),
-    G('armchair_01', 5850, 4350, -165),
-    G('coffeetable_01', 4660, 2600, 0),
-    F(() => withLamp(PR.sideTable()), 2650, 700),
-    F(() => withLamp(PR.sideTable()), 6650, 700),
-    G('potted_plant_01', 6750, 4100, 0),
-    G('ceramic_vase_01', 4400, 2600, 0, { h: 0.52 }),
-    CH(4660, 2650),
+    F(() => PR.rugStyled(3.0, 2.4, 'cream'), 4660, 2700),
+    F(() => PR.shelving(3.0, 2.7), 4660, 420, 0),
+    F(() => PR.officeDesk(), 4660, 1950, 0),
+    F(PR.tubChair, 4050, 3250, 180),
+    F(PR.tubChair, 5300, 3250, 180),
+    F(() => PR.marbleTable(0.6, 0.6, 0.5), 4660, 3650),
+    F(() => PR.tvWall(1.4), 7130, 3000, -90, { h: 1.25 }),
+    F(() => PR.artwork(1.2, 1.5, 3), 2197, 2900, 90, { h: 1.5 }),
+    G('potted_plant_01', 6750, 5000, 0),
   ],
+  // MAJLIS (pages 5–7): cream curved sofas + long taupe sofa, caramel cushions,
+  // white-marble / brass coffee tables, brass ring chandelier, cream floral rug
   'gf-maleMajlis': [
-    F(() => PR.rug(3.4, 4.4, 1), 4660, 15100),
-    F(() => PR.majlisSeat(3.1), 3730, 12610, 0), // stops short of the wash opening (x 5362–6560)
-    F(() => PR.majlisSeat(4.2), 2580, 15050, 90),
-    F(() => PR.majlisSeat(3.6), 6745, 14750, -90),
-    G('coffeetable_01', 4660, 14400, 0),
-    G('coffeetable_01', 4660, 15900, 0),
-    G('ceramic_vase_01', 4400, 14400, 0, { h: 0.52 }),
+    F(() => PR.rugStyled(3.6, 4.6, 'cream'), 4560, 15200),
+    F(() => PR.modernSofa(3.0, { color: 'taupe', pillows: 5 }), 2650, 15200, 90),
+    F(() => PR.modernSofa(2.4, { curved: true }), 3800, 12700, 0),
+    F(() => PR.modernSofa(2.4, { curved: true }), 3800, 17650, 180),
+    F(() => PR.modernSofa(2.4, { curved: true }), 6650, 15200, -90),
+    F(() => PR.marbleTable(1.3, 0.8), 4500, 14650),
+    F(() => PR.marbleTable(0.9, 0.7, 0.45), 4600, 15800),
+    G('ceramic_vase_01', 4400, 14650, 0, { h: 0.38 }),
+    F(() => PR.ringChandelier(0.65), 4600, 15200, 0, { ceiling: true }),
     G('potted_plant_01', 2500, 17800, 0),
-    CH(4660, 14000), CH(4660, 16300),
+    G('potted_plant_02', 6800, 12650, 0),
   ],
+  // DINING (page 4): white marble table, brown leather chairs, globe pendant cluster, grey rug
   'gf-dining': [
-    F(() => PR.artwork(1.8, 1.0, 5), 7390, 3725, 90, { h: 1.35 }),
-    F(() => PR.rug(3.6, 2.6, 2), 9300, 3750),
-    F(() => PR.diningTable(2.6, 1.1), 9300, 3750),
-    ...[-850, 0, 850].flatMap((dx) => [G('dining_chair_02', 9300 + dx, 2980, 0), G('dining_chair_02', 9300 + dx, 4520, 180)]),
-    G('dining_chair_02', 7780, 3750, 90),
-    G('dining_chair_02', 10820, 3750, -90),
-    G('modern_wooden_cabinet', 7640, 3725, 90),
-    G('ceramic_vase_01', 7640, 3000, 0, { h: 0.68 }),
-    G('potted_plant_04', 7640, 4400, 0, { h: 0.68 }),
-    CH(9300, 3750),
+    F(() => PR.rugStyled(3.6, 2.6, 'grey'), 9400, 3800),
+    F(() => PR.diningTable(2.6, 1.1), 9400, 3800),
+    ...[-850, 0, 850].flatMap((dx) => [G('dining_chair_02', 9400 + dx, 3030, 0, { tint: 0x7a4a30 }), G('dining_chair_02', 9400 + dx, 4570, 180, { tint: 0x7a4a30 })]),
+    G('dining_chair_02', 7880, 3800, 90, { tint: 0x7a4a30 }),
+    G('dining_chair_02', 10920, 3800, -90, { tint: 0x7a4a30 }),
+    F(() => PR.globePendants(6, 1.4), 9400, 3800, 0, { ceiling: true }),
+    G('potted_plant_04', 9700, 3800, 0, { h: 0.77 }),
   ],
   'gf-hall': [
     G('potted_plant_01', 9750, 5700, 0), // corner, clear of the garden slider (SD1)
   ],
+  // LIVING (pages 2–3): walnut TV wall with linear fireplace, cream sofa,
+  // brown velvet tub chairs, marble coffee table, cream rug
   'gf-living': [
-    F(() => PR.artwork(1.6, 1.0, 0), 7390, 12500, 90, { h: 1.6 }),
-    F(() => PR.rug(4.2, 3.2, 1), 11300, 11950),
-    G('sofa_03', 11300, 10150, 0),
-    G('modern_arm_chair_01', 9550, 12150, 90),
-    G('modern_arm_chair_01', 13050, 12150, -90),
-    G('coffee_table_round_01', 11300, 11950, 0),
-    G('potted_plant_04', 11300, 11950, 0, { h: 0.49 }),
-    G('modern_wooden_cabinet', 11300, 14710, 180),
-    F(() => PR.tvWall(1.9), 11300, 14975, 180, { h: 1.15 }),
+    F(() => PR.rugStyled(4.2, 3.2, 'cream'), 11300, 11950),
+    F(() => PR.modernSofa(3.2, { pillows: 4 }), 11300, 10150, 0),
+    F(PR.tubChair, 9650, 12200, 90),
+    F(PR.tubChair, 12950, 12200, -90),
+    F(() => PR.marbleTable(1.4, 0.85), 11300, 11950),
+    G('potted_plant_04', 11200, 11950, 0, { h: 0.38 }),
+    F(() => PR.linearFireplace(1.8), 11300, 14800, 180),
+    F(() => PR.tvWall(1.9), 11300, 14940, 180, { h: 1.3 }),
     G('potted_plant_01', 13450, 9700, 0),
-    G('potted_plant_02', 9900, 14600, 0),
-    CH(11300, 11950),
+    F(() => PR.artwork(1.6, 1.0, 0), 7390, 12500, 90, { h: 1.6 }),
   ],
   'gf-kitchen': [
     F(() => PR.counterRun(2.95, { sink: 0.3 }), 14275, 540, 0),
@@ -110,66 +109,62 @@ const LAYOUTS = {
 
   /* ---------------- first floor ----------------- */
   'ff-masterBedroom': [
-    F(() => PR.artwork(1.4, 0.8, 1), 4400, 260, 0, { h: 1.75 }),
-    F(() => PR.rug(3.0, 2.2, 2), 4400, 2600),
+    F(() => PR.rugStyled(3.0, 2.2, 'cream'), 4400, 2600),
     F(() => PR.bed({ duvet: 'duvetSage' }), 4400, 1270, 0),
     F(() => PR.nightstand(), 3060, 460, 0),
     F(() => PR.nightstand(), 5740, 460, 0),
     G('modern_wooden_cabinet', 3800, 5190, 180),
     F(() => PR.tvWall(1.4), 3800, 5465, 180, { h: 1.1 }),
-    G('armchair_01', 2750, 4700, 45),
+    F(() => PR.tubChair('beige'), 2750, 4700, 45),
     G('potted_plant_02', 6800, 650, 0),
   ],
   'ff-masterBedroom2': [
-    F(() => PR.artwork(1.4, 0.8, 2), 2197, 16700, 90, { h: 1.75 }),
-    F(() => PR.rug(3.0, 2.4, 0), 4400, 16700),
-    F(() => PR.bed({ duvet: 'duvet' }), 3207, 16700, 90),
+    F(() => PR.rugStyled(3.0, 2.4, 'cream'), 4400, 16700),
+    F(() => PR.bed({ duvet: 'duvetGrey' }), 3207, 16700, 90),
     F(() => PR.nightstand(), 2397, 15360, 90),
     F(() => PR.nightstand(), 2397, 18040, 90),
     F(() => PR.dressingTable(), 6945, 15300, -90),
-    G('modern_arm_chair_01', 5350, 18450, 90),
-    G('modern_arm_chair_01', 6650, 18450, -90),
+    F(() => PR.tubChair('beige'), 5350, 18450, 90),
+    F(() => PR.tubChair('beige'), 6650, 18450, -90),
     F(() => PR.sideTable(), 6000, 18500),
     G('potted_plant_01', 2550, 19000, 0),
   ],
   'ff-masterBedroom3': [
-    F(() => PR.artwork(1.4, 0.8, 3), 11300, 260, 0, { h: 1.75 }),
-    F(() => PR.rug(3.0, 2.2, 1), 11300, 2650),
+    F(() => PR.rugStyled(3.0, 2.2, 'cream'), 11300, 2650),
     F(() => PR.bed({ duvet: 'duvetBlue' }), 11300, 1270, 0),
     F(() => PR.nightstand(), 9960, 460, 0),
     F(() => PR.nightstand(), 12640, 460, 0),
     G('modern_wooden_cabinet', 10750, 4940, 180),
     F(() => PR.tvWall(1.4), 10750, 5195, 180, { h: 1.1 }),
-    G('armchair_01', 13050, 4300, -135),
+    F(() => PR.tubChair('beige'), 13050, 4300, -135),
     G('potted_plant_02', 13250, 2600, 0),
   ],
   'ff-masterBedroom4': [
-    F(() => PR.artwork(1.4, 0.8, 4), 15720, 18100, -90, { h: 1.75 }),
-    F(() => PR.rug(3.2, 2.4, 2), 12900, 18100),
+    F(() => PR.rugStyled(3.2, 2.4, 'cream'), 12900, 18100),
     F(() => PR.bed({ duvet: 'duvetSage' }), 14710, 18100, -90),
     F(() => PR.nightstand(), 15520, 16760, -90),
     F(() => PR.nightstand(), 15520, 19440, -90),
     G('modern_wooden_cabinet', 9995, 18100, 90),
     F(() => PR.tvWall(1.6), 9745, 18100, 90, { h: 1.1 }),
-    G('modern_arm_chair_01', 11000, 20350, 135),
-    G('modern_arm_chair_01', 12500, 20350, -135),
+    F(() => PR.tubChair('beige'), 11000, 20350, 135),
+    F(() => PR.tubChair('beige'), 12500, 20350, -135),
     F(() => PR.sideTable(), 11750, 20600),
-    G('ottoman_01', 13250, 18100, 90),
+    G('ottoman_01', 13250, 18100, 90, { tint: 0xbba78d }),
     G('potted_plant_01', 15400, 20850, 0),
   ],
+  // FF LIVING (pages 14–15): taupe L-sofa + ottoman, persian rug, walnut shelving by the TV
   'ff-familyLiving': [
-    F(() => PR.artwork(1.6, 0.9, 3), 11570, 11350, -90, { h: 1.6, skip: true }),
-    F(() => PR.rug(3.4, 2.6, 0), 9100, 11350),
-    G('modern_wooden_cabinet', 7600, 11400, 90, { sx: 0.8 }),
-    F(() => PR.tvWall(1.9), 7350, 11400, 90, { h: 1.05 }),
-    G('sofa_03', 10500, 11350, -90),
-    G('modern_arm_chair_01', 9000, 10100, 0),
-    G('modern_coffee_table_01', 9150, 11350, 0),
-    G('armchair_01', 10950, 6400, -120),
-    G('armchair_01', 10950, 8200, -60),
+    F(() => PR.rugStyled(3.4, 2.6, 'persian'), 9300, 11300),
+    G('modern_wooden_cabinet', 7620, 11300, 90, { sx: 0.8 }),
+    F(() => PR.tvWall(1.9), 7420, 11300, 90, { h: 1.05 }),
+    F(() => PR.shelving(1.6, 2.6, 0.35), 7560, 9500, 90),
+    F(() => PR.modernSofa(3.0, { color: 'taupe', pillows: 4 }), 10900, 11100, -90),
+    F(() => PR.modernSofa(2.0, { color: 'taupe', pillows: 2 }), 9700, 12000, 180),
+    G('ottoman_01', 9300, 11200, 90, { tint: 0x8c7a68 }),
+    F(() => PR.tubChair('beige'), 10950, 6400, -120),
+    F(() => PR.tubChair('beige'), 10950, 8200, -60),
     F(() => withLamp(PR.sideTable()), 11150, 7300),
     G('potted_plant_01', 11300, 9300, 0),
-    CH(9100, 11350),
   ],
   'ff-lobby': [G('potted_plant_01', 9100, 2450, 0), G('potted_plant_02', 7600, 2450, 0)],
   'ff-lobby2': [
@@ -189,11 +184,11 @@ const LAYOUTS = {
     F(() => PR.wardrobe(2.4), 10045, 13771, 90),
     F(() => PR.wardrobe(2.1), 11150, 14707, 180),
     F(() => PR.wardrobe(1.7), 10950, 12835, 0),
-    G('ottoman_01', 12300, 13800, 0),
+    G('ottoman_01', 12300, 13800, 0, { tint: 0xbba78d }),
   ],
 };
 
-const CURTAIN_ROOMS = ['femaleMajlis', 'maleMajlis', 'living', 'masterBedroom', 'familyLiving', 'dining'];
+const CURTAIN_ROOMS = ['office', 'maleMajlis', 'living', 'masterBedroom', 'girlBedroom', 'boyBedroom', 'doubleBedroom', 'familyLiving', 'dining'];
 
 export function buildFurniture(ctx) {
   const { TL, M, root } = ctx;
@@ -226,7 +221,7 @@ export function buildFurniture(ctx) {
       holder.userData.collide = !(it.ceiling || it.hang);
       ctx.furnitureItems.push(holder);
       if (it.fn) holder.add(it.fn());
-      else pending.push({ holder, name: it.m });
+      else pending.push({ holder, name: it.m, tint: it.tint });
     }
   }
 
@@ -266,7 +261,11 @@ export function buildFurniture(ctx) {
   ctx.furnitureReady = Promise.all(MODELS.map((n) => load(n).catch((e) => { console.warn('model failed', n, e); return null; })))
     .then(() => Promise.all(pending.map(async (p) => {
       const src = await load(p.name).catch(() => null);
-      if (src) p.holder.add(src.clone(true));
+      if (!src) return;
+      const c = src.clone(true);
+      // recolour (texture dropped so dark source leather can become light): leather / velvet finish
+      if (p.tint) c.traverse((o) => { if (o.isMesh && !/metal|leg|steel/i.test(o.material.name)) { o.material = o.material.clone(); o.material.map = null; o.material.color.set(p.tint); o.material.roughness = 0.6; } });
+      p.holder.add(c);
     })))
     .then(() => { ctx.furnitureVersion++; TL.update(TL.t, true); });
 }
@@ -342,11 +341,14 @@ function addCurtains(root, groups) {
         // face into the room
         grp.rotation.y = Math.atan2(n[0] * s, n[1] * s);
         for (const k of [-1, 1]) {
-          const panel = PR.curtain(0.55, h - 0.03, room.f === 0 && room.key !== 'living');
+          const panel = PR.curtain(0.55, h - 0.03, false);
           panel.position.x = k * (width / 2 + 0.05);
           panel.children[1].scale.y = 0; // hide per-panel rod; one long rod below
           grp.add(panel);
         }
+        const sh = PR.sheer(width + 0.3, h - 0.03);
+        sh.position.z = -0.06;
+        grp.add(sh);
         const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, width + 1.3, 8), new THREE.MeshStandardMaterial({ color: 0xb8b1a3, roughness: 0.3, metalness: 0.9 }));
         rod.rotation.z = Math.PI / 2;
         rod.position.set(0, 0.02, -0.02);

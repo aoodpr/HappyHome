@@ -263,3 +263,26 @@ majlis and the hall"); improve the assets with Blender.
   opened, the walker passes into the outdoor seating area.
 - The interior-design reference PDF ("13 SEP- Ahmed Ghazi") is on the user's
   PC and > 30 MB — waiting for an upload to apply the interior style.
+
+#### 8. Interior style from the interior-design package (13 SEP – Ahmed Ghazi, parts 2–3)
+- Read the mood board, the room renders (living, dining, majlis, office, FF
+  living, master / girl / boy / double bedrooms, dressing, baths) and the
+  room plans. Palette: warm greige walls, walnut, cream boucle, taupe,
+  caramel accents, grey + cream marble, light oak, brass.
+- Room uses updated to the design: GF "female majlis" → **Office**, the
+  FF bedrooms → **Girl bedroom** (NW), **Boy bedroom** (NE), **Double
+  bedroom** (W), **Master bedroom** (SE); labels in EN/AR.
+- New `src/build/style.js`: per-room floors (grey marble GF living/dining/
+  hall/office, cream marble majlis/FF living/lobbies/stairs, light oak
+  bedrooms), **gypsum perimeter LED cove ceilings** with black linear AC
+  slots, feature walls (vertical walnut slats with LED edges, nero marble at
+  the lift, linen panel, navy panel in the boy bedroom) and white panel
+  mouldings (majlis, double bedroom).
+- New procedural pieces (`props.js`): modern sofas (boucle / taupe, curved),
+  velvet tub chairs, organic marble-and-brass coffee tables, brass ring
+  chandelier (majlis), white globe pendant cluster (dining), executive office
+  desk + black/walnut shelving, linear fireplace under the living-room TV,
+  sheer curtains behind taupe drapes, cream / grey / persian rugs.
+- Layouts redone for office, majlis, dining, GF living and FF living; bedrooms
+  restyled (beige upholstered beds, taupe / grey bedding, beige tub chairs,
+  cream rugs, beige joinery); dining chairs recoloured to brown leather.

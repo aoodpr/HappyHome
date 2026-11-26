@@ -334,6 +334,22 @@ function travertine(N) {
   }, { normalStrength: 2 });
 }
 
+/** Veined marble slabs 1200 × 1200 (2 × 2 tiles of 600) — base colour + vein colour. */
+function veinedMarble(N, base, veinCol, seed, veinAmt = 0.6, grid = 0.6) {
+  const n = fbm(N, { seed, octaves: 6, base: 3 });
+  const w = fbm(N, { seed: seed + 1, octaves: 5, base: 4 });
+  const px = N / 1.2;
+  const b = rgb(base), vc = rgb(veinCol);
+  return bake(N, (x, y) => {
+    const i = y * N + x;
+    if (x % (grid * px) < 1.2 || y % (grid * px) < 1.2) return [b[0] * 0.8, b[1] * 0.8, b[2] * 0.8, 0];
+    const vein = Math.pow(1 - Math.abs(Math.sin((x / N * 3 + y / N * 1.5 + n[i] * 5 + w[i] * 2.5) * Math.PI)), 22) * veinAmt;
+    const cloud = (w[i] - 0.5) * 0.12;
+    const t = Math.min(1, vein);
+    return [b[0] * (1 + cloud) * (1 - t) + vc[0] * t, b[1] * (1 + cloud) * (1 - t) + vc[1] * t, b[2] * (1 + cloud) * (1 - t) + vc[2] * t, 0.5];
+  }, { normalStrength: 0.5 });
+}
+
 /** Real-world size (m) covered by one texture repeat. */
 export const TILE = {
   concrete: 2.0, blocks: 1.2, plaster: 2.0, paint: 2.0, stone: 2.4, marble: 1.2, wood: 1.8,
@@ -365,6 +381,9 @@ export function createTextures(renderer, quality = 'high') {
   T.slats = toTextures(slats(256), an);
   T.wallTiles = toTextures(wallTiles(N), an);
   T.travertine = toTextures(travertine(N), an);
+  T.greyMarble = toTextures(veinedMarble(N, 0x8c8a87, 0xd6d3cf, 151, 0.55, 1.2), an);
+  T.neroMarble = toTextures(veinedMarble(N, 0x232222, 0xbdb6ac, 161, 0.7, 1.2), an);
+  T.creamMarble = toTextures(veinedMarble(N, 0xe9e2d6, 0xb8ab98, 171, 0.35, 0.6), an);
   return T;
 }
 

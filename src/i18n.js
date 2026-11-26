@@ -51,7 +51,7 @@ export const STRINGS = {
       ['Keys', '← / → step through stages · Space play/pause · 1–7 camera views · L language'],
     ],
     rooms: {
-      femaleMajlis: 'Female Majlis', maleMajlis: 'Male Majlis', bath: 'Bath', wash: 'Wash', stair: 'Stair',
+      femaleMajlis: 'Female Majlis', office: 'Office', girlBedroom: 'Girl Bedroom', boyBedroom: 'Boy Bedroom', doubleBedroom: 'Double Bedroom', maleMajlis: 'Majlis', bath: 'Bath', wash: 'Wash', stair: 'Stair',
       lift: 'Lift', store: 'Store', kitchen: 'Kitchen', dining: 'Dining', hall: 'Hall', outdoorSeating: 'Outdoor Seating',
       garden: 'Garden', living: 'Living Room', entrance: 'Entrance', garage: 'Garage', masterBedroom: 'Master Bedroom',
       dress: 'Dressing', familyLiving: 'Family Living', lobby: 'Lobby', laundry: 'Laundry',
@@ -108,7 +108,7 @@ export const STRINGS = {
       ['المفاتيح', '← / → التنقل بين المراحل · المسافة تشغيل/إيقاف · 1–7 المناظر · L اللغة'],
     ],
     rooms: {
-      femaleMajlis: 'مجلس النساء', maleMajlis: 'مجلس الرجال', bath: 'حمام', wash: 'مغسلة', stair: 'الدرج',
+      femaleMajlis: 'مجلس النساء', office: 'المكتب', girlBedroom: 'غرفة البنت', boyBedroom: 'غرفة الولد', doubleBedroom: 'غرفة نوم مزدوجة', maleMajlis: 'المجلس', bath: 'حمام', wash: 'مغسلة', stair: 'الدرج',
       lift: 'المصعد', store: 'مخزن', kitchen: 'المطبخ', dining: 'الطعام', hall: 'الردهة', outdoorSeating: 'جلسة خارجية',
       garden: 'الحديقة', living: 'الصالة', entrance: 'المدخل', garage: 'الكراج', masterBedroom: 'غرفة نوم رئيسية',
       dress: 'غرفة ملابس', familyLiving: 'صالة العائلة', lobby: 'الردهة', laundry: 'غسيل',

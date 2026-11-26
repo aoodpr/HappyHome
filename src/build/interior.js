@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { LEVEL, ROOMS, SLAB_RF, SLAB_T, SLAB_UR, STAIR, WALLS_GF, WALLS_FF } from '../data/building.js';
 import { box, cyl, rectBox, slabMesh, rng, toScene, tube } from './helpers.js';
 import { stagger } from '../core/timeline.js';
+import { floorMaterialFor } from './style.js';
 
 const FFL = [LEVEL.gf, LEVEL.ff];
 const CEIL = [3.3, 3.2];
@@ -202,7 +203,7 @@ export function buildInterior(ctx) {
   finRooms.forEach((rm, i) => {
     const [x0, y0, x1, y1] = rm.rect;
     const ffl = FFL[rm.f];
-    const fin = rectBox(x0 - 40, y0 - 40, x1 + 40, y1 + 40, ffl - 0.075, 0.075, rm.key === 'bath' ? M.travertineFloor : floorMat[rm.floor], { cast: false });
+    const fin = rectBox(x0 - 40, y0 - 40, x1 + 40, y1 + 40, ffl - 0.075, 0.075, rm.key === 'bath' ? M.travertineFloor : (floorMaterialFor(rm, M) || (rm.floor === 'wood' ? M.lightOak : rm.floor === 'marble' ? M.creamMarble : floorMat[rm.floor])), { cast: false });
     add(fin, { in: stagger(i, finRooms.length, 12.0, 12.35), anim: 'rise' });
     ctx.walkables.push(fin);
   });
