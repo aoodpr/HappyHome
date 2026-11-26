@@ -273,7 +273,9 @@ export function buildStructure(ctx) {
 
     // Perimeter PT beams (270 × 600) under external walls
     for (const w of edgeWalls) {
-      const b = beamAlong(w, top - 0.6, 0.6 - SLAB_T + 0.01, 270, mat);
+      // 190 mm wide so the plastered wall (230 mm) hides it — it used to show as a
+      // dark concrete band in the stairwell, which has no ceiling
+      const b = beamAlong(w, top - 0.6, 0.6 - SLAB_T + 0.01, 190, mat);
       add(b, { in: win.pour, anim: 'pour', cure: win.cure });
     }
   }

@@ -210,3 +210,18 @@ majlis and the hall"); improve the assets with Blender.
 - Verified by casting rays straight up from above both flights and the
   landing: the first hit is the underside of the next flight, nothing at
   +4.70; the walk test still climbs hall → landing → first floor.
+
+#### 5. Windows checked against the schedule and plans (user screenshot)
+- Read the door & window schedule (sheet 19) and located every opening from
+  the glazing lines and jamb lines in the plan vectors.
+- W6 (staircase, "2 nos"): 1400 × 2000, sill +1.0 m. The first-floor one moved
+  to y 8240–9641 (was 8500–9800, sill/head wrong) and the **second W6 on the
+  roof stair room (sheet 5) was missing** — added at the same position.
+- Also corrected: W5 2000 wide at y 1901–3901 (was 1500); W7 600 × 1800,
+  sill 1.4 m, at y 5891–6492 / 10890–11491 (was 600 × 600 at 1.7 m); W1 and
+  W8 full height from the floor; W2/W3 sill 0.2 → head 3.0; FF front W3 at
+  7657–9256; W3 / W7 on the bedroom-3 wall shifted; SD2 at 3490–5292; all
+  sliding doors 3.0 m high.
+- The dark concrete band under the stair window was the first-floor edge beam
+  (270 mm) poking out of the 230 mm plastered wall — visible only in the
+  stairwell, which has no ceiling. Beams are now 190 mm, hidden by plaster.
