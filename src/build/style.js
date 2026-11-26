@@ -29,7 +29,7 @@ export const ROOM_STYLE = {
   'gf-living': { floor: 'greyMarble', cove: true, feature: [['S', 9700, 12900, 'walnut']] },
   'gf-entrance': { floor: 'greyMarble' },
   'gf-stair': { floor: 'creamMarble' },
-  'ff-familyLiving': { floor: 'creamMarble', cove: true, feature: [['W', 10300, 12300, 'walnut']] },
+  'ff-familyLiving': { floor: 'creamMarble', cove: true, feature: [['N', 9500, 11650, 'walnut']] }, // TV wall (north)
   'ff-lobby': { floor: 'creamMarble', feature: [['N', 7360, 7880, 'nero'], ['N', 8820, 9355, 'nero']] },
   'ff-lobby2': { floor: 'creamMarble' },
   'ff-masterBedroom': { floor: 'lightOak', cove: true, feature: [['N', 3100, 5700, 'linen']] },        // GIRL bedroom

@@ -311,3 +311,23 @@ majlis and the hall"); improve the assets with Blender.
   top, and a warm oak handrail following the pitch (plus a short oak rail
   across the landing turn). An invisible guard along each balustrade keeps
   walk mode from stepping into the stair well.
+
+#### 11. Façade from the final renders + garage passage (user screenshot + "233 – Final Renders")
+- **No wall between front yard and garage:** the garage's west wall now has
+  the 1.85 m open passage shown on the plan (y 18745–20591) and in the
+  renders.
+- **Bigger borders:** window / door surrounds are now 220 mm wide with a
+  70 mm deeper inner step and a projecting sill; floor cornices are deep
+  stepped bands (body + projecting top and bottom lips); parapets get a
+  two-tier stepped cornice.
+- Stone cladding changed to the renders' **grey large-format panels**
+  (600 × 1200, stack bond); render / trim in greige; dark grey blind box
+  across the top of every tall window.
+
+#### 12. First-floor living rearranged (user sketch)
+- TV + cabinet moved to the north wall with the walnut slat feature wall;
+  the L-sofa sits at that end facing the TV, beside the big window W2.
+- New **coffee corner** at the south end: base cabinets with stone top,
+  walnut backsplash with two LED-lit floating shelves of cups, espresso
+  machine, grinder and kettle, plus a marble bistro table with two beige
+  tub chairs.

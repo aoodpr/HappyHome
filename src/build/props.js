@@ -611,3 +611,34 @@ export function rugStyled(w, d, style) {
   mesh.position.y = 0.006; mesh.receiveShadow = true;
   const g = new THREE.Group(); g.add(mesh); return g;
 }
+
+/** Coffee corner: base cabinets + stone top, open walnut shelves with LED, espresso machine, grinder, cups (front +Z). */
+export function coffeeCorner(L = 2.4) {
+  const g = counterRun(L, { uppers: false });
+  const wood = m('walnutShelf', { color: 0x6b4c36, roughness: 0.55 });
+  const led = m('shelfLed', { color: 0xfff3dc, emissive: 0xffd9a0, emissiveIntensity: 1.1 });
+  // backsplash panel in walnut + two floating shelves
+  g.add(blk(L, 1.2, 0.02, wood, 0, 0.9, -0.3));
+  for (const y of [1.45, 1.85]) {
+    g.add(blk(L - 0.2, 0.04, 0.28, wood, 0, y, -0.15));
+    g.add(blk(L - 0.3, 0.01, 0.02, led, 0, y - 0.01, -0.03));
+    for (let x = -L / 2 + 0.3; x < L / 2 - 0.2; x += 0.22) g.add(cylY(0.04, 0.09, P.ceramic, x, y + 0.04, -0.15, 12));
+  }
+  // espresso machine
+  const em = new THREE.Group();
+  em.add(blk(0.4, 0.38, 0.4, P.steel, 0, 0, 0));
+  em.add(blk(0.36, 0.06, 0.1, P.blackGlass, 0, 0.26, 0.2));
+  em.add(cylY(0.03, 0.06, P.chrome, -0.08, 0.12, 0.22));
+  em.add(cylY(0.03, 0.06, P.chrome, 0.08, 0.12, 0.22));
+  em.position.set(-L / 4, 0.905, 0);
+  g.add(em);
+  // grinder + kettle + cups
+  const gr = new THREE.Group();
+  gr.add(blk(0.16, 0.25, 0.2, P.screen, 0, 0, 0));
+  gr.add(cylY(0.06, 0.15, P.glass, 0, 0.25, 0, 14, 0.05));
+  gr.position.set(0.05, 0.905, -0.05);
+  g.add(gr);
+  g.add(cylY(0.08, 0.2, P.steel, L / 4, 0.905, 0, 16, 0.06));
+  for (const dx of [0.35, 0.45]) g.add(cylY(0.04, 0.08, P.ceramic, L / 4 + dx - 0.2, 0.905, 0.15, 12));
+  return g;
+}

@@ -234,18 +234,34 @@ export function buildWalls(ctx) {
         const cuts = openings.filter((op) => (op.kind === 'void' && op.head >= o.H - 0.001) || op.kind === 'band');
         let a = -ext / 2;
         for (const c of [...cuts, { u0: L + ext / 2, u1: L + ext / 2 }]) {
-          if (c.u0 - a > 0.01) mould.add(box(c.u0 - a, 0.45, 0.12, M.texturePaint, (a + c.u0) / 2, o.H - 0.25, off + side * 0.06));
+          if (c.u0 - a > 0.01) {
+            // deep stepped floor cornice (final renders): body + projecting top lip + bottom lip
+            const wd = c.u0 - a, cx = (a + c.u0) / 2;
+            mould.add(box(wd, 0.5, 0.22, M.trimStone, cx, o.H - 0.3, off + side * 0.11));
+            mould.add(box(wd, 0.1, 0.34, M.trimStone, cx, o.H + 0.1, off + side * 0.17));
+            mould.add(box(wd, 0.07, 0.3, M.trimStone, cx, o.H - 0.37, off + side * 0.15));
+          }
           a = c.u1;
         }
       }
-      if (o.parapet) mould.add(box(L + ext, 0.12, 0.42, M.white, L / 2, o.H, side * 0.06));
+      if (o.parapet) {
+        // stepped parapet cornice
+        mould.add(box(L + ext, 0.28, 0.2 + t, M.trimStone, L / 2, o.H - 0.28, side * 0.1));
+        mould.add(box(L + ext + 0.1, 0.12, 0.42 + t, M.trimStone, L / 2, o.H, side * 0.16));
+      }
       for (const op of openings) {
         if (op.kind === 'gap' || op.kind === 'void' || op.kind === 'band') continue;
-        const fw = 0.12, pj = off + side * 0.05;
-        mould.add(box(op.u1 - op.u0 + 2 * fw, fw, 0.1, M.white, (op.u0 + op.u1) / 2, op.head, pj));
-        mould.add(box(fw, op.head - op.sill, 0.1, M.white, op.u0 - fw / 2, op.sill, pj));
-        mould.add(box(fw, op.head - op.sill, 0.1, M.white, op.u1 + fw / 2, op.sill, pj));
-        if (op.sill > 0.05) mould.add(box(op.u1 - op.u0 + 2 * fw + 0.06, 0.06, 0.16, M.white, (op.u0 + op.u1) / 2, op.sill - 0.06, pj + side * 0.03));
+        // wide stepped surround (final renders): outer frame 220 mm + inner step 70 mm
+        const fw = 0.22, fi = 0.07, pj = off + side * 0.05, pi = off + side * 0.08;
+        const ww = op.u1 - op.u0, cxo = (op.u0 + op.u1) / 2, hh = op.head - op.sill;
+        const top = Math.min(op.head + fw, o.slabAbove ? o.H - 0.3 : o.H) - op.head;
+        if (top > 0.04) mould.add(box(ww + 2 * fw, top, 0.1, M.trimStone, cxo, op.head, pj));
+        mould.add(box(fw, hh, 0.1, M.trimStone, op.u0 - fw / 2, op.sill, pj));
+        mould.add(box(fw, hh, 0.1, M.trimStone, op.u1 + fw / 2, op.sill, pj));
+        mould.add(box(ww + 2 * fi, fi, 0.16, M.trimStone, cxo, op.head - 0.001, pi));
+        mould.add(box(fi, hh, 0.16, M.trimStone, op.u0 - fi / 2, op.sill, pi));
+        mould.add(box(fi, hh, 0.16, M.trimStone, op.u1 + fi / 2, op.sill, pi));
+        if (op.sill > 0.05) mould.add(box(ww + 2 * fw + 0.1, 0.08, 0.24, M.trimStone, cxo, op.sill - 0.08, pj + side * 0.06));
       }
       if (mould.children.length) {
         mould.traverse((m) => { if (m.isMesh && m.geometry.parameters.height < 0.4) m.castShadow = false; });
@@ -353,6 +369,7 @@ export function buildWalls(ctx) {
       for (let i = 1; i < panels; i++) grp.add(box(0.05, h, t * 0.5, M.alu, -w / 2 + (w * i) / panels, 0, 0));
       if (h > 2.2) grp.add(box(w, 0.05, t * 0.5, M.alu, 0, h * 0.22, 0));
       const glass = box(w - 0.08, h - 0.08, 0.016, M.glass, 0, 0.04, 0, { cast: false, receive: false });
+      if (ext && h > 2.3) grp.add(box(w - 0.1, 0.5, 0.03, M.blindBox, 0, h - 0.56, (side || 1) * 0.03, { cast: false }));
       // marble inner sill on the room side of the window
       if (op.sill > 0.05 && o.floorKey !== 'roof') {
         const inner = -(side || 1);

@@ -13,7 +13,9 @@ export function createMaterials(T) {
     render: tex(T.render, { roughness: 0.9 }),
     paint: tex(T.paint, { roughness: 0.8 }),
     stone: tex(T.stone, { roughness: 0.7, normalScale: new THREE.Vector2(1, 1) }),
-    texturePaint: tex(T.render, { color: 0xf3ead8, roughness: 0.85, normalScale: new THREE.Vector2(1.2, 1.2) }),
+    texturePaint: tex(T.render, { color: 0xddd1bf, roughness: 0.85, normalScale: new THREE.Vector2(1.2, 1.2) }),
+    trimStone: tex(T.render, { color: 0xe2d8c9, roughness: 0.75, normalScale: new THREE.Vector2(0.5, 0.5) }),
+    blindBox: std({ color: 0x6d6a66, roughness: 0.7 }),
     marble: tex(T.marble, { roughness: 0.18, metalness: 0.0 }),
     porcelain: tex(T.porcelain, { roughness: 0.3 }),
     wood: tex(T.wood, { roughness: 0.45 }),
@@ -94,7 +96,7 @@ export function createMaterials(T) {
 
   // Real-world texture repeat size (m) used when generating UVs.
   const tiles = {
-    concrete: 2, blinding: 2, blocks: 1.2, plaster: 2, render: 2, paint: 2, stone: 2.4, texturePaint: 2,
+    concrete: 2, blinding: 2, blocks: 1.2, plaster: 2, render: 2, paint: 2, stone: 2.4, texturePaint: 2, trimStone: 2,
     marble: 1.2, porcelain: 1.2, wood: 1.8, soil: 4, soilDark: 4, sand: 3, gravel: 1.5, grass: 3, pavers: 1.2,
     asphalt: 4, plywood: 2.44, wallTile: 1.2, travertine: 1.2, travertineFloor: 1.2, greyMarble: 1.2, neroMarble: 1.2, creamMarble: 1.2, lightOak: 1.8, walnut: 1.8, greige: 2, linenPanel: 2, navyPanel: 2, rebar: 1.2, doorWood: 1.8, shutter: 1, gypsum: 2, coolRoof: 2,
   };

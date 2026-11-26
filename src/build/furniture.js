@@ -154,17 +154,23 @@ const LAYOUTS = {
   ],
   // FF LIVING (pages 14–15): taupe L-sofa + ottoman, persian rug, walnut shelving by the TV
   'ff-familyLiving': [
-    F(() => PR.rugStyled(3.4, 2.6, 'persian'), 9300, 11300),
-    G('modern_wooden_cabinet', 7620, 11300, 90, { sx: 0.8 }),
-    F(() => PR.tvWall(1.9), 7420, 11300, 90, { h: 1.05 }),
-    F(() => PR.shelving(1.6, 2.6, 0.35), 7560, 6600, 90), // north part of the wall — keeps the stair landing clear
-    F(() => PR.modernSofa(3.0, { color: 'taupe', pillows: 4 }), 10900, 11100, -90),
-    F(() => PR.modernSofa(2.0, { color: 'taupe', pillows: 2 }), 9700, 12000, 180),
-    G('ottoman_01', 9300, 11200, 90, { tint: 0x8c7a68 }),
-    F(() => PR.tubChair('beige'), 10950, 6400, -120),
-    F(() => PR.tubChair('beige'), 10950, 8200, -60),
-    F(() => withLamp(PR.sideTable()), 11150, 7300),
-    G('potted_plant_01', 11300, 9300, 0),
+    // north end — sitting area by the big window W2, TV on the north wall
+    F(() => PR.rugStyled(3.4, 2.6, 'persian'), 10100, 7200),
+    G('modern_wooden_cabinet', 10600, 5700, 0, { sx: 0.8 }),
+    F(() => PR.tvWall(1.9), 10600, 5450, 0, { h: 1.15 }),
+    F(() => PR.modernSofa(3.0, { color: 'taupe', pillows: 4 }), 10200, 8450, 180),
+    F(() => PR.modernSofa(2.0, { color: 'taupe', pillows: 2 }), 8400, 7400, 90),
+    G('ottoman_01', 10100, 7200, 90, { tint: 0x8c7a68 }),
+    F(() => withLamp(PR.sideTable()), 8400, 6100),
+    G('potted_plant_01', 11350, 9100, 0),
+    F(() => PR.shelving(1.6, 2.6, 0.35), 7560, 6250, 90),
+    // south end — coffee corner (counter with uppers, coffee machine, bistro table)
+    F(() => PR.coffeeCorner(2.4), 11345, 10900, -90),
+    F(() => PR.marbleTable(0.75, 0.75, 0.74), 9900, 10900),
+    F(() => PR.tubChair('beige'), 9300, 10900, 90),
+    F(() => PR.tubChair('beige'), 10500, 10900, -90),
+    F(() => PR.rugStyled(2.2, 2.0, 'cream'), 9900, 10900),
+    G('potted_plant_02', 7650, 12000, 0),
   ],
   'ff-lobby': [G('potted_plant_01', 9100, 2450, 0), G('potted_plant_02', 7600, 2450, 0)],
   'ff-lobby2': [

@@ -150,24 +150,23 @@ function plaster(N, hex = 0xe9e4da, rough = 0.06) {
 
 /** Limestone cladding 1200×300 tiles with 20 mm grooves — 2.4 × 2.4 m tile. */
 function stone(N) {
+  // grey large-format stone panels, 600 wide × 1200 high, stack bond (final renders)
   const n = fbm(N, { seed: 41, octaves: 6, base: 6 });
   const v2 = fbm(N, { seed: 42, octaves: 4, base: 3 });
   const tint = mulberry32(9);
-  const bt = Array.from({ length: 128 }, () => (tint() - 0.5) * 0.08);
+  const bt = Array.from({ length: 128 }, () => (tint() - 0.5) * 0.07);
   const px = N / 2.4;
-  const c = rgb(0xd9cbb0);
+  const c = rgb(0xa29d95);
   return bake(N, (x, y) => {
-    const row = Math.floor(y / (0.3 * px));
-    const off = row % 2 ? 0.6 * px : 0;
-    const col = Math.floor((x + off) / (1.2 * px));
-    const lx = (x + off) % (1.2 * px), ly = y % (0.3 * px);
-    const g = 0.01 * px;
+    const col = Math.floor(x / (0.6 * px)), row = Math.floor(y / (1.2 * px));
+    const lx = x % (0.6 * px), ly = y % (1.2 * px);
+    const g = 0.006 * px;
     const i = y * N + x;
-    if (lx < g || ly < g) return [c[0] * 0.55, c[1] * 0.55, c[2] * 0.55, 0];
-    const vein = Math.abs(Math.sin((v2[i] * 12 + x / N * 3) * Math.PI)) < 0.04 ? -0.05 : 0;
-    const v = 1 + (n[i] - 0.5) * 0.16 + bt[(row * 13 + col) & 127] + vein;
-    return [c[0] * v, c[1] * v, c[2] * v, 0.7 + n[i] * 0.2];
-  }, { normalStrength: 3 });
+    if (lx < g || ly < g) return [c[0] * 0.7, c[1] * 0.7, c[2] * 0.7, 0.2];
+    const cloud = (v2[i] - 0.5) * 0.12;
+    const v = 1 + (n[i] - 0.5) * 0.1 + cloud + bt[(row * 13 + col) & 127];
+    return [c[0] * v, c[1] * v, c[2] * v, 0.6 + n[i] * 0.2];
+  }, { normalStrength: 2 });
 }
 
 /** Polished marble, 600×600 tiles — 1.2 × 1.2 m tile. */
