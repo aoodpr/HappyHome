@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import {
   COLUMNS_MAIN, COLUMNS_ROOF, LEVEL, SLAB_T, GRADE_SLAB_T, SLAB_GF, SLAB_FF, SLAB_RF, SLAB_UR,
-  WALLS_GF, WALLS_FF, STAIR, FOOTING_TYPES, PLOT,
+  WALLS_GF, WALLS_FF, STAIR, FOOTING_TYPES, PLOT, STAIR_WINDOWS,
 } from '../data/building.js';
 import { pourMaterial } from '../core/materials.js';
 import { box, rectBox, slabMesh, inPoly, toScene } from './helpers.js';
@@ -272,12 +272,23 @@ export function buildStructure(ctx) {
     ctx.walkables.push(s);
 
     // Perimeter PT beams (270 × 600) under external walls
-    for (const w of edgeWalls) {
+    for (const w0 of edgeWalls) {
+     for (const w of splitForStairWindows(w0)) {
       // 190 mm wide so the plastered wall (230 mm) hides it — it used to show as a
       // dark concrete band in the stairwell, which has no ceiling
       const b = beamAlong(w, top - 0.6, 0.6 - SLAB_T + 0.01, 190, mat);
       add(b, { in: win.pour, anim: 'pour', cure: win.cure });
+     }
     }
+  }
+
+  /** Edge beams stop at the storey-spanning stair windows (west wall, x 2067). */
+  function splitForStairWindows(w) {
+    if (!(w.a[0] === 2067 && w.b[0] === 2067)) return [w];
+    const [lo, hi] = [Math.min(w.a[1], w.b[1]), Math.max(w.a[1], w.b[1])];
+    const sw = STAIR_WINDOWS[0];
+    if (sw.y1 < lo || sw.y0 > hi) return [w];
+    return [{ ...w, a: [2067, lo], b: [2067, sw.y0] }, { ...w, a: [2067, sw.y1], b: [2067, hi] }];
   }
 
   function flight(xFrom, xTo, yA, yB, z0, z1, n, mat) {

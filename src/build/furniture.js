@@ -157,7 +157,7 @@ const LAYOUTS = {
     F(() => PR.rugStyled(3.4, 2.6, 'persian'), 9300, 11300),
     G('modern_wooden_cabinet', 7620, 11300, 90, { sx: 0.8 }),
     F(() => PR.tvWall(1.9), 7420, 11300, 90, { h: 1.05 }),
-    F(() => PR.shelving(1.6, 2.6, 0.35), 7560, 9500, 90),
+    F(() => PR.shelving(1.6, 2.6, 0.35), 7560, 6600, 90), // north part of the wall — keeps the stair landing clear
     F(() => PR.modernSofa(3.0, { color: 'taupe', pillows: 4 }), 10900, 11100, -90),
     F(() => PR.modernSofa(2.0, { color: 'taupe', pillows: 2 }), 9700, 12000, 180),
     G('ottoman_01', 9300, 11200, 90, { tint: 0x8c7a68 }),

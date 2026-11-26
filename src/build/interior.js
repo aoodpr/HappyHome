@@ -169,7 +169,7 @@ export function buildInterior(ctx) {
   /* ---------------- roof build-up (plaster stage) --------------------- */
   {
     const holes = [
-      [[2100, 7450], [8294, 7450], [8294, 10350], [2100, 10350]],
+      [[1990, 7450], [8294, 7450], [8294, 10350], [1990, 10350]],
       [[7160, 160], [9560, 160], [9560, 3824], [7160, 3824]],
     ];
     const screed = slabMesh(SLAB_RF.outline, holes, LEVEL.rfSSL, 0.12, M.concrete, { cast: false });

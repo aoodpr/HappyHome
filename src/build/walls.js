@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import { FLOORS, LEVEL, SLAB_T, SLAB_RF, SLAB_UR, WALLS_RF, SLAB_FF, GF_ENCLOSED, ROOMS } from '../data/building.js';
+import { FLOORS, LEVEL, SLAB_T, SLAB_RF, SLAB_UR, WALLS_RF, SLAB_FF, GF_ENCLOSED, ROOMS, STAIR_WINDOWS } from '../data/building.js';
 import { pourMaterial } from '../core/materials.js';
-import { box, inPoly, toScene } from './helpers.js';
+import { box, inPoly, rectBox, toScene } from './helpers.js';
 import { stagger } from '../core/timeline.js';
 
 /**
@@ -50,6 +50,32 @@ export function buildWalls(ctx) {
     ints.forEach((w, i) => build(w, i, ints.length, 'int'));
     rcs.forEach((w, i) => build(w, i, rcs.length, 'rc'));
   });
+
+  /* ---------- stair windows W6, spanning the slab band ------------------ */
+  for (const sw of STAIR_WINDOWS) {
+    const g = new THREE.Group();
+    g.position.y = sw.z0;
+    const h = sw.z1 - sw.z0;
+    const R = (x0, y0, x1, y1, z, hh, m, op) => g.add(rectBox(x0, y0, x1, y1, z, hh, m, op || { cast: false }));
+    const X0 = 2007, X1 = 2127; // within the 200 mm external wall
+    R(X0, sw.y0, X1, sw.y0 + 60, 0, h, M.alu);
+    R(X0, sw.y1 - 60, X1, sw.y1, 0, h, M.alu);
+    R(X0, sw.y0, X1, sw.y1, 0, 0.06, M.alu);
+    R(X0, sw.y0, X1, sw.y1, h - 0.06, 0.06, M.alu);
+    R(X0 + 20, sw.y0, X1 - 20, sw.y1, h * 0.62, 0.05, M.alu); // transom
+    const gl = rectBox(2059, sw.y0 + 40, 2075, sw.y1 - 40, 0.04, h - 0.08, M.glass, { cast: false, receive: false });
+    gl.userData.solid = true;
+    ctx.solids.push(gl);
+    g.add(gl);
+    // marble sill + white moulding outside (elevation)
+    R(1900, sw.y0 - 60, 2167, sw.y1 + 60, -0.04, 0.04, M.marble);
+    // white moulding frame on the façade (four strips, not a plate)
+    R(1850, sw.y0 - 120, 1890, sw.y0, -0.04, h + 0.16, M.white);
+    R(1850, sw.y1, 1890, sw.y1 + 120, -0.04, h + 0.16, M.white);
+    R(1850, sw.y0 - 120, 1890, sw.y1 + 120, h, 0.12, M.white);
+    root.add(g);
+    TL.add(g, { in: [11.6, 11.8], anim: 'rise' });
+  }
 
   /* ---------- parapets on the roof and upper roofs ------------------- */
   const roofRoomLines = WALLS_RF.filter((w) => w.ext);
@@ -145,6 +171,7 @@ export function buildWalls(ctx) {
     let cur = 0;
     for (const op of openings) {
       if (op.u0 > cur + 0.001) pieces.push([cur, op.u0, 0, o.H]);
+      if (op.kind === 'band') { pieces.push([op.u0, op.u1, op.sill, Math.min(op.head, o.H)]); cur = op.u1; continue; }
       if (op.sill > 0.001) pieces.push([op.u0, op.u1, 0, op.sill]);
       if (op.head < o.H - 0.001) pieces.push([op.u0, op.u1, op.head, o.H]);
       cur = op.u1;
@@ -202,10 +229,18 @@ export function buildWalls(ctx) {
       const mould = new THREE.Group();
       const ext = 0.34;
       // band at the slab edge — its top stays just below the slab top so it never pokes into the room above
-      if (o.slabAbove) mould.add(box(L + ext, 0.45, 0.12, M.texturePaint, L / 2, o.H - 0.25, off + side * 0.06));
+      if (o.slabAbove) {
+        // split around storey-spanning windows (stair W6)
+        const cuts = openings.filter((op) => (op.kind === 'void' && op.head >= o.H - 0.001) || op.kind === 'band');
+        let a = -ext / 2;
+        for (const c of [...cuts, { u0: L + ext / 2, u1: L + ext / 2 }]) {
+          if (c.u0 - a > 0.01) mould.add(box(c.u0 - a, 0.45, 0.12, M.texturePaint, (a + c.u0) / 2, o.H - 0.25, off + side * 0.06));
+          a = c.u1;
+        }
+      }
       if (o.parapet) mould.add(box(L + ext, 0.12, 0.42, M.white, L / 2, o.H, side * 0.06));
       for (const op of openings) {
-        if (op.kind === 'gap') continue;
+        if (op.kind === 'gap' || op.kind === 'void' || op.kind === 'band') continue;
         const fw = 0.12, pj = off + side * 0.05;
         mould.add(box(op.u1 - op.u0 + 2 * fw, fw, 0.1, M.white, (op.u0 + op.u1) / 2, op.head, pj));
         mould.add(box(fw, op.head - op.sill, 0.1, M.white, op.u0 - fw / 2, op.sill, pj));
@@ -301,7 +336,7 @@ export function buildWalls(ctx) {
 
   function fillOpening(g, op, t, side, ext, o) {
     const w = op.u1 - op.u0, h = op.head - op.sill, cx = (op.u0 + op.u1) / 2;
-    if (op.kind === 'gap') return;
+    if (op.kind === 'gap' || op.kind === 'void' || op.kind === 'band') return;
     const grp = new THREE.Group();
     grp.position.set(cx, op.sill, 0);
     g.add(grp);

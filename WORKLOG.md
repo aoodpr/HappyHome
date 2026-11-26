@@ -286,3 +286,19 @@ majlis and the hall"); improve the assets with Blender.
 - Layouts redone for office, majlis, dining, GF living and FF living; bedrooms
   restyled (beige upholstered beds, taupe / grey bedding, beige tub chairs,
   cream rugs, beige joinery); dining chairs recoloured to brown leather.
+
+#### 9. Stair windows lowered, stair exit unblocked, better walking (user screenshots)
+- **W6 position from the side elevation (sheet 16):** the two stair windows
+  are 1400 × 2000 centred on the landings and cross the slab band — lower
+  ≈ +3.00…+5.00, upper ≈ +7.26…+9.24. They were wrongly at first-floor sill
+  height (+5.7). Now built as single storey-spanning windows: walls get a
+  hole / band opening, the slab and roof screed are notched and the edge
+  beams and façade band stop at the window; white moulding frame outside.
+- **Couldn't reach the first floor:** the new black shelving unit in the
+  first-floor living room had been placed right in front of the top of the
+  stair. Moved to the north part of that wall. Walk test: hall → landing →
+  first floor (+4.70) passes.
+- **Walking feel:** smooth acceleration / braking, sliding along walls
+  instead of sticking, eye height eased on stairs, gentler speed-scaled head
+  bob, wider 68° lens in walk mode, and quick jumps — **G** ground-floor hall,
+  **F** first-floor living by the stair, **R** roof.

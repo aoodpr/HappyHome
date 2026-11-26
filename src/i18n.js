@@ -39,7 +39,7 @@ export const STRINGS = {
     viewLiving: 'Living room',
     viewBedroom: 'Bedroom',
     viewRoof: 'Roof',
-    walkHintDesktop: 'Click the scene to look around · W A S D to move · E or click to open/close doors · Esc to release',
+    walkHintDesktop: 'Click to look around · W A S D move · Shift run · E open/close doors · G / F / R ground, first floor, roof · Esc release',
     walkHintTouch: 'Left pad to move · drag to look · tap the door button to open/close',
     helpText: [
       ['Timeline', 'Drag the slider at the bottom to move smoothly through the build. Press ▶ to play.'],
@@ -96,7 +96,7 @@ export const STRINGS = {
     viewLiving: 'الصالة',
     viewBedroom: 'غرفة النوم',
     viewRoof: 'السطح',
-    walkHintDesktop: 'انقر على المشهد للنظر حولك · W A S D للحركة · E أو النقر لفتح/إغلاق الأبواب · Esc للخروج',
+    walkHintDesktop: 'انقر للنظر · W A S D للحركة · Shift للركض · E لفتح/إغلاق الأبواب · G / F / R الأرضي، الأول، السطح · Esc للخروج',
     walkHintTouch: 'لوحة اليسار للحركة · اسحب للنظر · اضغط زر الباب للفتح/الإغلاق',
     helpText: [
       ['الخط الزمني', 'اسحب المؤشر في الأسفل للتنقل بسلاسة بين مراحل البناء، أو اضغط ▶ للتشغيل.'],

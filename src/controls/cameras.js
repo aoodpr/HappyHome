@@ -42,7 +42,7 @@ export class CameraRig {
     camera.position.set(-16, 17, 34);
 
     this.tween = null;
-    this.walk = { pos: new THREE.Vector3(), yaw: 0, pitch: 0, vy: 0, keys: new Set(), joy: new THREE.Vector2(), run: false };
+    this.walk = { pos: new THREE.Vector3(), vel: new THREE.Vector3(), bobT: 0, yaw: 0, pitch: 0, vy: 0, keys: new Set(), joy: new THREE.Vector2(), run: false };
     this.ray = new THREE.Raycaster();
     this.ray.layers.enableAll(); // static batching moves originals to a hidden layer
     this.tour = { time: 0 };
@@ -61,6 +61,9 @@ export class CameraRig {
     this.orbit.enabled = mode === 'orbit';
     if (prev === 'walk' && document.pointerLockElement) document.exitPointerLock();
     if (mode === 'walk') this._enterWalk();
+    // wider lens on foot feels more natural indoors
+    this.camera.fov = mode === 'walk' ? 68 : 50;
+    this.camera.updateProjectionMatrix();
     if (mode === 'orbit' && prev !== 'orbit') {
       // keep looking at roughly the same spot
       const dir = new THREE.Vector3();
@@ -90,6 +93,26 @@ export class CameraRig {
     this.walk.yaw = 0; // look towards the house (−Z)
     this.walk.pitch = 0.05;
     this.walk.vy = 0;
+    this.walk.vel.set(0, 0, 0);
+    this.walk.eyeY = undefined;
+  }
+
+  /** Jump to a spot while walking: 'ground' (hall), 'first' (FF lobby by the stair), 'roof'. */
+  walkTo(spot) {
+    const spots = {
+      ground: [8700, 7000, 0.5, Math.PI / 2],
+      first: [8300, 9600, 4.7, Math.PI / 2],
+      roof: [12000, 12000, 9.1, 0],
+    };
+    const s = spots[spot];
+    if (!s) return;
+    if (this.mode !== 'walk') this.setMode('walk');
+    const [x, z] = toScene(s[0], s[1]);
+    this.walk.pos.set(x, s[2], z);
+    this.walk.yaw = s[3];
+    this.walk.vel.set(0, 0, 0);
+    this.walk.vy = 0;
+    this.walk.eyeY = undefined;
   }
 
   _bindWalkInput() {
@@ -98,6 +121,9 @@ export class CameraRig {
       if (this.mode !== 'walk') return;
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
       w.keys.add(e.code);
+      if (e.code === 'KeyG') this.walkTo('ground');
+      if (e.code === 'KeyF') this.walkTo('first');
+      if (e.code === 'KeyR') this.walkTo('roof');
       if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') w.run = true;
     });
     addEventListener('keyup', (e) => {
@@ -141,11 +167,17 @@ export class CameraRig {
     let fwd = (k.has('KeyW') || k.has('ArrowUp') ? 1 : 0) - (k.has('KeyS') || k.has('ArrowDown') ? 1 : 0);
     let str = (k.has('KeyD') || k.has('ArrowRight') ? 1 : 0) - (k.has('KeyA') || k.has('ArrowLeft') ? 1 : 0);
     fwd += w.joy.y; str += w.joy.x;
-    const speed = (w.run ? 3.6 : 1.7) * Math.min(1, Math.hypot(fwd, str) || 0);
+    const input = Math.min(1, Math.hypot(fwd, str) || 0);
     const len = Math.hypot(fwd, str) || 1;
     const dirF = new THREE.Vector3(-Math.sin(w.yaw), 0, -Math.cos(w.yaw));
     const dirR = new THREE.Vector3(Math.cos(w.yaw), 0, -Math.sin(w.yaw));
-    const move = dirF.multiplyScalar((fwd / len) * speed * dt).add(dirR.multiplyScalar((str / len) * speed * dt));
+    // smooth acceleration / braking instead of instant start-stop
+    const target = dirF.multiplyScalar((fwd / len) * input).add(dirR.multiplyScalar((str / len) * input)).multiplyScalar(w.run ? 3.4 : 1.6);
+    const rate = target.lengthSq() > w.vel.lengthSq() ? 9 : 12;
+    w.vel.lerp(target, Math.min(1, dt * rate));
+    if (w.vel.lengthSq() < 1e-5) w.vel.set(0, 0, 0);
+    const speed = w.vel.length();
+    const move = w.vel.clone().multiplyScalar(dt);
 
     const solids = this.ctx.solids.filter(shown);
     const walk = this.ctx.walkables.filter(shown);
@@ -169,8 +201,12 @@ export class CameraRig {
       }
       w.pos.x += dx; w.pos.z += dz;
     };
+    const bx = w.pos.x, bz = w.pos.z;
     tryAxis(move.x, 0);
     tryAxis(0, move.z);
+    // blocked on an axis → kill that velocity component (slide along walls, no "sticking")
+    if (Math.abs(w.pos.x - bx) < Math.abs(move.x) * 0.5) w.vel.x = 0;
+    if (Math.abs(w.pos.z - bz) < Math.abs(move.z) * 0.5) w.vel.z = 0;
 
     // ground following (stairs, slabs, terrain) with a step-up limit
     this.ray.set(new THREE.Vector3(w.pos.x, w.pos.y + STEP + 0.05, w.pos.z), new THREE.Vector3(0, -1, 0));
@@ -185,8 +221,11 @@ export class CameraRig {
       w.pos.y = Math.max(groundY, w.pos.y + w.vy * dt);
       if (w.pos.y <= groundY) w.vy = 0;
     }
-    const bob = speed > 0.1 ? Math.sin(performance.now() / (w.run ? 120 : 180)) * 0.025 : 0;
-    this.camera.position.set(w.pos.x, w.pos.y + EYE + bob, w.pos.z);
+    // gentle head bob scaled by speed; eye height eased so stairs feel smooth
+    w.bobT += dt * (w.run ? 9 : 6.5) * Math.min(1, speed / 1.6);
+    const bob = Math.sin(w.bobT) * 0.012 * Math.min(1, speed / 1.6);
+    w.eyeY = w.eyeY === undefined ? w.pos.y : THREE.MathUtils.lerp(w.eyeY, w.pos.y, Math.min(1, dt * 10));
+    this.camera.position.set(w.pos.x, w.eyeY + EYE + bob, w.pos.z);
     this.camera.rotation.set(w.pitch, w.yaw, 0, 'YXZ');
   }
 

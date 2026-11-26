@@ -85,12 +85,24 @@ const win = (from, to, sill, head, mark) => [from, to, sill, head, 'window', mar
 const door = (from, to, mark, head = 2.4) => [from, to, 0, head, 'door', mark];
 const slide = (from, to, mark, head = 2.6) => [from, to, 0, head, 'slide', mark];
 const gap = (from, to, head = 2.4) => [from, to, 0, head, 'gap', ''];
+/** Hole with no infill (a window built separately spans several storeys). */
+const hole = (from, to, sill, head) => [from, to, sill, head, 'void', ''];
+/** Only the wall between sill and head remains (window above and below). */
+const band = (from, to, sill, head) => [from, to, sill, head, 'band', ''];
+
+/**
+ * Stair windows W6 (side elevation, sheet 16): 1400 × 2000, centred on the
+ * landings, crossing the slab band — lower one ≈ +3.00…+5.00, upper one
+ * ≈ +7.26…+9.24 (absolute). Built in walls.js as single windows; the walls,
+ * slab edge and edge beams are opened across them.
+ */
+export const STAIR_WINDOWS = [{ y0: 8240, y1: 9641, z0: 3.0, z1: 5.0 }, { y0: 8240, y1: 9641, z0: 7.26, z1: 9.24 }];
 const shutter = (from, to) => [from, to, 0, 3.0, 'shutter', 'RS'];
 
 export const WALLS_GF = [
   // --- external envelope
   W(1967, 130, 15950, 130, { ext: true }),
-  W(2067, 30, 2067, 18392, { ext: true, o: [slide(3490, 5292, 'SD2', 3.0), win(5891, 6492, 1.4, 3.2, 'W7'), win(10890, 11491, 1.4, 3.2, 'W7')] }),
+  W(2067, 30, 2067, 18392, { ext: true, o: [slide(3490, 5292, 'SD2', 3.0), win(5891, 6492, 1.4, 3.2, 'W7'), win(10890, 11491, 1.4, 3.2, 'W7'), hole(8240, 9641, 2.5, 9)] }),
   W(1967, 18292, 7360, 18292, { ext: true, o: [win(3167, 6167, 0, 3.0, 'W1')] }),
   W(7260, 16300, 7260, 18392, { ext: true, o: [door(16950, 17900, 'D2')] }),
   W(7260, 16300, 9558, 16300, { ext: true, o: [door(7700, 9300, 'D1', 3.0)] }),
@@ -131,7 +143,7 @@ export const WALLS_GF = [
 export const WALLS_FF = [
   // --- external envelope
   W(1967, 130, 15950, 130, { ext: true }),
-  W(2067, 30, 2067, 19500, { ext: true, o: [win(1901, 3901, 0.2, 3.0, 'W5'), win(5891, 6492, 1.4, 3.2, 'W7'), win(8240, 9641, 1.0, 3.0, 'W6'), win(10890, 11491, 1.4, 3.2, 'W7')] }),
+  W(2067, 30, 2067, 19500, { ext: true, o: [win(1901, 3901, 0.2, 3.0, 'W5'), win(5891, 6492, 1.4, 3.2, 'W7'), band(8240, 9641, 0.3, 2.56), win(10890, 11491, 1.4, 3.2, 'W7')] }),
   W(1967, 19400, 9758, 19400, { ext: true, o: [win(3165, 6161, 0.2, 3.0, 'W2'), win(7657, 9256, 0.2, 3.0, 'W3')] }),
   W(9658, 19400, 9658, 21391, { ext: true }),
   W(9558, 21291, 15950, 21291, { ext: true, o: [win(11050, 14050, 0.2, 3.0, 'W2')] }),
@@ -169,7 +181,7 @@ export const WALLS_FF = [
 
 /** Roof-level rooms: stair room and lift room. */
 export const WALLS_RF = [
-  W(2067, 7550, 2067, 10250, { ext: true, o: [win(8240, 9641, 1.0, 3.0, 'W6')] }),
+  W(2067, 7550, 2067, 10250, { ext: true, o: [hole(8240, 9641, 0, 0.34)] }),
   W(1967, 7550, 8294, 7550, { ext: true }),
   W(1967, 10250, 8294, 10250, { ext: true }),
   W(8194, 7550, 8194, 10250, { ext: true, o: [door(9200, 10050, 'D2', 2.2)] }),
@@ -190,7 +202,7 @@ export const SLAB_GF = {
 export const SLAB_FF = {
   outline: [[1967, 30], [15950, 30], [15950, 5400], [11800, 5400], [11800, 9150], [13950, 9150],
     [13950, 14992], [15950, 14992], [15950, 21391], [9558, 21391], [9558, 19500], [1967, 19500]],
-  holes: [[[7360, 230], [9360, 230], [9360, 1950], [7360, 1950]], [[2167, 7650], [7160, 7650], [7160, 10150], [2167, 10150]]],
+  holes: [[[7360, 230], [9360, 230], [9360, 1950], [7360, 1950]], [[2167, 7650], [7160, 7650], [7160, 10150], [2167, 10150], [2167, 9641], [1985, 9641], [1985, 8240], [2167, 8240]]],
 };
 export const SLAB_RF = SLAB_FF;
 export const SLAB_UR = [
