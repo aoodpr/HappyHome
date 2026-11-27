@@ -12,6 +12,7 @@ import { buildInterior } from './build/interior.js';
 import { buildFurniture } from './build/furniture.js';
 import { buildBathrooms } from './build/bathrooms.js';
 import { buildStyle } from './build/style.js';
+import { Lighting, buildElectrical, createRoomLightPool } from './build/electrical.js';
 import { setLampLevel } from './build/props.js';
 import { buildMachines } from './people/machines.js';
 import { Crew } from './people/crew.js';
@@ -56,7 +57,7 @@ async function init() {
   const TL = new Timeline();
   const plasterMat = M.plaster.clone();
   plasterMat.userData = { ...M.plaster.userData };
-  const ctx = { TL, M, root, solids: [], walkables: [], plasterMat };
+  const ctx = { TL, M, root, solids: [], walkables: [], plasterMat, lighting: new Lighting() };
   buildSite(ctx);
   buildStructure(ctx);
   buildWalls(ctx);
@@ -64,6 +65,8 @@ async function init() {
   buildFurniture(ctx);
   buildBathrooms(ctx);
   buildStyle(ctx);
+  buildElectrical(ctx);
+  const roomLights = createRoomLightPool(scene, ctx.lighting);
   const machines = buildMachines(ctx);
   const crew = new Crew(scene);
   const baker = new Baker(scene, TL);
@@ -198,6 +201,7 @@ async function init() {
     M.led.emissiveIntensity = dusk ? 6 : 2.2;
     M.gypsum.emissive.copy(dusk ? gypsumDusk : gypsumDay);
     setLampLevel(dusk ? 3.5 : 1);
+    ctx.lighting.setDusk(dusk);
     $('tod').textContent = dusk ? '☾' : '☀';
     $('tod').title = STRINGS[state.lang][dusk ? 'dusk' : 'day'];
   };
@@ -338,7 +342,7 @@ async function init() {
   // Expose a tiny API for debugging / automated screenshots.
   window.happyhome = {
     setT: (t) => { state.target = state.t = t; },
-    setCut, goTo: (v) => rig.goTo(v), setMode: (m) => rig.setMode(m), rig, state, scene, camera, renderer, crew, baker, doors: ctx.doors, toggleDoor: (i) => { const d = ctx.doors[i]; d.isOpen = !d.isOpen; }, rooms: ROOMS, toScene, LEVEL,
+    setCut, goTo: (v) => rig.goTo(v), setMode: (m) => rig.setMode(m), rig, state, scene, camera, renderer, crew, baker, doors: ctx.doors, interact: ctx.interact, lighting: ctx.lighting, electrical: ctx.electricalCounts, toggleDoor: (i) => { const d = ctx.doors[i]; d.isOpen = !d.isOpen; }, rooms: ROOMS, toScene, LEVEL,
     pick: (nx, ny) => {
       const rc = new THREE.Raycaster();
       rc.layers.enableAll();
@@ -351,35 +355,51 @@ async function init() {
     },
   };
 
-  /* ---------- interactive doors ---------- */
+  /* ---------- interactive doors, light switches, sockets ---------- */
   const doors = ctx.doors || [];
   const tmpV = new THREE.Vector3(), fwd = new THREE.Vector3();
-  doors.forEach((d, i) => d.obj.traverse((o) => { o.userData.doorIndex = i; }));
-  const toggleDoor = (d) => { if (d) d.isOpen = !d.isOpen; };
-  /** Door in front of the walker within reach (2.2 m), or null. */
-  const doorInReach = () => {
+  const doorTargets = doors.map((d) => ({ kind: 'door', door: d, get on() { return d.isOpen; }, toggle() { d.isOpen = !d.isOpen; } }));
+  doors.forEach((d, i) => d.obj.traverse((o) => { o.userData.interact = doorTargets[i]; }));
+  const fittings = ctx.interact || [];
+  const fittingMeshes = [];
+  for (const t of fittings) for (const m of t.meshes) { m.userData.interact = t; fittingMeshes.push(m); }
+  const isShown = (o) => { for (let q = o; q; q = q.parent) if (!q.visible) return false; return true; };
+  const centreRay = new THREE.Raycaster();
+  centreRay.layers.enableAll();
+  /** Switch / socket under the crosshair (2.4 m), else the door in front (2.2 m). */
+  const targetInReach = () => {
+    centreRay.setFromCamera(new THREE.Vector2(0, 0), camera);
+    centreRay.far = 2.4;
+    const hit = centreRay.intersectObjects(fittingMeshes, false).find((h) => isShown(h.object));
+    if (hit) return hit.object.userData.interact;
     camera.getWorldDirection(fwd); fwd.y = 0; fwd.normalize();
     let best = null, bestD = 2.2;
-    for (const d of doors) {
-      let vis = true; for (let q = d.anchor; q; q = q.parent) if (!q.visible) { vis = false; break; }
-      if (!vis) continue;
+    doors.forEach((d, i) => {
+      if (!isShown(d.anchor)) return;
       d.anchor.getWorldPosition(tmpV); tmpV.y += 1.0;
       const dist = tmpV.distanceTo(camera.position);
-      if (dist > bestD || Math.abs(tmpV.y - camera.position.y) > 1.6) continue;
+      if (dist > bestD || Math.abs(tmpV.y - camera.position.y) > 1.6) return;
       tmpV.sub(camera.position).setY(0).normalize();
-      if (tmpV.dot(fwd) < 0.35) continue;
-      best = d; bestD = dist;
-    }
+      if (tmpV.dot(fwd) < 0.35) return;
+      best = doorTargets[i]; bestD = dist;
+    });
     return best;
   };
+  const labelOf = (t) => {
+    const S = STRINGS[state.lang];
+    if (t.kind === 'door') return S[t.on ? 'doorClose' : 'doorOpen'];
+    if (t.kind === 'socket') return `${S.socket} · ${t.on ? S.on : S.off}`;
+    return `${S.rooms[t.room] || t.room} · ${S.circuits[t.circuit]} · ${t.on ? S.on : S.off}`;
+  };
   const doorBtn = $('doorBtn');
-  let reachDoor = null;
-  doorBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleDoor(reachDoor); });
-  addEventListener('keydown', (e) => { if (e.code === 'KeyE' && rig.mode === 'walk') toggleDoor(doorInReach()); });
+  let reach = null;
+  const act = (t) => { if (t) t.toggle(); };
+  doorBtn.addEventListener('click', (e) => { e.stopPropagation(); act(reach); });
+  addEventListener('keydown', (e) => { if (e.code === 'KeyE' && rig.mode === 'walk') act(targetInReach()); });
   renderer.domElement.addEventListener('mousedown', () => {
-    if (rig.mode === 'walk' && document.pointerLockElement === renderer.domElement) toggleDoor(doorInReach());
+    if (rig.mode === 'walk' && document.pointerLockElement === renderer.domElement) act(targetInReach());
   });
-  // orbit / tour: click (not drag) on a door toggles it
+  // orbit / tour: click (not drag) on a door, switch or socket
   let downAt = null;
   renderer.domElement.addEventListener('pointerdown', (e) => { downAt = [e.clientX, e.clientY]; });
   renderer.domElement.addEventListener('pointerup', (e) => {
@@ -388,8 +408,8 @@ async function init() {
     const rc = new THREE.Raycaster();
     rc.layers.enableAll();
     rc.setFromCamera(new THREE.Vector2((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1), camera);
-    const hit = rc.intersectObjects(scene.children, true).find((h) => { for (let q = h.object; q; q = q.parent) if (!q.visible) return false; return true; });
-    if (hit && hit.object.userData.doorIndex !== undefined) toggleDoor(doors[hit.object.userData.doorIndex]);
+    const hit = rc.intersectObjects(scene.children, true).find((h) => isShown(h.object));
+    if (hit?.object.userData.interact) act(hit.object.userData.interact);
   });
   const updateDoors = (dt) => {
     for (const d of doors) {
@@ -401,9 +421,9 @@ async function init() {
       if (d.prop === 'rotY') d.obj.rotation.y = v; else d.obj.position.x = v;
     }
     if (rig.mode === 'walk') {
-      reachDoor = doorInReach();
-      doorBtn.hidden = !reachDoor;
-      if (reachDoor) doorBtn.textContent = STRINGS[state.lang][reachDoor.isOpen ? 'doorClose' : 'doorOpen'] + (isTouch ? '' : '  (E)');
+      reach = targetInReach();
+      doorBtn.hidden = !reach;
+      if (reach) doorBtn.textContent = labelOf(reach) + (isTouch ? '' : '  (E)');
     } else doorBtn.hidden = true;
   };
 
@@ -427,6 +447,7 @@ async function init() {
     if (state.cut !== 'all' && time - lastCollect > 1) { lastCollect = time; setCut(state.cut); }
     rig.update(dt);
     updateDoors(dt);
+    roomLights(camera, time, state.t >= 12.5);
     ctx.updateFurnitureLOD?.(camera, state.cut !== 'all');
     stage3d.followShadow(rig.focus());
     updateCard();

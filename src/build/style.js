@@ -58,6 +58,8 @@ export function buildStyle(ctx) {
     const g = new THREE.Group();
     g.position.y = ffl;
     g.name = 'style:' + rm.id;
+    let LEDm = null; // created only if the room actually has LED cove / feature lighting
+    const led = () => (LEDm ||= ctx.lighting ? ctx.lighting.matFor(rm.id, 'cove', M.covedLed) : M.covedLed);
     const B = (ax0, ay0, ax1, ay1, h0, h1, m, o) => g.add(rectBox(ax0, ay0, ax1, ay1, h0, h1 - h0, m, o || { cast: false }));
 
     /** Box on a wall face: along-wall range [a0,a1] (mm), off the wall [d0,d1] (mm), heights in m. */
@@ -77,10 +79,10 @@ export function buildStyle(ctx) {
       B(x1 - band, y0 + band, x1, y1 - band, hb, ceil, M.gypsum);
       // LED strip along the inner lip, glowing up into the recess
       const l = 12;
-      B(x0 + band, y0 + band - l, x1 - band, y0 + band, hb - 0.004, hb + 0.01, M.covedLed);
-      B(x0 + band, y1 - band, x1 - band, y1 - band + l, hb - 0.004, hb + 0.01, M.covedLed);
-      B(x0 + band - l, y0 + band, x0 + band, y1 - band, hb - 0.004, hb + 0.01, M.covedLed);
-      B(x1 - band, y0 + band, x1 - band + l, y1 - band, hb - 0.004, hb + 0.01, M.covedLed);
+      B(x0 + band, y0 + band - l, x1 - band, y0 + band, hb - 0.004, hb + 0.01, led());
+      B(x0 + band, y1 - band, x1 - band, y1 - band + l, hb - 0.004, hb + 0.01, led());
+      B(x0 + band - l, y0 + band, x0 + band, y1 - band, hb - 0.004, hb + 0.01, led());
+      B(x1 - band, y0 + band, x1 - band + l, y1 - band, hb - 0.004, hb + 0.01, led());
       // two black linear diffusers along the long direction, 0.7 m inside the band
       const alongX = x1 - x0 >= y1 - y0;
       const inset = band + 450;
@@ -98,14 +100,14 @@ export function buildStyle(ctx) {
         // vertical walnut slats on a dark backing, LED strips at both edges
         onWall(wall, a0, a1, 0, 12, 0, top, M.darkSteel);
         for (let a = a0 + 15; a < a1 - 60; a += 90) onWall(wall, a, a + 60, 12, 42, 0, top, M.walnut);
-        onWall(wall, a0, a0 + 10, 0, 44, 0.05, top - 0.05, M.covedLed);
-        onWall(wall, a1 - 10, a1, 0, 44, 0.05, top - 0.05, M.covedLed);
+        onWall(wall, a0, a0 + 10, 0, 44, 0.05, top - 0.05, led());
+        onWall(wall, a1 - 10, a1, 0, 44, 0.05, top - 0.05, led());
       } else if (kind === 'nero') {
         onWall(wall, a0, a1, 0, 20, 0, top, M.neroMarble);
       } else if (kind === 'linen') {
         onWall(wall, a0, a1, 0, 30, 0, top, M.linenPanel);
-        onWall(wall, a0 - 10, a0, 0, 32, 0, top, M.covedLed);
-        onWall(wall, a1, a1 + 10, 0, 32, 0, top, M.covedLed);
+        onWall(wall, a0 - 10, a0, 0, 32, 0, top, led());
+        onWall(wall, a1, a1 + 10, 0, 32, 0, top, led());
       } else if (kind === 'navy') {
         onWall(wall, a0, a1, 0, 25, 0, top, M.navyPanel);
         onWall(wall, a0 - 120, a0, 0, 30, 0, top, M.walnut);

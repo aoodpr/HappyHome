@@ -346,3 +346,27 @@ majlis and the hall"); improve the assets with Blender.
   screens the stage card starts collapsed.
 - ⤢ in the toolbar (or **H**) hides every panel for a clean full-screen view;
   ☰ (or H) brings them back. Help text and README updated (EN / AR).
+
+#### 15. Electrical: sockets, switch gangs, working lights
+- Source: interior package part 2 — ELECTRICAL GROUND / FIRST FLOOR PLANS
+  (pp. 34–35) and KEY LIGHTING plans (pp. 42–43).
+- New `tools/extract_electrical.py`: pulls the socket (orange), data/TV
+  (blue) and outdoor (pink) symbols from the PDF vectors and converts them to
+  plan mm using the sheets' dimension chains → `src/data/electrical.json`
+  (109 sockets, 5 data/TV, 14 outdoor). Each is snapped to the nearest wall
+  face: twin switched sockets (white plate, rocker, red indicator) at 0.35 m,
+  1.1 m in kitchen / baths / laundry; data plates; grey weatherproof boxes
+  outside.
+- The key-lighting sheets carry no dimensions, so switches are placed by
+  rule: one brass-edged plate inside every room's door (latch side, 1.2 m),
+  **one gang per circuit** — ceiling downlights · LED cove & feature walls ·
+  chandelier / pendants / lamps · ceiling fan (kitchen). 29 plates.
+- New `src/build/electrical.js` → `Lighting`: every light is now on a
+  per-room circuit (cloned emissive materials); switching dims/brightens the
+  fittings, stops the fan, and a pool of three warm point lights follows the
+  lit rooms nearest the camera so the room itself gets darker / brighter
+  (fixed pool → no shader recompiles). Day / dusk levels respected.
+- Interaction unified with doors: walk mode aims with the crosshair (switches,
+  sockets within 2.4 m, else the door in front) → prompt "Living Room ·
+  Ceiling lights · ON (E)"; orbit mode click. Tested: living-room lights,
+  kitchen fan and master-bedroom cove toggle; sockets toggle their indicator.

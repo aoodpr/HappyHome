@@ -220,7 +220,7 @@ export function buildInterior(ctx) {
     for (let x = x0 + 900; x < x1 - 500; x += 1500) {
       for (let y = y0 + 900; y < y1 - 500; y += 1500) {
         const [sx, sz] = toScene(x, y);
-        lights.add(cyl(0.05, 0.01, M.led, sx, ffl + ch - 0.005, sz, 10, { cast: false }));
+        lights.add(cyl(0.05, 0.01, ctx.lighting ? ctx.lighting.matFor(rm.id, 'spots', M.led) : M.led, sx, ffl + ch - 0.005, sz, 10, { cast: false }));
       }
     }
     if (lights.children.length) add(lights, { in: [12.48, 12.5], anim: 'show' });

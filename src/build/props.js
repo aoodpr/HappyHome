@@ -678,11 +678,12 @@ export function ceilingFan({ span = 1.32, blades = 5, drop = 0.42 } = {}) {
     rotor.add(arm);
   }
   rotor.userData.dynamic = true;
+  rotor.userData.isFanRotor = true;
   // spin ~1.3 rev/s while rendered (onBeforeRender fires only for meshes)
   let last = performance.now();
   rotor.children[0].children[0].onBeforeRender = () => {
     const now = performance.now();
-    rotor.rotation.y -= Math.min(0.1, (now - last) / 1000) * 8;
+    if (!rotor.userData.off) rotor.rotation.y -= Math.min(0.1, (now - last) / 1000) * 8;
     last = now;
   };
   g.add(rotor);
