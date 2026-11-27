@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { JOTUN, paintTint, ROOMS_PAINT } from '../data/colours.js';
 import { FLOORS, LEVEL, SLAB_T, SLAB_RF, SLAB_UR, WALLS_RF, SLAB_FF, GF_ENCLOSED, ROOMS, STAIR_WINDOWS } from '../data/building.js';
 import { pourMaterial } from '../core/materials.js';
 import { box, inPoly, rectBox, toScene } from './helpers.js';
@@ -15,10 +16,41 @@ export function buildWalls(ctx) {
   // Interior plaster that turns into painted finish during the interior stage.
   const plasterMat = ctx.plasterMat;
   const skirtingMat = new THREE.MeshStandardMaterial({ color: 0xe9e4da, roughness: 0.4 });
-  const plasterCol = new THREE.Color(0xd9d4ca), paintCol = new THREE.Color(0xe9dcc7); // warm greige (interior mood board)
+  // Jotun schedule: 1931 Cashew (−30 %) for the house, 8181 Pastel Mint (−30 %) for the first-floor bedrooms
+  const PLASTER_BASE = 0xe6e1d7; // base tint baked into T.plaster
+  const PAINT_BASE = 0xf4efe6; // finer, more even texture once painted (T.paint)
+  const plasterCol = new THREE.Color(0xd9d4ca), paintCol = paintTint(JOTUN.interior, PLASTER_BASE);
+  const paintColFinal = paintTint(JOTUN.interior, PAINT_BASE);
+  const rawMap = plasterMat.map, paintMap = M.paint.map;
+  const roomsMat = plasterMat.clone();
+  roomsMat.map = paintMap;
+  roomsMat.color.copy(paintTint(JOTUN.rooms, PAINT_BASE));
+  // Finished emulsion: smooth (weaker plaster relief), and lit more by warm room bounce than by
+  // the blue sky probe, so light warm whites don't read as cool grey indoors.
+  const PAINT_LOOK = { normal: 0.12, env: 0.8, emissive: plasterMat.emissive.clone() };
+  const rawLook = { normal: plasterMat.normalScale.x, env: plasterMat.envMapIntensity, emissive: plasterMat.emissive.clone() };
+  roomsMat.normalScale.setScalar(PAINT_LOOK.normal);
+  roomsMat.envMapIntensity = PAINT_LOOK.env;
+  roomsMat.emissive.copy(PAINT_LOOK.emissive);
+  // Indoors most light on a wall has bounced off warm floors / walls rather than coming
+  // straight from the blue sky: warm the indirect (hemisphere + sky probe) term only.
+  for (const m of [plasterMat, roomsMat]) {
+    m.onBeforeCompile = (sh) => {
+      sh.fragmentShader = sh.fragmentShader.replace('#include <lights_fragment_end>',
+        '#include <lights_fragment_end>\n\treflectedLight.indirectDiffuse *= vec3(1.16, 1.02, 0.86);');
+    };
+    m.customProgramCacheKey = () => 'warmBounce';
+  }
+  const isPaintedRoom = (px, py, f) => ROOMS.some((r) => r.f === f && ROOMS_PAINT(r) &&
+    px > r.rect[0] && px < r.rect[2] && py > r.rect[1] && py < r.rect[3]);
   TL.hook((t) => {
     const k = Math.min(1, Math.max(0, (t - 12.45) / 0.2));
     plasterMat.color.copy(plasterCol).lerp(paintCol, k);
+    plasterMat.map = k >= 1 ? paintMap : rawMap;
+    if (k >= 1) plasterMat.color.copy(paintColFinal);
+    plasterMat.normalScale.setScalar(rawLook.normal + (PAINT_LOOK.normal - rawLook.normal) * k);
+    plasterMat.envMapIntensity = rawLook.env + (PAINT_LOOK.env - rawLook.env) * k;
+    plasterMat.emissive.copy(rawLook.emissive).lerp(PAINT_LOOK.emissive, k);
   });
 
   const W = {
@@ -66,7 +98,7 @@ export function buildWalls(ctx) {
     // fixed single pane — no transom (W6 is a fixed window)
     // reveal linings on both jambs (hide the edge-beam ends): render-white outside, plaster inside
     for (const [ya, yb] of [[sw.y0, sw.y0 + 12], [sw.y1 - 12, sw.y1]]) {
-      R(1880, ya, X0, yb, 0, h, M.white);
+      R(1880, ya, X0, yb, 0, h, M.trimStone);
       R(X1, ya, 2185, yb, 0, h, ctx.plasterMat);
     }
     const gl = rectBox(2059, sw.y0 + 40, 2075, sw.y1 - 40, 0.04, h - 0.08, M.glass, { cast: false, receive: false });
@@ -75,10 +107,10 @@ export function buildWalls(ctx) {
     g.add(gl);
     // marble sill + white moulding outside (elevation)
     R(1900, sw.y0 - 60, 2167, sw.y1 + 60, -0.04, 0.04, M.marble);
-    // white moulding frame on the façade (four strips, not a plate)
-    R(1850, sw.y0 - 120, 1890, sw.y0, -0.04, h + 0.16, M.white);
-    R(1850, sw.y1, 1890, sw.y1 + 120, -0.04, h + 0.16, M.white);
-    R(1850, sw.y0 - 120, 1890, sw.y1 + 120, h, 0.12, M.white);
+    // moulding frame on the façade (four strips, not a plate) — trim colour
+    R(1850, sw.y0 - 120, 1890, sw.y0, -0.04, h + 0.16, M.trimStone);
+    R(1850, sw.y1, 1890, sw.y1 + 120, -0.04, h + 0.16, M.trimStone);
+    R(1850, sw.y0 - 120, 1890, sw.y1 + 120, h, 0.12, M.trimStone);
     root.add(g);
     TL.add(g, { in: [11.6, 11.8], anim: 'rise' });
   }
@@ -216,9 +248,23 @@ export function buildWalls(ctx) {
       core.userData.solid = true;
       ctx.solids.push(core);
 
-      const pl = box(len, h, t + 0.03, plasterMat, (u0 + u1) / 2, y0, 0, { cast: false });
+      const pl = box(len, h, t + 0.03, o.parapet ? M.texturePaint : plasterMat, (u0 + u1) / 2, y0, 0, { cast: false });
       g.add(pl);
       TL.add(pl, { in: o.plasterWin, anim: 'rise' });
+
+      // First-floor bedroom faces get their own paint (thin coat over the plaster)
+      if (o.floorKey === 'ff') {
+        for (const sd of [-1, 1]) {
+          const inRoom = (u) => isPaintedRoom(
+            w.a[0] + dir[0] * u * 1000 + nrm[0] * sd * (w.t / 2 + 250),
+            w.a[1] + dir[1] * u * 1000 + nrm[1] * sd * (w.t / 2 + 250), 1);
+          for (const [v0, v1] of voidSpans(u0, u1, inRoom)) {
+            const coat = box(v1 - v0, h, 0.003, roomsMat, (v0 + v1) / 2, y0, sd * (t / 2 + 0.0165), { cast: false });
+            g.add(coat);
+            TL.add(coat, { in: [12.45, 12.6], anim: 'show' });
+          }
+        }
+      }
 
       // Skirting board at the foot of the wall inside the house (per face; none over the open stairwell)
       if (y0 < 0.001 && (o.floorKey === 'gf' || o.floorKey === 'ff')) {

@@ -444,3 +444,29 @@ majlis and the hall"); improve the assets with Blender.
   - Renders from inside and outside the stairwell.
   - Console sweep: no errors.
   - Walk test: off the top step onto FF +4.70; the half landing holds +2.6.
+
+#### 19. Jotun paint schedule (owner's choice)
+New `src/data/colours.js` holds the schedule. Hex values are the published
+on-screen approximations; a physical sample is the reference.
+
+| Code | Name | Approx. hex | Where |
+|---|---|---|---|
+| 8181 | Pastel Mint | #E7E1C9, −30 % | First-floor bedrooms + dressing rooms |
+| 1931 | Cashew | #E3DDCD, −30 % | All other interior walls (GF, FF lobby / family living, stair) |
+| 1964 | Sadaf | #EDDDC6 | Exterior painted walls, roof parapets (both faces) |
+| 0568 | Woodsmoke | #DBCAB5 | Exterior cornices, window surrounds, projections, W6 frame |
+
+- **Dilution:** "مخفف 30 %" is applied as 30 % lighter, i.e. the tint is mixed
+  30 % towards white. It is one number per colour (`dilute`).
+- **Texture compensation:** the procedural plaster / render textures carry their
+  own tint, so the material colour is divided by the texture base. The surface
+  albedo then equals the paint colour.
+- **Bedroom faces:** FF wall faces that border a bedroom or dressing room
+  (sampled along each wall) get a 3 mm coat in 8181. Everything else keeps
+  the 1931 plaster.
+- **Painted finish:** at the paint stage the walls switch to the finer paint
+  texture with softer relief. A warm-bounce term on the indirect light stops
+  light warm whites reading as cool grey under the blue sky probe.
+  Measured: the wall changed from RGB 176/183/181 (cyan cast) to 184/183/169.
+- **Stone cladding:** the road-façade grey stone cladding (final renders) is
+  unchanged.

@@ -1,4 +1,7 @@
 import * as THREE from 'three';
+import { JOTUN, paintTint } from '../data/colours.js';
+
+const RENDER_BASE = 0xe8dcc6; // base tint baked into T.render
 
 /** Shared PBR material library built from the procedural textures. */
 export function createMaterials(T) {
@@ -13,8 +16,8 @@ export function createMaterials(T) {
     render: tex(T.render, { roughness: 0.9 }),
     paint: tex(T.paint, { roughness: 0.8 }),
     stone: tex(T.stone, { roughness: 0.7, normalScale: new THREE.Vector2(1, 1) }),
-    texturePaint: tex(T.render, { color: 0xddd1bf, roughness: 0.85, normalScale: new THREE.Vector2(1.2, 1.2) }),
-    trimStone: tex(T.render, { color: 0xe2d8c9, roughness: 0.75, normalScale: new THREE.Vector2(0.5, 0.5) }),
+    texturePaint: tex(T.render, { color: paintTint(JOTUN.exterior, RENDER_BASE), roughness: 0.85, normalScale: new THREE.Vector2(1.2, 1.2) }), // Jotun 1964 Sadaf
+    trimStone: tex(T.render, { color: paintTint(JOTUN.trim, RENDER_BASE), roughness: 0.75, normalScale: new THREE.Vector2(0.5, 0.5) }), // Jotun 0568 Woodsmoke
     blindBox: std({ color: 0x6d6a66, roughness: 0.7 }),
     marble: tex(T.marble, { roughness: 0.18, metalness: 0.0 }),
     porcelain: tex(T.porcelain, { roughness: 0.3 }),
