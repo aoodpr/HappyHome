@@ -287,33 +287,56 @@ export function buildSite(ctx) {
     }
     add(planter, { in: [13.45, 13.6], anim: 'rise' });
 
-    // Front boundary wall + pedestrian gate
+    // Front boundary wall + pedestrian gate (site photo / owner's reference render):
+    // 2.3 m rendered wall (Jotun 1964), coping, pilaster pairs framing grey stone strips with
+    // ground uplights, 2.6 m gate piers with stepped caps, dark aluminium gate with slatted side panel.
     const fw = new THREE.Group();
+    const WH = 2.3, PH = 2.6;
     const seg = (x0, x1) => {
       const [a] = toScene(x0, 0), [b] = toScene(x1, 0);
-      fw.add(box(b - a, 1.2, 0.2, M.stone, (a + b) / 2, 0, fz));
-      fw.add(box(b - a + 0.1, 0.1, 0.3, M.white, (a + b) / 2, 1.2, fz));
+      fw.add(box(b - a, WH, 0.22, M.texturePaint, (a + b) / 2, 0, fz));
+      fw.add(box(b - a + 0.06, 0.08, 0.3, M.trimStone, (a + b) / 2, WH, fz));
+      // pilaster pairs with a stone strip between, every ~2.4 m
+      const n = Math.max(1, Math.round((b - a) / 2.4));
+      for (let i = 0; i < n; i++) {
+        const c = a + ((b - a) * (i + 0.5)) / n;
+        for (const dx of [-0.2, 0.2]) fw.add(box(0.12, WH - 0.05, 0.3, M.trimStone, c + dx, 0, fz + 0.02));
+        fw.add(box(0.26, WH - 0.12, 0.26, M.stone, c, 0.06, fz + 0.01));
+        fw.add(box(0.06, 0.02, 0.04, M.led, c, 0.03, fz + 0.15, { cast: false })); // uplight
+      }
     };
     seg(-25, 7260);
-    for (const x of [-25, 2200, 4700, 7160, 9458]) {
+    for (const x of [-25, 7160, 9458]) {
       const [sx] = toScene(x, 0);
-      fw.add(box(0.4, 1.7, 0.4, M.stone, sx + 0.1, 0, fz));
-      fw.add(box(0.5, 0.1, 0.5, M.white, sx + 0.1, 1.7, fz));
+      fw.add(box(0.45, PH, 0.45, M.trimStone, sx + 0.1, 0, fz));
+      fw.add(box(0.55, 0.08, 0.55, M.trimStone, sx + 0.1, PH, fz));
+      fw.add(box(0.45, 0.1, 0.45, M.trimStone, sx + 0.1, PH + 0.08, fz));
+      fw.add(box(0.03, 0.55, 0.03, M.darkSteel, sx + 0.1, 1.2, fz + 0.24)); // slim wall light
     }
-    add(fw, { in: [13.1, 13.4], anim: 'course', h: 1.7 });
+    add(fw, { in: [13.1, 13.4], anim: 'course', h: PH });
     fw.traverse((o) => { if (o.isMesh) { o.userData.solid = true; ctx.solids.push(o); } });
     const gate = new THREE.Group();
-    const [g0] = toScene(7460, 0), [g1] = toScene(9358, 0);
-    const leafW = (g1 - g0) / 2;
-    for (const [x, rot] of [[g0, 0.9], [g1, Math.PI - 0.9]]) {
-      const leaf = new THREE.Group();
-      for (let i = 0; i < 9; i++) leaf.add(box(0.04, 1.5, 0.04, M.darkSteel, 0.1 + i * (leafW - 0.15) / 8, 0.05, 0));
-      leaf.add(box(leafW, 0.06, 0.05, M.darkSteel, leafW / 2, 0.1, 0));
-      leaf.add(box(leafW, 0.06, 0.05, M.darkSteel, leafW / 2, 1.5, 0));
-      leaf.position.set(x, 0, fz);
-      leaf.rotation.y = -rot;
-      gate.add(leaf);
-    }
+    const [g0] = toScene(7360, 0), [g1] = toScene(9258, 0);
+    const gw = g1 - g0, leafW = gw * 0.66, gh = 2.25;
+    // fixed slatted side panel
+    const slats = new THREE.Group();
+    gate.add(box(gw - leafW, 0.05, 0.06, M.darkSteel, g0 + leafW + (gw - leafW) / 2, 0.02, fz));
+    gate.add(box(gw - leafW, 0.05, 0.06, M.darkSteel, g0 + leafW + (gw - leafW) / 2, gh - 0.05, fz));
+    for (let x = g0 + leafW + 0.05; x < g1 - 0.02; x += 0.07) slats.add(box(0.035, gh - 0.06, 0.05, M.darkSteel, x, 0.03, fz));
+    gate.add(slats);
+    // solid aluminium leaf (hinged at the pier), long black pull — opens in walk mode
+    const leaf = new THREE.Group();
+    const lg = new THREE.Mesh(new THREE.BoxGeometry(leafW - 0.02, gh, 0.06).translate((leafW - 0.02) / 2, gh / 2, 0), M.darkSteel);
+    lg.castShadow = true;
+    leaf.add(lg);
+    leaf.add(box(0.025, 1.1, 0.03, M.alu, leafW - 0.18, 0.6, 0.05));
+    leaf.add(box(0.025, 1.1, 0.03, M.alu, leafW - 0.18, 0.6, -0.05));
+    leaf.position.set(g0 + 0.01, 0, fz);
+    leaf.traverse((o) => { if (o.isMesh) { o.userData.solid = true; ctx.solids.push(o); } });
+    leaf.userData.dynamic = true;
+    gate.add(leaf);
+    ctx.doors = ctx.doors || [];
+    ctx.doors.push({ type: 'hinge', obj: leaf, prop: 'rotY', closed: 0, open: 1.35, k: 0, isOpen: false, anchor: gate });
     add(gate, { in: [13.8, 13.9], anim: 'rise' });
 
     // Palms

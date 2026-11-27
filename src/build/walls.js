@@ -474,10 +474,11 @@ export function buildWalls(ctx) {
       const main = op.mark === 'D1';
       const isLift = op.mark === 'LIFT';
       if (isLift) return; // landing doors, architraves and call buttons are built by lift.js
-      // frame
-      grp.add(box(0.05, h, t + 0.04, M.doorWood, -w / 2 + 0.025, 0, 0));
-      grp.add(box(0.05, h, t + 0.04, M.doorWood, w / 2 - 0.025, 0, 0));
-      grp.add(box(w, 0.05, t + 0.04, M.doorWood, 0, h - 0.05, 0));
+      // frame (main entrance: black aluminium; others: wood)
+      const fm = main ? M.alu : M.doorWood;
+      grp.add(box(0.05, h, t + 0.04, fm, -w / 2 + 0.025, 0, 0));
+      grp.add(box(0.05, h, t + 0.04, fm, w / 2 - 0.025, 0, 0));
+      grp.add(box(w, 0.05, t + 0.04, fm, 0, h - 0.05, 0));
       if (isLift) {
         grp.add(box(w / 2 - 0.05, h - 0.05, 0.04, M.galvanised, -w / 4, 0, t / 2 * (side || 1)));
         grp.add(box(w / 2 - 0.05, h - 0.05, 0.04, M.galvanised, w / 4, 0, t / 2 * (side || 1)));
@@ -489,13 +490,18 @@ export function buildWalls(ctx) {
         for (const hingeStart of leaves) {
           const leafGeo = new THREE.BoxGeometry(leafW, h - 0.06, main ? 0.07 : 0.045);
           leafGeo.translate(hingeStart ? leafW / 2 : -leafW / 2, (h - 0.06) / 2, 0);
-          const leaf = new THREE.Mesh(leafGeo, main || ext ? M.doorWood : M.doorWhite);
+          const leaf = new THREE.Mesh(leafGeo, main ? M.woodAlu : ext ? M.doorWood : M.doorWhite);
           leaf.castShadow = leaf.receiveShadow = true;
           leaf.position.set(hingeStart ? -w / 2 + 0.05 : w / 2 - 0.05, 0, sw.s * (t / 2 - 0.03));
           const ang = main ? 1.25 : 1.48;
           leaf.rotation.y = hingeStart ? -sw.s * ang : sw.s * ang;
           const hx = hingeStart ? leafW - 0.1 : -leafW + 0.1;
-          if (main) leaf.add(box(0.03, 1.4, 0.06, M.galvanised, hingeStart ? leafW - 0.15 : -leafW + 0.15, (h - 1.4) / 2, 0.05 * sw.s));
+          if (main) {
+            // aluminium wood-grain entrance door (owner's reference render): black reveal lines + long black pull
+            const cx = hingeStart ? leafW / 2 : -leafW / 2;
+            for (const yy of [0.62, 1.58]) for (const zz of [0.036, -0.036]) leaf.add(box(leafW - 0.02, 0.012, 0.004, M.darkSteel, cx, yy, zz));
+            for (const zz of [0.05, -0.05]) leaf.add(box(0.03, 1.6, 0.025, M.darkSteel, hingeStart ? leafW - 0.15 : -leafW + 0.15, (h - 1.6) / 2, zz * sw.s));
+          }
           else for (const zz of [0.035, -0.035]) leaf.add(box(0.12, 0.02, 0.02, M.galvanised, hx, 1.0, zz));
           leaf.userData.solid = true;
           leaf.userData.dynamic = true;

@@ -59,6 +59,8 @@ export function createMaterials(T) {
     }),
     doorWood: tex(T.wood, { color: 0x8a5a35, roughness: 0.4 }),
     doorWhite: std({ color: 0xf1ede6, roughness: 0.5 }),
+    // aluminium door with a wood-grain powder coat (main entrance): wood look, satin sheen
+    woodAlu: tex(T.wood, { color: 0xa8754a, roughness: 0.32, metalness: 0.35, normalScale: new THREE.Vector2(0.25, 0.25) }),
     shutter: tex(T.slats, { color: 0xc9ccd0, roughness: 0.4, metalness: 0.6 }),
     white: std({ color: 0xf5f3ef, roughness: 0.9 }),
     // slight self-illumination stands in for bounced daylight inside rooms
@@ -116,7 +118,7 @@ export function createMaterials(T) {
   const tiles = {
     concrete: 2, blinding: 2, blocks: 1.2, plaster: 2, render: 2, paint: 2, stone: 2.4, texturePaint: 2, trimStone: 2,
     marble: 1.2, porcelain: 1.2, wood: 1.8, soil: 4, soilDark: 4, sand: 3, gravel: 1.5, grass: 3, pavers: 1.2,
-    asphalt: 4, plywood: 2.44, wallTile: 1.2, travertine: 1.2, travertineFloor: 1.2, greyMarble: 1.2, neroMarble: 1.2, creamMarble: 1.2, lightOak: 1.8, walnut: 1.8, greige: 2, linenPanel: 2, navyPanel: 2, rebar: 1.2, doorWood: 1.8, shutter: 1, gypsum: 2, coolRoof: 2,
+    asphalt: 4, plywood: 2.44, wallTile: 1.2, travertine: 1.2, travertineFloor: 1.2, greyMarble: 1.2, neroMarble: 1.2, creamMarble: 1.2, lightOak: 1.8, walnut: 1.8, greige: 2, linenPanel: 2, navyPanel: 2, rebar: 1.2, doorWood: 1.8, woodAlu: 1.6, shutter: 1, gypsum: 2, coolRoof: 2,
   };
   for (const [k, v] of Object.entries(tiles)) M[k].userData.tile = v;
   // exterior paints: ground bounce from the sand keeps Sadaf / Woodsmoke warm in shade

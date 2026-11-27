@@ -498,3 +498,18 @@ on-screen approximations; a physical sample is the reference.
   - Console sweep: no errors.
   - Walk test: off the top step onto FF +4.70.
   - Walk-mode renders: bedroom and master ceilings, hall slot, stair window from the landing and from FF, ensuite window.
+
+#### 22. Front boundary wall, entrance door, porch ↔ garage, stair slab edge
+- **Front boundary wall** (owner's site photo + reference render):
+  - The wall is 2.3 m high, was 1.2 m. It is rendered in Jotun 1964 with a 0568 coping.
+  - Pilaster pairs every ~2.4 m frame grey stone strips with ground uplights.
+  - The gate piers are 2.6 m with stepped caps and slim black wall lights.
+  - The gate is dark aluminium: a solid leaf with a long pull, plus a fixed slatted side panel. The leaf opens and closes in walk mode.
+- **Main entrance door D1:** aluminium with a wood-grain finish (`M.woodAlu`), black aluminium frame, black reveal lines and long black pulls.
+- **Entrance porch ↔ garage:** now open under a beam, as on site (`gap(16400, 20591, 2.9)` on x 9658).
+- **Stair slab edge (user screenshot):** the FF and roof slab stair cut-out stopped at y 10150, 40 mm short of the wall face (10190). That left a dark concrete strip running along the flight. The cut-out now meets the wall face.
+- **Wall check against the working drawings** (`tools/check_walls.py`): all walls are ≥ 80 % covered except:
+  - the back boundary, drawn as a party wall;
+  - the lift front, which has door openings.
+
+  No other changes were needed. Note: the drawing does show a wall along x 9658 by the porch. It was opened here because the site photo shows a column and beam.
