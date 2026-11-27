@@ -559,3 +559,8 @@ on-screen approximations; a physical sample is the reference.
   - A wide walnut casing on both faces and a flush walnut panel from the door head up to the ceiling, with a black shadow gap at the head.
   - Black lever.
 - **Bathroom / wash-room doors:** a frosted glass leaf in a slim black aluminium frame. The door is detected by sampling the rooms on either side.
+
+#### 28. Split AC units; outdoor gypsum soffit with spotlights
+- **Split AC (owner):** the office, kitchen and three bedrooms (girl, boy, double) have wall-mounted split indoor units (`ROOM_STYLE.split`), and their linear ceiling diffusers are removed. Ducted AC stays in the master bedroom over the garage and in the living spaces.
+- **Office:** the TV moved to the south wall with a media unit, under the split unit (owner's mark-up).
+- **Front FF overhang** (site photos): a painted moisture-resistant gypsum soffit with an edge band and a row of downlights replaces the bare concrete underside.

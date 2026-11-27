@@ -229,6 +229,21 @@ export function buildInterior(ctx) {
     }
     if (lights.children.length) add(lights, { in: [12.48, 12.5], anim: 'show' });
   });
+  // External gypsum soffit (moisture-resistant board, painted) with downlights under the FF overhang:
+  // the 1.1 m front cantilever and the entrance porch (site photos)
+  {
+    const SOFFIT = LEVEL.ffSSL - 0.6; // flush with the underside of the perimeter beams
+    const g = new THREE.Group();
+    const rects = [[1967, 18392, 9558, 19500]]; // the porch already has its own gypsum ceiling + spots
+    for (const [x0, y0, x1, y1] of rects) {
+      g.add(rectBox(x0, y0, x1, y1, SOFFIT - 0.025, 0.025, M.coolRoof, { cast: false }));
+      g.add(rectBox(x0, y1 - 60, x1, y1, SOFFIT - 0.07, 0.07, M.trimStone, { cast: false })); // edge band
+    }
+    const spot = (x, y) => g.add(cyl(0.045, 0.008, M.led, ...(() => { const [sx, sz] = toScene(x, y); return [sx, SOFFIT - 0.03, sz]; })(), 12, { cast: false }));
+    for (let x = 2500; x <= 9200; x += 1200) spot(x, 18950);
+    add(g, { in: [12.3, 12.45], anim: 'show' });
+  }
+
   // Stair finish: concrete → marble
   TL.hook((t) => {
     const m = ctx.stairMaterial;

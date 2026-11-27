@@ -18,7 +18,10 @@ import { stagger } from '../core/timeline.js';
  */
 
 export const ROOM_STYLE = {
-  'gf-femaleMajlis': { floor: 'greyMarble', cove: true }, // now the OFFICE
+  // split: wall-mounted split AC [wall, along (mm), underside height (m)] — owner: split units in the
+  // office, bedrooms and kitchen; ducted only in the master bedroom over the garage and the living spaces
+  'gf-femaleMajlis': { floor: 'greyMarble', cove: true, split: ['S', 4300, 2.55] }, // now the OFFICE
+  'gf-kitchen': { split: ['W', 1350, 2.45] },
   'gf-maleMajlis': {
     floor: 'creamMarble', cove: true,
     feature: [['W', 13700, 16700, 'linen'], ['W', 13300, 13700, 'walnut'], ['W', 16700, 17100, 'walnut']],
@@ -32,9 +35,9 @@ export const ROOM_STYLE = {
   'ff-familyLiving': { floor: 'creamMarble', cove: true, feature: [['S', 9000, 11000, 'walnut']] }, // TV wall (south, sheet 4)
   'ff-lobby': { floor: 'creamMarble', feature: [['N', 7360, 7880, 'nero'], ['N', 8820, 9355, 'nero']] },
   'ff-lobby2': { floor: 'creamMarble' },
-  'ff-masterBedroom': { floor: 'lightOak', cove: true, feature: [['N', 3100, 5700, 'linen']] },        // GIRL bedroom
-  'ff-masterBedroom2': { floor: 'lightOak', cove: true, feature: [['W', 15300, 18100, 'walnut']], mouldings: [['E', 14600, 19000]] }, // DOUBLE
-  'ff-masterBedroom3': { floor: 'lightOak', cove: true, feature: [['N', 10000, 12600, 'navy']] },      // BOY bedroom
+  'ff-masterBedroom': { floor: 'lightOak', cove: true, split: ['S', 3800, 2.45], feature: [['N', 3100, 5700, 'linen']] },        // GIRL bedroom
+  'ff-masterBedroom2': { floor: 'lightOak', cove: true, split: ['E', 17000, 2.45], feature: [['W', 15300, 18100, 'walnut']], mouldings: [['E', 14600, 19000]] }, // DOUBLE
+  'ff-masterBedroom3': { floor: 'lightOak', cove: true, split: ['W', 2200, 2.45], feature: [['N', 10000, 12600, 'navy']] },      // BOY bedroom
   'ff-masterBedroom4': { floor: 'lightOak', cove: true, feature: [['E', 16700, 19500, 'walnut']] },    // MASTER
 };
 
@@ -104,8 +107,8 @@ export function buildStyle(ctx) {
       }
       // linear AC diffuser in the band along the long sides
       const alongX = x1 - x0 >= y1 - y0;
-      if (alongX) for (const y of [y0 + band * 0.75, y1 - band * 0.75]) B(x0 + band + 300, y - 25, x1 - band - 300, y + 25, hb - 0.004, hb + 0.001, slot);
-      else for (const x of [x0 + band * 0.75, x1 - band * 0.75]) B(x - 25, y0 + band + 300, x + 25, y1 - band - 300, hb - 0.004, hb + 0.001, slot);
+      if (!st.split && alongX) for (const y of [y0 + band * 0.75, y1 - band * 0.75]) B(x0 + band + 300, y - 25, x1 - band - 300, y + 25, hb - 0.004, hb + 0.001, slot);
+      else if (!st.split) for (const x of [x0 + band * 0.75, x1 - band * 0.75]) B(x - 25, y0 + band + 300, x + 25, y1 - band - 300, hb - 0.004, hb + 0.001, slot);
     }
     // ---- hall: narrow raised strip with cornice mouldings on both edges (site photos) ----
     if (st.slot) {
@@ -120,6 +123,15 @@ export function buildStyle(ctx) {
         for (const [a, b, dd] of CROWN) { B(c - w / 2, y0, c - w / 2 + dd, y1, ceil - b, ceil - a, M.white); B(c + w / 2 - dd, y0, c + w / 2, y1, ceil - b, ceil - a, M.white); }
         for (let y = y0 + 700; y < y1 - 400; y += 1300) B(c - 40, y - 40, c + 40, y + 40, ceil - 0.006, ceil, spots);
       }
+    }
+
+    // ---- wall-mounted split AC indoor unit ----
+    if (st.split) {
+      const [wall, a, h] = st.split;
+      onWall(wall, a - 450, a + 450, 0, 215, h, h + 0.29, M.sanitary);                // body
+      onWall(wall, a - 430, a + 430, 150, 222, h - 0.005, h + 0.035, M.alu);          // louver
+      onWall(wall, a - 430, a + 430, 214, 220, h + 0.2, h + 0.203, M.blindBox);       // front panel line
+      onWall(wall, a + 300, a + 360, 215, 221, h + 0.08, h + 0.11, M.darkSteel);      // display
     }
 
     // ---- feature walls ----

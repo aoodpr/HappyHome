@@ -39,7 +39,9 @@ const LAYOUTS = {
     F(PR.tubChair, 4050, 3250, 180),
     F(PR.tubChair, 5300, 3250, 180),
     F(() => PR.marbleTable(0.6, 0.6, 0.5), 4660, 3650),
-    F(() => PR.tvWall(1.4), 7130, 3000, -90, { h: 1.25 }),
+    // TV + media unit on the south wall under the split AC (owner's mark-up)
+    G('modern_wooden_cabinet', 4300, 5250, 180, { sx: 0.8 }),
+    F(() => PR.tvWall(1.4), 4300, 5460, 180, { h: 1.25 }),
     F(() => PR.artwork(1.2, 1.5, 3), 2197, 2900, 90, { h: 1.5 }),
     G('potted_plant_01', 6750, 5000, 0),
   ],
