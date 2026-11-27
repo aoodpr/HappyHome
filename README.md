@@ -21,7 +21,7 @@ The model is built from the project's working drawings: plans, elevations, secti
 - **Furnished interior.** Every room is furnished following the furniture shown on the plans: realistic CC0 sofas, armchairs, dining chairs, coffee tables, chandeliers, plants and more, plus detailed procedural beds, wardrobes, kitchen, bathrooms, laundry, curtains and rugs. Walk mode collides with furniture.
 - **Neighbours toggle.** The surrounding houses are hidden by default; tick **Neighbours** (or add `#neighbours=1`) to show the street context.
 - **Bilingual interface.** English and Arabic, with a full right-to-left layout and room labels in both languages.
-- **Realistic rendering.** Physically based materials with procedural textures (concrete, blockwork, stone cladding, marble, oak, pavers and more), a physical sky with image-based lighting, soft shadows and N8AO ambient occlusion. There are High, Medium and Low quality presets; iPad defaults to Medium.
+- **Realistic rendering.** Physically based materials with procedural textures (concrete, blockwork, stone cladding, marble, oak, pavers and more), a physical sky with image-based lighting, PBR Neutral tone mapping, soft shadows, N8AO ambient occlusion and subtle bloom on lamps and LEDs. There are High, Medium and Low quality presets; iPad defaults to Medium.
 
 ## Controls
 
