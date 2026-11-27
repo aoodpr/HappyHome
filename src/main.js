@@ -39,6 +39,7 @@ const state = {
   labels: true,
   quality: params.get('q') || defaultQuality(),
   neighbours: params.get('neighbours') === '1',
+  furniture: params.get('furniture') !== '0',
 };
 state.t = state.target;
 
@@ -151,6 +152,14 @@ async function init() {
   };
   $('neighboursToggle').addEventListener('change', (e) => setNeighbours(e.target.checked));
   setNeighbours(state.neighbours);
+  // Furniture on / off (empty rooms — handy for comparing with site photos)
+  const setFurniture = (on) => {
+    state.furniture = on;
+    ctx.furnitureRoot.visible = on;
+    $('furnitureToggle').checked = on;
+  };
+  $('furnitureToggle').addEventListener('change', (e) => setFurniture(e.target.checked));
+  setFurniture(state.furniture);
   $('quality').addEventListener('change', (e) => {
     state.quality = e.target.value;
     stage3d.setQuality(state.quality);

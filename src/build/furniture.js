@@ -204,6 +204,11 @@ export function buildFurniture(ctx) {
   ctx.furnitureVersion = 0;
   const groups = [];
   const pending = []; // GLB placements waiting for their model
+  // One parent for all loose furniture + curtains so the UI can hide it all (empty rooms).
+  const furnRoot = new THREE.Group();
+  furnRoot.name = 'furniture:all';
+  root.add(furnRoot);
+  ctx.furnitureRoot = furnRoot;
 
   const roomById = Object.fromEntries(ROOMS.map((r) => [r.id, r]));
   for (const [id, items] of Object.entries(LAYOUTS)) {
@@ -212,7 +217,7 @@ export function buildFurniture(ctx) {
     const ffl = FFL[room.f];
     const grp = new THREE.Group();
     grp.name = 'furniture:' + id;
-    root.add(grp);
+    furnRoot.add(grp);
     groups.push(grp);
     for (const it of items) {
       if (it.skip) continue;
@@ -232,7 +237,7 @@ export function buildFurniture(ctx) {
     }
   }
 
-  addCurtains(root, groups);
+  addCurtains(furnRoot, groups);
 
   // Distance culling: rooms far from the camera can't be seen through the
   // windows anyway, so their furniture is skipped (big win on iPad).
