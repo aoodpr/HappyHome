@@ -34,6 +34,7 @@ The model is built from the project's working drawings: plans, elevations, secti
 | Open / close doors | Walk mode: E or click when the door hint shows · Orbit: click a door | Tap the door button |
 | Camera views | Views menu · keys 1–7 | Views menu |
 | Language | ع / EN button · L | ع / EN button |
+| Collapse a panel / hide all panels | ▴ ▾ on each panel · ⤢ or H | ▴ ▾ · ⤢, then ☰ to bring them back |
 
 Add `#lang=ar`, `#t=7.5` (timeline position, 0–14) or `#q=low|medium|high` to the URL to start in a given state.
 

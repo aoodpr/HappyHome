@@ -207,3 +207,28 @@ dialog dd { margin: 2px 0 0; font-size: 14px; line-height: 1.5; color: #d4dde6; 
   color: var(--text); cursor: pointer; pointer-events: auto; border-radius: 999px;
 }
 .door-btn[hidden] { display: none; }
+
+/* ---------- collapsible panels ---------- */
+.brand-actions { display: flex; gap: 6px; }
+.collapse-btn { min-width: 30px; min-height: 30px; padding: 2px 8px; font-size: 13px; line-height: 1; }
+.card-top .collapse-btn { margin-inline-start: 8px; }
+.card-top { gap: 8px; }
+.card-top #stageWeeks { margin-inline-start: auto; }
+.tl-row .collapse-btn { flex: none; margin-top: 5px; }
+.panel { transition: padding 0.2s, width 0.2s, opacity 0.2s; }
+
+.brand.collapsed .toolbar, .brand.collapsed p { display: none; }
+.brand.collapsed h1 { font-size: 16px; }
+
+.card.collapsed { width: auto; max-width: 340px; padding: 8px 12px; }
+.card.collapsed #stageDesc, .card.collapsed #stageTasks, .card.collapsed .bar, .card.collapsed .card-foot, .card.collapsed #stageWeeks { display: none; }
+.card.collapsed h2 { font-size: 14px; margin: 6px 0 0; }
+
+.timeline.collapsed { padding: 6px 10px; width: min(720px, calc(100vw - 2 * var(--gutter))); }
+.timeline.collapsed #ticks, .timeline.collapsed #speed, .timeline.collapsed .week { display: none; }
+.timeline.collapsed .play { width: 34px; height: 34px; font-size: 13px; }
+.timeline.collapsed #slider { margin-top: 4px; }
+
+body.ui-hidden .brand, body.ui-hidden .card, body.ui-hidden .timeline, body.ui-hidden #labels, body.ui-hidden .hint { display: none !important; }
+.show-ui { top: calc(var(--gutter) + env(safe-area-inset-top)); inset-inline-start: var(--gutter); z-index: 5; font-size: 18px; min-width: 42px; min-height: 42px; background: var(--panel); color: var(--text); }
+.show-ui[hidden] { display: none; }

@@ -24,7 +24,10 @@
         <h1><span class="logo">⌂</span> <span data-i18n="title">HappyHome</span></h1>
         <p data-i18n="subtitle">Two-storey villa · PE-233-25</p>
       </div>
-      <button id="lang" class="chip" title="Language / اللغة">ع</button>
+      <div class="brand-actions">
+        <button id="lang" class="chip" title="Language / اللغة">ع</button>
+        <button class="chip collapse-btn" data-collapse="brand" aria-expanded="true">▴</button>
+      </div>
     </div>
     <nav class="toolbar" aria-label="View controls">
       <div class="seg" id="modes">
@@ -43,6 +46,7 @@
       <select id="quality" aria-label="Quality"></select>
       <button id="tod" class="chip" aria-label="Day / dusk" title="Day / dusk">☀</button>
       <button id="helpBtn" class="chip" aria-label="Help">?</button>
+      <button id="hideUi" class="chip" aria-label="Hide all panels">⤢</button>
     </nav>
   </header>
 
@@ -50,6 +54,7 @@
     <div class="card-top">
       <span id="stageNum" class="badge"></span>
       <span id="stageWeeks" class="muted"></span>
+      <button class="chip collapse-btn" data-collapse="card" aria-expanded="true">▴</button>
     </div>
     <h2 id="stageName"></h2>
     <p id="stageDesc"></p>
@@ -75,8 +80,11 @@
         <ol id="ticks"></ol>
       </div>
       <span id="weekLabel" class="week"></span>
+      <button class="chip collapse-btn" data-collapse="timeline" aria-expanded="true">▾</button>
     </div>
   </section>
+
+  <button id="showUi" class="panel chip show-ui" hidden aria-label="Show panels">☰</button>
 
   <div id="walkUI" hidden>
     <div class="crosshair"></div>

@@ -152,6 +152,43 @@ async function init() {
   $('lang').addEventListener('click', () => setLang(state.lang === 'en' ? 'ar' : 'en'));
   $('helpBtn').addEventListener('click', () => $('help').showModal());
 
+  /* ---------- collapsible panels + hide-all ---------- */
+  const store = {
+    get: (k, d) => { try { const v = localStorage.getItem('hh.' + k); return v === null ? d : v === '1'; } catch { return d; } },
+    set: (k, v) => { try { localStorage.setItem('hh.' + k, v ? '1' : '0'); } catch { /* storage unavailable */ } },
+  };
+  const panelOf = { brand: document.querySelector('.brand'), card: document.querySelector('.card'), timeline: document.querySelector('.timeline') };
+  const collapseIcon = { brand: ['▴', '▾'], card: ['▴', '▾'], timeline: ['▾', '▴'] };
+  const setCollapsed = (key, on) => {
+    panelOf[key].classList.toggle('collapsed', on);
+    const btn = document.querySelector(`[data-collapse="${key}"]`);
+    btn.textContent = collapseIcon[key][on ? 1 : 0];
+    btn.setAttribute('aria-expanded', String(!on));
+    btn.title = STRINGS[state.lang][on ? 'expand' : 'collapse'];
+    store.set('collapsed.' + key, on);
+  };
+  const narrow = matchMedia('(max-width: 900px)').matches;
+  for (const key of Object.keys(panelOf)) {
+    setCollapsed(key, store.get('collapsed.' + key, key === 'card' && narrow));
+    document.querySelector(`[data-collapse="${key}"]`).addEventListener('click', (e) => {
+      e.stopPropagation();
+      setCollapsed(key, !panelOf[key].classList.contains('collapsed'));
+    });
+  }
+  const setUiHidden = (on) => {
+    document.body.classList.toggle('ui-hidden', on);
+    $('showUi').hidden = !on;
+    $('hideUi').title = STRINGS[state.lang].hideUi;
+    $('showUi').title = STRINGS[state.lang].showUi;
+  };
+  $('hideUi').addEventListener('click', () => setUiHidden(true));
+  $('showUi').addEventListener('click', () => setUiHidden(false));
+  addEventListener('keydown', (e) => {
+    if (e.code !== 'KeyH' || e.target instanceof HTMLInputElement && e.target.type !== 'range' || e.target instanceof HTMLSelectElement) return;
+    setUiHidden(!document.body.classList.contains('ui-hidden'));
+  });
+  setUiHidden(false);
+
   // Day / dusk: low warm sun, interior and façade lights on.
   const gypsumDay = M.gypsum.emissive.clone(), gypsumDusk = new THREE.Color(0x9a8a6e);
   const setTimeOfDay = (mode) => {

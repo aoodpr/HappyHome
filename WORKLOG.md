@@ -338,3 +338,11 @@ majlis and the hall"); improve the assets with Blender.
   0.42 m downrod. Blades spin (~1.3 rev/s) while the fan is on screen.
 - Placed over the open floor between the island and the garden slider, clear
   of the two island pendants (blades at ≈ 2.8 m).
+
+#### 14. Collapsible panels
+- Each panel has a ▴ / ▾ button: the toolbar collapses to the title bar,
+  the stage card to the stage badge + name, the timeline to play + slider.
+  Choices are remembered between visits (localStorage, guarded); on narrow
+  screens the stage card starts collapsed.
+- ⤢ in the toolbar (or **H**) hides every panel for a clean full-screen view;
+  ☰ (or H) brings them back. Help text and README updated (EN / AR).
