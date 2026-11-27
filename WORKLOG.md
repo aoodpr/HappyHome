@@ -523,3 +523,15 @@ on-screen approximations; a physical sample is the reference.
   - Coffee corner (1.8 m) on the east wall past the window.
   - Bistro table on the stair side.
 - **Garage:** the side door in the back wall is removed. The site photo shows a solid wall with the DB panel.
+
+#### 24. Ceilings re-done to the site photos; wooden doors; garage side opening
+- **Gypsum ceilings:** the coffer grid and LED step are removed. The photos show a plain tray:
+  - a 600 mm perimeter band, 160 mm down, with a small cornice at the walls;
+  - a step up into a plain raised centre field, with a crown moulding in the step's top corner;
+  - downlights along the band and over the field, and a linear AC diffuser in the band.
+- **GF hall:** a narrow raised strip (480 mm) with crown mouldings along both edges, as in the photos.
+- **Doors:**
+  - Interior doors are now natural wood veneer (`M.doorVeneer`), with matching frames and matt-black levers.
+  - The entrance door is a more natural wood-grain tone.
+  - The owner's Instagram references can't be opened from here (host blocked / login), so I'll refine the doors once screenshots arrive.
+- **Garage north wall:** an open side passage with no door, at the drawn position (14480–15300), as on site.

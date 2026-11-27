@@ -73,70 +73,58 @@ export function buildStyle(ctx) {
       else B(x1 - d1, a0, x1 - d0, a1, h0, h1, m);
     };
 
-    // ---- gypsum ceiling design (site photos): perimeter band + cornice, LED step, coffer grid ----
+    // ---- gypsum ceiling (site photos): dropped perimeter band, step up into a plain raised
+    //      centre field, classical cornice moulding on the step and a small one at the wall ----
+    const spots = ctx.lighting ? ctx.lighting.matFor(rm.id, 'spots', M.led) : M.led;
+    const ring = (inset, w, h0, h1, m) => {
+      B(x0 + inset, y0 + inset, x1 - inset, y0 + inset + w, h0, h1, m);
+      B(x0 + inset, y1 - inset - w, x1 - inset, y1 - inset, h0, h1, m);
+      B(x0 + inset, y0 + inset + w, x0 + inset + w, y1 - inset - w, h0, h1, m);
+      B(x1 - inset - w, y0 + inset + w, x1 - inset, y1 - inset - w, h0, h1, m);
+    };
+    // crown profile, widest at the top: [from top, to top, width] (m, m, mm)
+    const CROWN = [[0, 0.03, 100], [0.03, 0.07, 75], [0.07, 0.11, 50], [0.11, 0.14, 25]];
+    const SMALL = [[0, 0.02, 60], [0.02, 0.04, 40], [0.04, 0.06, 18]];
     if (st.cove) {
-      const band = 560, drop = 0.18, hb = ceil - drop;       // perimeter band, 180 mm down
-      const step = 220, hs = ceil - 0.09;                   // second step (LED cove behind its lip)
-      const ring = (inset, w, h0, h1, m) => {
-        B(x0 + inset, y0 + inset, x1 - inset, y0 + inset + w, h0, h1, m);
-        B(x0 + inset, y1 - inset - w, x1 - inset, y1 - inset, h0, h1, m);
-        B(x0 + inset, y0 + inset + w, x0 + inset + w, y1 - inset - w, h0, h1, m);
-        B(x1 - inset - w, y0 + inset + w, x1 - inset, y1 - inset - w, h0, h1, m);
-      };
-      ring(0, band, hb, ceil, M.gypsum);
-      ring(band, step, hs, ceil, M.gypsum);
-      // moulded cornice on the band's inner face: three stepped fillets
-      ring(band, 25, hb - 0.035, hb, M.white);
-      ring(band - 15, 15, hb - 0.06, hb - 0.035, M.white);
-      // small cornice where the band meets the walls
-      ring(0, 30, hb - 0.05, hb, M.white);
-      // LED strip on the inner lip of the second step, glowing up into the recess
-      const l = 12, e = band + step;
-      B(x0 + e, y0 + e - l, x1 - e, y0 + e, hs - 0.004, hs + 0.012, led());
-      B(x0 + e, y1 - e, x1 - e, y1 - e + l, hs - 0.004, hs + 0.012, led());
-      B(x0 + e - l, y0 + e, x0 + e, y1 - e, hs - 0.004, hs + 0.012, led());
-      B(x1 - e, y0 + e, x1 - e + l, y1 - e, hs - 0.004, hs + 0.012, led());
+      const band = 600, drop = 0.16, hb = ceil - drop;
+      ring(0, band, hb, ceil, M.gypsum);            // perimeter band (lower)
+      for (const [a, b, d] of SMALL) ring(0, d, hb - b, hb - a, M.white);   // small cornice at the walls
+      for (const [a, b, d] of CROWN) ring(band, d, ceil - b, ceil - a, M.white); // crown in the step's top corner
+      // downlights: along the band and in a loose grid over the centre field
+      for (const [ya, side] of [[y0 + band / 2, 1], [y1 - band / 2, -1]]) {
+        const n = Math.max(2, Math.round((x1 - x0) / 1500));
+        for (let k = 0; k < n; k++) { const x = x0 + ((x1 - x0) * (k + 0.5)) / n; B(x - 40, ya - 40, x + 40, ya + 40, hb - 0.006, hb, spots); }
+        void side;
+      }
+      const fx0 = x0 + band, fx1 = x1 - band, fy0 = y0 + band, fy1 = y1 - band;
+      const nx = Math.max(1, Math.round((fx1 - fx0) / 1600)), ny = Math.max(1, Math.round((fy1 - fy0) / 1600));
+      for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) {
+        const x = fx0 + ((fx1 - fx0) * (i + 0.5)) / nx, y = fy0 + ((fy1 - fy0) * (j + 0.5)) / ny;
+        B(x - 40, y - 40, x + 40, y + 40, ceil - 0.006, ceil, spots);
+      }
       // linear AC diffuser in the band along the long sides
       const alongX = x1 - x0 >= y1 - y0;
-      if (alongX) for (const y of [y0 + band / 2, y1 - band / 2]) B(x0 + band + 200, y - 25, x1 - band - 200, y + 25, hb - 0.004, hb + 0.001, slot);
-      else for (const x of [x0 + band / 2, x1 - band / 2]) B(x - 25, y0 + band + 200, x + 25, y1 - band - 200, hb - 0.004, hb + 0.001, slot);
-      // coffer grid over the centre field: 200 mm ribs, 60 mm down; a downlight at every crossing
-      const fx0 = x0 + e, fx1 = x1 - e, fy0 = y0 + e, fy1 = y1 - e;
-      const nx = Math.max(2, Math.round((fx1 - fx0) / 1500)), ny = Math.max(2, Math.round((fy1 - fy0) / 1500));
-      const rib = 200, hr = ceil - 0.06;
-      const spots = ctx.lighting ? ctx.lighting.matFor(rm.id, 'spots', M.led) : M.led;
-      for (let i = 1; i < nx; i++) { const x = fx0 + ((fx1 - fx0) * i) / nx; B(x - rib / 2, fy0, x + rib / 2, fy1, hr, ceil, M.gypsum); }
-      for (let j = 1; j < ny; j++) { const y = fy0 + ((fy1 - fy0) * j) / ny; B(fx0, y - rib / 2, fx1, y + rib / 2, hr, ceil, M.gypsum); }
-      for (let i = 1; i < nx; i++) for (let j = 1; j < ny; j++) {
-        const x = fx0 + ((fx1 - fx0) * i) / nx, y = fy0 + ((fy1 - fy0) * j) / ny;
-        B(x - 45, y - 45, x + 45, y + 45, hr - 0.006, hr, spots);
-      }
-      // downlights along the perimeter band
-      for (const [ax, ay, bx, by] of [[x0, y0, x1, y0], [x0, y1, x1, y1]]) {
-        const n = Math.max(2, Math.round((bx - ax) / 1400));
-        for (let k = 0; k < n; k++) { const x = ax + ((bx - ax) * (k + 0.5)) / n, y = ay === y0 ? y0 + band * 0.3 : y1 - band * 0.3; B(x - 40, y - 40, x + 40, y + 40, hb - 0.006, hb, spots); }
-      }
+      if (alongX) for (const y of [y0 + band * 0.75, y1 - band * 0.75]) B(x0 + band + 300, y - 25, x1 - band - 300, y + 25, hb - 0.004, hb + 0.001, slot);
+      else for (const x of [x0 + band * 0.75, x1 - band * 0.75]) B(x - 25, y0 + band + 300, x + 25, y1 - band - 300, hb - 0.004, hb + 0.001, slot);
     }
-    // ---- linear light slot along a hall (site photos) ----
+    // ---- hall: narrow raised strip with cornice mouldings on both edges (site photos) ----
     if (st.slot) {
-      const alongX = x1 - x0 >= y1 - y0, w = 200, d = 0.15, hd = ceil - d;
-      const spots = ctx.lighting ? ctx.lighting.matFor(rm.id, 'spots', M.led) : M.led;
+      const alongX = x1 - x0 >= y1 - y0, w = 480, d = 0.15, hd = ceil - d;
+      const c = alongX ? (y0 + y1) / 2 : (x0 + x1) / 2;
       if (alongX) {
-        const yc = (y0 + y1) / 2;
-        B(x0, y0, x1, yc - w / 2, hd, ceil, M.gypsum); B(x0, yc + w / 2, x1, y1, hd, ceil, M.gypsum);
-        B(x0 + 300, yc - 15, x1 - 300, yc + 15, ceil - 0.01, ceil, led());
-        for (let x = x0 + 700; x < x1 - 400; x += 1200) for (const y of [y0 + 500, y1 - 500]) B(x - 40, y - 40, x + 40, y + 40, hd - 0.006, hd, spots);
+        B(x0, y0, x1, c - w / 2, hd, ceil, M.gypsum); B(x0, c + w / 2, x1, y1, hd, ceil, M.gypsum);
+        for (const [a, b, dd] of CROWN) { B(x0, c - w / 2, x1, c - w / 2 + dd, ceil - b, ceil - a, M.white); B(x0, c + w / 2 - dd, x1, c + w / 2, ceil - b, ceil - a, M.white); }
+        for (let x = x0 + 700; x < x1 - 400; x += 1300) B(x - 40, c - 40, x + 40, c + 40, ceil - 0.006, ceil, spots);
       } else {
-        const xc = (x0 + x1) / 2;
-        B(x0, y0, xc - w / 2, y1, hd, ceil, M.gypsum); B(xc + w / 2, y0, x1, y1, hd, ceil, M.gypsum);
-        B(xc - 15, y0 + 300, xc + 15, y1 - 300, ceil - 0.01, ceil, led());
-        for (let y = y0 + 700; y < y1 - 400; y += 1200) for (const x of [x0 + 500, x1 - 500]) B(x - 40, y - 40, x + 40, y + 40, hd - 0.006, hd, spots);
+        B(x0, y0, c - w / 2, y1, hd, ceil, M.gypsum); B(c + w / 2, y0, x1, y1, hd, ceil, M.gypsum);
+        for (const [a, b, dd] of CROWN) { B(c - w / 2, y0, c - w / 2 + dd, y1, ceil - b, ceil - a, M.white); B(c + w / 2 - dd, y0, c + w / 2, y1, ceil - b, ceil - a, M.white); }
+        for (let y = y0 + 700; y < y1 - 400; y += 1300) B(c - 40, y - 40, c + 40, y + 40, ceil - 0.006, ceil, spots);
       }
     }
 
     // ---- feature walls ----
     for (const [wall, a0, a1, kind] of st.feature || []) {
-      const top = ceil - (st.cove ? 0.18 : st.slot ? 0.15 : 0);
+      const top = ceil - (st.cove ? 0.16 : st.slot ? 0.15 : 0);
       if (kind === 'walnut') {
         // vertical walnut slats on a dark backing, LED strips at both edges
         onWall(wall, a0, a1, 0, 12, 0, top, M.darkSteel);

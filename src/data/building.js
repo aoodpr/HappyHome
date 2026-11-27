@@ -112,7 +112,7 @@ export const WALLS_GF = [
   W(9558, 21291, 15950, 21291, { ext: true, o: [shutter(9758, 15750)] }),
   W(15850, 14992, 15850, 21391, { ext: true }),
   W(9558, 15092, 13850, 15092, { ext: true }),
-  W(13850, 15092, 15950, 15092, { ext: true }), // garage back wall — solid, DB panel (site photo)
+  W(13850, 15092, 15950, 15092, { ext: true, o: [gap(14480, 15300, 2.9)] }), // open side passage, no door (site photo)
   W(13850, 9390, 13850, 15092, { ext: true, o: [win(11000, 13600, 0, 3.0, 'W1')] }),
   W(10100, 9390, 13950, 9390, { ext: true, o: [win(10300, 11500, 0, 3.0, 'W8'), win(12300, 13500, 0, 3.0, 'W8')] }),
   W(10150, 6450, 10150, 9390, { ext: true, o: [slide(6700, 8950, 'SD1', 3.0)] }),

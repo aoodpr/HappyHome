@@ -475,7 +475,7 @@ export function buildWalls(ctx) {
       const isLift = op.mark === 'LIFT';
       if (isLift) return; // landing doors, architraves and call buttons are built by lift.js
       // frame (main entrance: black aluminium; others: wood)
-      const fm = main ? M.alu : M.doorWood;
+      const fm = main ? M.alu : M.doorVeneer;
       grp.add(box(0.05, h, t + 0.04, fm, -w / 2 + 0.025, 0, 0));
       grp.add(box(0.05, h, t + 0.04, fm, w / 2 - 0.025, 0, 0));
       grp.add(box(w, 0.05, t + 0.04, fm, 0, h - 0.05, 0));
@@ -490,7 +490,7 @@ export function buildWalls(ctx) {
         for (const hingeStart of leaves) {
           const leafGeo = new THREE.BoxGeometry(leafW, h - 0.06, main ? 0.07 : 0.045);
           leafGeo.translate(hingeStart ? leafW / 2 : -leafW / 2, (h - 0.06) / 2, 0);
-          const leaf = new THREE.Mesh(leafGeo, main ? M.woodAlu : ext ? M.doorWood : M.doorWhite);
+          const leaf = new THREE.Mesh(leafGeo, main ? M.woodAlu : M.doorVeneer);
           leaf.castShadow = leaf.receiveShadow = true;
           leaf.position.set(hingeStart ? -w / 2 + 0.05 : w / 2 - 0.05, 0, sw.s * (t / 2 - 0.03));
           const ang = main ? 1.25 : 1.48;
@@ -502,7 +502,11 @@ export function buildWalls(ctx) {
             for (const yy of [0.62, 1.58]) for (const zz of [0.036, -0.036]) leaf.add(box(leafW - 0.02, 0.012, 0.004, M.darkSteel, cx, yy, zz));
             for (const zz of [0.05, -0.05]) leaf.add(box(0.03, 1.6, 0.025, M.darkSteel, hingeStart ? leafW - 0.15 : -leafW + 0.15, (h - 1.6) / 2, zz * sw.s));
           }
-          else for (const zz of [0.035, -0.035]) leaf.add(box(0.12, 0.02, 0.02, M.galvanised, hx, 1.0, zz));
+          else for (const zz of [0.035, -0.035]) {
+            // matt black lever + rose
+            leaf.add(box(0.13, 0.018, 0.018, M.darkSteel, hx + (hingeStart ? -0.05 : 0.05), 1.02, zz));
+            leaf.add(box(0.05, 0.05, 0.008, M.darkSteel, hx, 1.02, zz * 0.86));
+          }
           leaf.userData.solid = true;
           leaf.userData.dynamic = true;
           ctx.solids.push(leaf);
