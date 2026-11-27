@@ -365,11 +365,12 @@ export function buildWalls(ctx) {
     for (const op of openings) {
       if (op.kind === 'door') {
         op.swing = doorSwing(w, dir, op, fIdx, L, side);
-        // bathroom doors get frosted glass leaves: is either side of the door a bath / wash room?
+        // bathroom doors get frosted glass leaves (only real bathrooms — the 'wash' basin lobbies lead
+        // to the office / majlis, whose doors stay wood)
         const um = (op.u0 + op.u1) / 2, nn = [-(w.b[1] - w.a[1]) / (L * 1000), (w.b[0] - w.a[0]) / (L * 1000)];
         op.bath = fIdx >= 0 && [1, -1].some((s) => {
           const px = w.a[0] + dir[0] * um * 1000 + nn[0] * s * (w.t / 2 + 300), py = w.a[1] + dir[1] * um * 1000 + nn[1] * s * (w.t / 2 + 300);
-          return ROOMS.some((r) => r.f === fIdx && ['bath', 'wash'].includes(r.key) && px > r.rect[0] && px < r.rect[2] && py > r.rect[1] && py < r.rect[3]);
+          return ROOMS.some((r) => r.f === fIdx && r.key === 'bath' && px > r.rect[0] && px < r.rect[2] && py > r.rect[1] && py < r.rect[3]);
         });
       }
       fillOpening(g, op, t, side, w.ext, o);
@@ -530,7 +531,8 @@ export function buildWalls(ctx) {
       }
       if (!ext && !main) {
         // floor-to-ceiling walnut: wide casing on both faces and a flush panel over the door (owner's reference)
-        const top = (o.ffl - o.base) + (o.floorKey === 'gf' ? 3.12 : 3.02) - op.sill;
+        // never taller than the wall itself (e.g. the low under-stair store wall)
+        const top = Math.min((o.ffl - o.base) + (o.floorKey === 'gf' ? 3.12 : 3.02), o.H) - op.sill;
         const cw = 0.07;
         for (const s of [1, -1]) {
           const z = s * (t / 2 + 0.028);

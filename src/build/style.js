@@ -21,7 +21,7 @@ export const ROOM_STYLE = {
   // split: wall-mounted split AC [wall, along (mm), underside height (m)] — owner: split units in the
   // office, bedrooms and kitchen; ducted only in the master bedroom over the garage and the living spaces
   'gf-femaleMajlis': { floor: 'greyMarble', cove: true, split: ['S', 4300, 2.55] }, // now the OFFICE
-  'gf-kitchen': { split: ['W', 1350, 2.45] },
+  'gf-kitchen': { split: ['S', 13300, 3.0] }, // above the garden slider (owner's mark-up)
   'gf-maleMajlis': {
     floor: 'creamMarble', cove: true,
     feature: [['W', 13700, 16700, 'linen'], ['W', 13300, 13700, 'walnut'], ['W', 16700, 17100, 'walnut']],
@@ -36,7 +36,7 @@ export const ROOM_STYLE = {
   'ff-lobby': { floor: 'creamMarble', feature: [['N', 7360, 7880, 'nero'], ['N', 8820, 9355, 'nero']] },
   'ff-lobby2': { floor: 'creamMarble' },
   'ff-masterBedroom': { floor: 'lightOak', cove: true, split: ['S', 3800, 2.45], feature: [['N', 3100, 5700, 'linen']] },        // GIRL bedroom
-  'ff-masterBedroom2': { floor: 'lightOak', cove: true, split: ['E', 17000, 2.45], feature: [['W', 15300, 18100, 'walnut']], mouldings: [['E', 14600, 19000]] }, // DOUBLE
+  'ff-masterBedroom2': { floor: 'lightOak', cove: true, split: ['N', 4200, 2.5], feature: [['W', 15300, 18100, 'walnut']], mouldings: [['E', 14600, 19000]] }, // DOUBLE
   'ff-masterBedroom3': { floor: 'lightOak', cove: true, split: ['W', 2200, 2.45], feature: [['N', 10000, 12600, 'navy']] },      // BOY bedroom
   'ff-masterBedroom4': { floor: 'lightOak', cove: true, feature: [['E', 16700, 19500, 'walnut']] },    // MASTER
 };

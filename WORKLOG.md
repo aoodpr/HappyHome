@@ -564,3 +564,9 @@ on-screen approximations; a physical sample is the reference.
 - **Split AC (owner):** the office, kitchen and three bedrooms (girl, boy, double) have wall-mounted split indoor units (`ROOM_STYLE.split`), and their linear ceiling diffusers are removed. Ducted AC stays in the master bedroom over the garage and in the living spaces.
 - **Office:** the TV moved to the south wall with a media unit, under the split unit (owner's mark-up).
 - **Front FF overhang** (site photos): a painted moisture-resistant gypsum soffit with an edge band and a row of downlights replaces the bare concrete underside.
+
+#### 29. Owner fixes: office / majlis doors wood, under-stair door, AC positions
+- **Office and majlis doors:** wood. Only doors into a real `bath` get frosted glass now. The 'wash' basin lobbies lead on to the office and majlis, so their doors were wrongly frosted before.
+- **Under-stair store door:** the walnut casing and over-door panel stuck up above the 1.85 m low wall next to the newel. They are now capped at the wall height.
+- **Kitchen split AC:** moved above the garden sliding door.
+- **Double bedroom split AC:** moved to the north wall, beside the dressing opening.
