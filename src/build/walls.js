@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { JOTUN, paintTint, ROOMS_PAINT } from '../data/colours.js';
 import { FLOORS, LEVEL, SLAB_T, SLAB_RF, SLAB_UR, WALLS_RF, SLAB_FF, GF_ENCLOSED, ROOMS, STAIR_WINDOWS } from '../data/building.js';
-import { pourMaterial } from '../core/materials.js';
+import { pourMaterial, warmBounce } from '../core/materials.js';
 import { box, inPoly, rectBox, toScene } from './helpers.js';
 import { stagger } from '../core/timeline.js';
 
@@ -34,13 +34,7 @@ export function buildWalls(ctx) {
   roomsMat.emissive.copy(PAINT_LOOK.emissive);
   // Indoors most light on a wall has bounced off warm floors / walls rather than coming
   // straight from the blue sky: warm the indirect (hemisphere + sky probe) term only.
-  for (const m of [plasterMat, roomsMat]) {
-    m.onBeforeCompile = (sh) => {
-      sh.fragmentShader = sh.fragmentShader.replace('#include <lights_fragment_end>',
-        '#include <lights_fragment_end>\n\treflectedLight.indirectDiffuse *= vec3(1.16, 1.02, 0.86);');
-    };
-    m.customProgramCacheKey = () => 'warmBounce';
-  }
+  for (const m of [plasterMat, roomsMat]) warmBounce(m, [1.16, 1.02, 0.86]);
   const isPaintedRoom = (px, py, f) => ROOMS.some((r) => r.f === f && ROOMS_PAINT(r) &&
     px > r.rect[0] && px < r.rect[2] && py > r.rect[1] && py < r.rect[3]);
   TL.hook((t) => {

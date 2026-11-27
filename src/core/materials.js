@@ -3,6 +3,21 @@ import { JOTUN, paintTint } from '../data/colours.js';
 
 const RENDER_BASE = 0xe8dcc6; // base tint baked into T.render
 
+/**
+ * Warm the indirect (sky probe + hemisphere) light on a paint material. Light that reaches a
+ * shaded or indoor wall has mostly bounced off warm sand / floors, so warm whites and beiges
+ * shouldn't turn blue-grey just because the sky probe is blue.
+ */
+export function warmBounce(mat, rgb) {
+  const v = rgb.map((x) => x.toFixed(3)).join(', ');
+  mat.onBeforeCompile = (sh) => {
+    sh.fragmentShader = sh.fragmentShader.replace('#include <lights_fragment_end>',
+      `#include <lights_fragment_end>\n\treflectedLight.indirectDiffuse *= vec3(${v});`);
+  };
+  mat.customProgramCacheKey = () => 'warmBounce' + v;
+  return mat;
+}
+
 /** Shared PBR material library built from the procedural textures. */
 export function createMaterials(T) {
   const std = (opts) => new THREE.MeshStandardMaterial({ roughness: 0.85, metalness: 0, ...opts });
@@ -104,6 +119,9 @@ export function createMaterials(T) {
     asphalt: 4, plywood: 2.44, wallTile: 1.2, travertine: 1.2, travertineFloor: 1.2, greyMarble: 1.2, neroMarble: 1.2, creamMarble: 1.2, lightOak: 1.8, walnut: 1.8, greige: 2, linenPanel: 2, navyPanel: 2, rebar: 1.2, doorWood: 1.8, shutter: 1, gypsum: 2, coolRoof: 2,
   };
   for (const [k, v] of Object.entries(tiles)) M[k].userData.tile = v;
+  // exterior paints: ground bounce from the sand keeps Sadaf / Woodsmoke warm in shade
+  warmBounce(M.texturePaint, [1.12, 1.0, 0.86]);
+  warmBounce(M.trimStone, [1.12, 1.0, 0.86]);
   return M;
 }
 

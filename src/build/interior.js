@@ -169,16 +169,18 @@ export function buildInterior(ctx) {
 
   /* ---------------- roof build-up (plaster stage) --------------------- */
   {
-    const holes = [
-      [[1990, 7450], [8294, 7450], [8294, 10350], [1990, 10350]],
-      [[7160, 160], [9560, 160], [9560, 3824], [7160, 3824]],
-    ];
-    const screed = slabMesh(SLAB_RF.outline, holes, LEVEL.rfSSL, 0.12, M.concrete, { cast: false });
+    // The roof-room footprint is an inlet reaching the west edge (not a hole stopping at
+    // x 1990): otherwise a strip of screed / membrane crosses the upper stair window W6.
+    const o = SLAB_RF.outline;
+    const iWest = o.findIndex((p) => p[0] === 1967 && p[1] === 19500);
+    const outline = [...o.slice(0, iWest + 1), [1967, 10350], [8294, 10350], [8294, 7450], [1967, 7450], ...o.slice(iWest + 1)];
+    const holes = [[[7160, 160], [9560, 160], [9560, 3824], [7160, 3824]]];
+    const screed = slabMesh(outline, holes, LEVEL.rfSSL, 0.12, M.concrete, { cast: false });
     add(screed, { in: [10.5, 10.65], anim: 'rise' });
     ctx.walkables.push(screed);
-    const memb = slabMesh(SLAB_RF.outline, holes, LEVEL.rfSSL + 0.12, 0.012, M.membrane, { cast: false });
+    const memb = slabMesh(outline, holes, LEVEL.rfSSL + 0.12, 0.012, M.membrane, { cast: false });
     add(memb, { in: [10.62, 10.8], anim: 'show' });
-    const cool = slabMesh(SLAB_RF.outline, holes, LEVEL.rfSSL + 0.132, 0.008, M.coolRoof, { cast: false });
+    const cool = slabMesh(outline, holes, LEVEL.rfSSL + 0.132, 0.008, M.coolRoof, { cast: false });
     add(cool, { in: [10.8, 10.98], anim: 'show' });
     ctx.walkables.push(cool);
     for (const s of SLAB_UR) {

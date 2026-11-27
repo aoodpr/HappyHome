@@ -470,3 +470,15 @@ on-screen approximations; a physical sample is the reference.
   Measured: the wall changed from RGB 176/183/181 (cyan cast) to 184/183/169.
 - **Stone cladding:** the road-façade grey stone cladding (final renders) is
   unchanged.
+
+#### 20. Upper stair window W6 clear + exterior paint in shade
+- **Upper W6 (roof level):** a bar crossed the glass. It was the roof
+  build-up (screed, membrane, cool-roof coat): its cut-out for the roof-room
+  footprint was a hole starting at x 1990, which left a 23 mm strip in front of
+  the window at 8.75–8.89. The build-up outline now has the roof-room
+  footprint as an inlet reaching the west edge. Both stair windows are now a
+  single fixed pane with nothing crossing them.
+- **Exterior paint in shade:** shaded façades read green-grey (RGB 147/151/145)
+  instead of Sadaf beige. A shared `warmBounce()` (materials.js) now warms the
+  indirect light on the exterior paints (ground bounce from the sand), giving
+  RGB 156/151/134 in shade. The interior paints use the same helper.
