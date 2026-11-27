@@ -104,7 +104,7 @@ const LAYOUTS = {
     G('potted_plant_01', 15400, 5750, 0),
     G('potted_plant_02', 12050, 8850, 0),
   ],
-  'gf-wash': [F(() => PR.vanity(1.9, true), 5900, 7210, 180)],
+  'gf-wash': [F(() => PR.wardrobe(1.9, 2.4, 0.5), 5900, 7235, 180)], // storage cabinet instead of basin + mirror (owner)
   'gf-wash2': [F(() => PR.vanity(1.3, true), 6920, 11100, -90)],
   'gf-garage': [F(() => car('carWhite'), 11300, 18200, 0), F(() => car('carRed'), 14200, 18300, 180)],
 

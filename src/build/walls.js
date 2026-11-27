@@ -387,8 +387,11 @@ export function buildWalls(ctx) {
       const x = px + n[0] * 600 * s, y = py + n[1] * 600 * s;
       const r = ROOMS.find((rm) => rm.f === fIdx && x >= rm.rect[0] - 50 && x <= rm.rect[2] + 50 && y >= rm.rect[1] - 50 && y <= rm.rect[3] + 50);
       if (!r) return 0;
-      if (['bath', 'wash', 'dress', 'store', 'laundry'].includes(r.key)) return 3;
-      if (['masterBedroom', 'girlBedroom', 'boyBedroom', 'doubleBedroom', 'maleMajlis', 'office'].includes(r.key)) return 2;
+      // owner: room doors open into the room; bathroom doors into the bathroom
+      if (r.key === 'bath') return 5;
+      if (['masterBedroom', 'girlBedroom', 'boyBedroom', 'doubleBedroom', 'maleMajlis', 'office'].includes(r.key)) return 4;
+      if (['dress', 'store', 'laundry'].includes(r.key)) return 3;
+      if (r.key === 'wash') return 2; // basin lobbies leading to the office / majlis
       return 1;
     };
     const rp = rank(1), rn = rank(-1);

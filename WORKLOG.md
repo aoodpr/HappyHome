@@ -570,3 +570,9 @@ on-screen approximations; a physical sample is the reference.
 - **Under-stair store door:** the walnut casing and over-door panel stuck up above the 1.85 m low wall next to the newel. They are now capped at the wall height.
 - **Kitchen split AC:** moved above the garden sliding door.
 - **Double bedroom split AC:** moved to the north wall, beside the dressing opening.
+
+#### 30. Wash lobby cabinet; door swing rule (owner)
+- **GF wash lobby by the hall:** the basin vanity and mirror are replaced by a tall 1.9 m storage cabinet.
+- **Door swing:** every room door opens into the room (office, majlis, bedrooms); bathroom doors open into the bathroom.
+  - Priority: bath > rooms > dress / store / laundry > wash lobby > hall / stair / lobby.
+  - The office door used to swing out into the wash lobby.
