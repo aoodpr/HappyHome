@@ -110,3 +110,20 @@ Wide-lens rule: verticals near the frame edges lean and room depth is exaggerate
   - A long linear ceiling slot (about 0.2 m) runs from the stair towards the courtyard, with a tray and cornice at the living end.
   - The courtyard side has large openings with deep white reveals (about 2.4 m wide).
   - The lift shaft is still bare blockwork at the end of the corridor.
+
+## Applied to the model (2026-11-27)
+- **Ceilings (`style.js`):**
+  - The main rooms are the ground-floor office, majlis, dining and living, the first-floor family living, and all four bedrooms. Each gets:
+    - A 560 mm perimeter band, 180 mm down, with a stepped cornice on its inner face and a small cornice at the wall.
+    - A second step (220 mm, 90 mm down) with an LED cove behind its lip.
+    - A linear AC diffuser in the band.
+    - A coffer grid over the centre field: 200 mm ribs, panels about 1.5 m. The downlights sit at the rib crossings and along the band, and they are on the room's "ceiling lights" switch circuit.
+  - Ground-floor hall: a 200 mm linear light slot runs its length, with downlights either side.
+- **Dressings:** a flat dropped ceiling at 2.70 m, hiding the ducted fan-coil.
+- **Stair window W6:**
+  - The sill now sits on a ~0.2 m upstand above each half landing: +2.80 to +4.80 and +7.00 to +9.00. Before it was +3.00 to +5.00 and +7.26 to +9.24.
+  - The wall openings and the band between the windows were adjusted to match.
+- **Bathroom windows W7:** sill 1.3 m and head 2.6 m (was 1.4 / 3.2). Each is now tall and narrow and sits below the 2.85 m bathroom false ceiling, as on site.
+- **Unchanged:**
+  - Wall layout and room sizes already match the photos.
+  - The bedroom picture windows are 3.0 m wide, with a 0.2 m sill and a 3.0 m head. That fits the near-square openings in the photos.

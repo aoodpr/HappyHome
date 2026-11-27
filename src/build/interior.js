@@ -2,11 +2,12 @@ import * as THREE from 'three';
 import { LEVEL, ROOMS, SLAB_RF, SLAB_T, SLAB_UR, STAIR, WALLS_GF, WALLS_FF } from '../data/building.js';
 import { box, cyl, rectBox, slabMesh, rng, toScene, tube } from './helpers.js';
 import { stagger } from '../core/timeline.js';
-import { floorMaterialFor } from './style.js';
+import { floorMaterialFor, ownsCeilingLights } from './style.js';
 import * as PR from './props.js';
 
 const FFL = [LEVEL.gf, LEVEL.ff];
 const CEIL = [3.3, 3.2];
+const DRESS_CEIL = 2.7; // dressing rooms: lower flat ceiling over the ducted fan-coil
 const BATH_CEIL = 2.85; // bathroom false ceiling (SHC drawings: 300 − 15 bulkhead)
 
 /** MEP rough-in, roof build-up, finishes, sanitary ware and furniture. */
@@ -214,12 +215,13 @@ export function buildInterior(ctx) {
   ceilRooms.forEach((rm, i) => {
     const [x0, y0, x1, y1] = rm.rect;
     const ffl = FFL[rm.f];
-    const ch = rm.key === 'bath' ? BATH_CEIL : CEIL[rm.f];
+    // dressings: flat dropped ceiling hiding the ducted AC unit (site photos)
+    const ch = rm.key === 'bath' ? BATH_CEIL : rm.key === 'dress' ? DRESS_CEIL : CEIL[rm.f];
     const c = rectBox(x0 - 40, y0 - 40, x1 + 40, y1 + 40, ffl + ch, 0.03, M.gypsum, { cast: false });
     add(c, { in: stagger(i, ceilRooms.length, 12.3, 12.5), anim: 'show' });
     // recessed spot lights
     const lights = new THREE.Group();
-    for (let x = x0 + 900; x < x1 - 500; x += 1500) {
+    if (!ownsCeilingLights(rm)) for (let x = x0 + 900; x < x1 - 500; x += 1500) {
       for (let y = y0 + 900; y < y1 - 500; y += 1500) {
         const [sx, sz] = toScene(x, y);
         lights.add(cyl(0.05, 0.01, ctx.lighting ? ctx.lighting.matFor(rm.id, 'spots', M.led) : M.led, sx, ffl + ch - 0.005, sz, 10, { cast: false }));

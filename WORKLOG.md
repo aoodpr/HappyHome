@@ -482,3 +482,19 @@ on-screen approximations; a physical sample is the reference.
   instead of Sadaf beige. A shared `warmBounce()` (materials.js) now warms the
   indirect light on the exterior paints (ground bounce from the sand), giving
   RGB 156/151/134 in shade. The interior paints use the same helper.
+
+#### 21. Furniture toggle + site photos (owner's Pixel 10 Pro wide-angle photos)
+- **Furniture toggle:**
+  - A "Furniture / الأثاث" checkbox (and `?furniture=0`) hides every piece of furniture and all curtains.
+  - All furniture now hangs under one `furniture:all` group.
+- **Photo log:** `docs/site-photos.md` records what each batch showed. Measurements were read from known sizes (600 × 1200 tiles, blocks, scaffold frames), allowing for wide-lens distortion.
+- **Applied from the photos:**
+  - Gypsum ceiling design: perimeter band and cornice, LED step, and a coffer grid with downlights at the crossings.
+  - The hall's linear slot.
+  - 2.70 m dressing ceilings.
+  - The stair window W6 lowered to sit just above the half landings.
+  - Ensuite windows W7 made tall and narrow, under the false ceiling.
+- **Checks:**
+  - Console sweep: no errors.
+  - Walk test: off the top step onto FF +4.70.
+  - Walk-mode renders: bedroom and master ceilings, hall slot, stair window from the landing and from FF, ensuite window.

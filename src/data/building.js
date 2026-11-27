@@ -96,13 +96,14 @@ const band = (from, to, sill, head) => [from, to, sill, head, 'band', ''];
  * ≈ +7.26…+9.24 (absolute). Built in walls.js as single windows; the walls,
  * slab edge and edge beams are opened across them.
  */
-export const STAIR_WINDOWS = [{ y0: 8240, y1: 9641, z0: 3.0, z1: 5.0 }, { y0: 8240, y1: 9641, z0: 7.26, z1: 9.24 }];
+// Sill on a ~0.2 m upstand above each half landing (+2.60 / +6.80), 2.0 m high (site photos)
+export const STAIR_WINDOWS = [{ y0: 8240, y1: 9641, z0: 2.8, z1: 4.8 }, { y0: 8240, y1: 9641, z0: 7.0, z1: 9.0 }];
 const shutter = (from, to) => [from, to, 0, 3.0, 'shutter', 'RS'];
 
 export const WALLS_GF = [
   // --- external envelope
   W(1967, 130, 15950, 130, { ext: true }),
-  W(2067, 30, 2067, 18392, { ext: true, o: [slide(3490, 5292, 'SD2', 3.0), win(5891, 6492, 1.4, 3.2, 'W7'), win(10890, 11491, 1.4, 3.2, 'W7'), hole(8240, 9641, 2.5, 9)] }),
+  W(2067, 30, 2067, 18392, { ext: true, o: [slide(3490, 5292, 'SD2', 3.0), win(5891, 6492, 1.3, 2.6, 'W7'), win(10890, 11491, 1.3, 2.6, 'W7'), hole(8240, 9641, 2.3, 9)] }),
   W(1967, 18292, 7360, 18292, { ext: true, o: [win(3167, 6167, 0, 3.0, 'W1')] }),
   W(7260, 16300, 7260, 18392, { ext: true, o: [door(16950, 17900, 'D2')] }),
   W(7260, 16300, 9558, 16300, { ext: true, o: [door(7700, 9300, 'D1', 3.0)] }),
@@ -143,16 +144,16 @@ export const WALLS_GF = [
 export const WALLS_FF = [
   // --- external envelope
   W(1967, 130, 15950, 130, { ext: true }),
-  W(2067, 30, 2067, 19500, { ext: true, o: [win(1901, 3901, 0.2, 3.0, 'W5'), win(5891, 6492, 1.4, 3.2, 'W7'), band(8240, 9641, 0.3, 2.56), win(10890, 11491, 1.4, 3.2, 'W7')] }),
+  W(2067, 30, 2067, 19500, { ext: true, o: [win(1901, 3901, 0.2, 3.0, 'W5'), win(5891, 6492, 1.3, 2.6, 'W7'), band(8240, 9641, 0.1, 2.3), win(10890, 11491, 1.3, 2.6, 'W7')] }),
   W(1967, 19400, 9758, 19400, { ext: true, o: [win(3165, 6161, 0.2, 3.0, 'W2'), win(7657, 9256, 0.2, 3.0, 'W3')] }),
   W(9658, 19400, 9658, 21391, { ext: true }),
   W(9558, 21291, 15950, 21291, { ext: true, o: [win(11050, 14050, 0.2, 3.0, 'W2')] }),
   W(15850, 14992, 15850, 21391, { ext: true }),
   W(13850, 15092, 15950, 15092, { ext: true }),
   W(13850, 9390, 13850, 15092, { ext: true }),
-  W(11655, 9390, 13950, 9390, { ext: true, o: [win(12255, 12855, 1.4, 3.2, 'W7')] }),
+  W(11655, 9390, 13950, 9390, { ext: true, o: [win(12255, 12855, 1.3, 2.6, 'W7')] }),
   W(11755, 5300, 11755, 9390, { ext: true, o: [win(5800, 8800, 0.2, 3.0, 'W2')] }),
-  W(11600, 5300, 15950, 5300, { ext: true, o: [win(11853, 13453, 0.2, 3.0, 'W3'), win(13950, 14550, 1.4, 3.2, 'W7')] }),
+  W(11600, 5300, 15950, 5300, { ext: true, o: [win(11853, 13453, 0.2, 3.0, 'W3'), win(13950, 14550, 1.3, 2.6, 'W7')] }),
   W(15850, 30, 15850, 5400, { ext: true }),
   // --- lift shaft
   W(7260, 130, 7260, 2050, { rc: true }),
@@ -181,7 +182,7 @@ export const WALLS_FF = [
 
 /** Roof-level rooms: stair room and lift room. */
 export const WALLS_RF = [
-  W(2067, 7550, 2067, 10250, { ext: true, o: [hole(8240, 9641, 0, 0.34)] }),
+  W(2067, 7550, 2067, 10250, { ext: true, o: [hole(8240, 9641, 0, 0.1)] }),
   W(1967, 7550, 8294, 7550, { ext: true }),
   W(1967, 10250, 8294, 10250, { ext: true }),
   W(8194, 7550, 8194, 10250, { ext: true, o: [door(9200, 10050, 'D2', 2.2)] }),
