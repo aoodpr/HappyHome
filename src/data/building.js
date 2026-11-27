@@ -172,7 +172,7 @@ export const WALLS_FF = [
   W(7260, 10290, 7260, 19490, { o: [door(13274, 14374, 'D2')] }),      // bedroom 2 door
   W(7260, 16490, 9655, 16490, { o: [door(8057, 8958, 'D4')] }),        // laundry
   W(9455, 2050, 9455, 5290, { o: [door(3892, 4991, 'D2')] }),          // bedroom 3 door
-  W(9455, 5290, 11755, 5290),                                         // bedroom 3 / family living
+  W(8872, 5290, 11755, 5290),                                         // bedroom 3 / family living; 1.5 m opening to the lobby (sheet 4)
   W(13850, 130, 13850, 5290, { o: [gap(993, 2193)] }),                 // bedroom 3 → dress/bath
   W(13850, 2292, 15850, 2292, { o: [door(14050, 14850, 'D4')] }),
   W(11755, 9390, 11755, 12490),

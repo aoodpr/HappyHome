@@ -535,3 +535,10 @@ on-screen approximations; a physical sample is the reference.
   - The entrance door is a more natural wood-grain tone.
   - The owner's Instagram references can't be opened from here (host blocked / login), so I'll refine the doors once screenshots arrive.
 - **Garage north wall:** an open side passage with no door, at the drawn position (14480–15300), as on site.
+
+#### 25. FF family living: north wall + clean-up (owner's mark-up)
+- **North wall:** it now starts at x 8872, as drawn on sheet 4 (was 9455). That leaves a 1.5 m opening to the lift lobby, mirroring the south side; the north sofa now sits against it.
+- **Removed:**
+  - the shelving unit by the stair;
+  - the bistro table and the two tub chairs;
+  - the side table that stood in the opening.

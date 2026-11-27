@@ -162,18 +162,12 @@ const LAYOUTS = {
     F(() => PR.modernSofa(2.2, { color: 'taupe', pillows: 2 }), 9550, 5900, 0),      // north wall
     F(() => withLamp(PR.sideTable()), 11200, 5800),
     G('ottoman_01', 9900, 7900, 90, { tint: 0x8c7a68 }),
-    F(() => PR.shelving(1.6, 2.6, 0.35), 7560, 6250, 90),
-    F(() => withLamp(PR.sideTable()), 8100, 5800),
     // TV wall (south)
     G('modern_wooden_cabinet', 10000, 12150, 180, { sx: 0.9 }),
     F(() => PR.tvWall(1.9), 10000, 12330, 180, { h: 1.15 }),
     G('potted_plant_01', 11300, 10050, 0),
     // coffee corner on the east wall beyond the window
     F(() => PR.coffeeCorner(1.8), 11345, 11300, -90),
-    // bistro table by the stair side
-    F(() => PR.marbleTable(0.75, 0.75, 0.74), 8300, 9700),
-    F(() => PR.tubChair('beige'), 7750, 9700, 90),
-    F(() => PR.tubChair('beige'), 8850, 9700, -90),
     G('potted_plant_02', 7650, 12100, 0),
   ],
   'ff-lobby': [G('potted_plant_01', 9100, 2450, 0), G('potted_plant_02', 7600, 2450, 0)],
