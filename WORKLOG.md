@@ -370,3 +370,20 @@ majlis and the hall"); improve the assets with Blender.
   sockets within 2.4 m, else the door in front) → prompt "Living Room ·
   Ceiling lights · ON (E)"; orbit mode click. Tested: living-room lights,
   kitchen fan and master-bedroom cove toggle; sockets toggle their indicator.
+
+## 2026-11-27
+
+#### 16. Working lift
+- New `src/build/lift.js`: cabin in the RC shaft (walnut back wall with
+  mirror, brushed-steel sides, steel handrails, LED ceiling, dark floor,
+  car operating panel with floor display); centre-opening stainless landing
+  doors on both floors + cabin doors that slide into the shaft; steel
+  architraves and call buttons on the hall / lobby side.
+- Controls (walk: aim + E / click; orbit: click): landing "Call the lift",
+  in-cabin "Go to ground floor / first floor / open doors". State machine:
+  closing → moving (1 m/s, eased stop) → opening → dwell 7 s → closing;
+  extra calls are queued. Door safety edge: anyone in the doorway re-opens
+  the doors.
+- A walker standing in the cabin rides with it. Tested: walk in at GF, press
+  "first floor" → cabin and walker reach +4.70, doors open, walk out into
+  the first-floor lobby.

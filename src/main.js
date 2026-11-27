@@ -13,6 +13,7 @@ import { buildFurniture } from './build/furniture.js';
 import { buildBathrooms } from './build/bathrooms.js';
 import { buildStyle } from './build/style.js';
 import { Lighting, buildElectrical, createRoomLightPool } from './build/electrical.js';
+import { buildLift } from './build/lift.js';
 import { setLampLevel } from './build/props.js';
 import { buildMachines } from './people/machines.js';
 import { Crew } from './people/crew.js';
@@ -66,6 +67,7 @@ async function init() {
   buildBathrooms(ctx);
   buildStyle(ctx);
   buildElectrical(ctx);
+  buildLift(ctx);
   const roomLights = createRoomLightPool(scene, ctx.lighting);
   const machines = buildMachines(ctx);
   const crew = new Crew(scene);
@@ -342,7 +344,7 @@ async function init() {
   // Expose a tiny API for debugging / automated screenshots.
   window.happyhome = {
     setT: (t) => { state.target = state.t = t; },
-    setCut, goTo: (v) => rig.goTo(v), setMode: (m) => rig.setMode(m), rig, state, scene, camera, renderer, crew, baker, doors: ctx.doors, interact: ctx.interact, lighting: ctx.lighting, electrical: ctx.electricalCounts, toggleDoor: (i) => { const d = ctx.doors[i]; d.isOpen = !d.isOpen; }, rooms: ROOMS, toScene, LEVEL,
+    setCut, goTo: (v) => rig.goTo(v), setMode: (m) => rig.setMode(m), rig, state, scene, camera, renderer, crew, baker, doors: ctx.doors, interact: ctx.interact, lighting: ctx.lighting, lift: ctx.lift, electrical: ctx.electricalCounts, toggleDoor: (i) => { const d = ctx.doors[i]; d.isOpen = !d.isOpen; }, rooms: ROOMS, toScene, LEVEL,
     pick: (nx, ny) => {
       const rc = new THREE.Raycaster();
       rc.layers.enableAll();
@@ -389,6 +391,7 @@ async function init() {
     const S = STRINGS[state.lang];
     if (t.kind === 'door') return S[t.on ? 'doorClose' : 'doorOpen'];
     if (t.kind === 'socket') return `${S.socket} · ${t.on ? S.on : S.off}`;
+    if (t.kind === 'lift') return t.label[state.lang] || t.label.en;
     return `${S.rooms[t.room] || t.room} · ${S.circuits[t.circuit]} · ${t.on ? S.on : S.off}`;
   };
   const doorBtn = $('doorBtn');
@@ -447,6 +450,7 @@ async function init() {
     if (state.cut !== 'all' && time - lastCollect > 1) { lastCollect = time; setCut(state.cut); }
     rig.update(dt);
     updateDoors(dt);
+    ctx.lift?.update(dt, rig.mode === 'walk' ? rig.walk : null);
     roomLights(camera, time, state.t >= 12.5);
     ctx.updateFurnitureLOD?.(camera, state.cut !== 'all');
     stage3d.followShadow(rig.focus());

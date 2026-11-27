@@ -383,6 +383,7 @@ export function buildWalls(ctx) {
     } else if (op.kind === 'door') {
       const main = op.mark === 'D1';
       const isLift = op.mark === 'LIFT';
+      if (isLift) return; // landing doors, architraves and call buttons are built by lift.js
       // frame
       grp.add(box(0.05, h, t + 0.04, M.doorWood, -w / 2 + 0.025, 0, 0));
       grp.add(box(0.05, h, t + 0.04, M.doorWood, w / 2 - 0.025, 0, 0));
