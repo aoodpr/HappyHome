@@ -363,7 +363,15 @@ export function buildWalls(ctx) {
     // Openings: windows, doors, shutter
     const fIdx = o.floorKey === 'gf' ? 0 : o.floorKey === 'ff' ? 1 : -1;
     for (const op of openings) {
-      if (op.kind === 'door') op.swing = doorSwing(w, dir, op, fIdx, L, side);
+      if (op.kind === 'door') {
+        op.swing = doorSwing(w, dir, op, fIdx, L, side);
+        // bathroom doors get frosted glass leaves: is either side of the door a bath / wash room?
+        const um = (op.u0 + op.u1) / 2, nn = [-(w.b[1] - w.a[1]) / (L * 1000), (w.b[0] - w.a[0]) / (L * 1000)];
+        op.bath = fIdx >= 0 && [1, -1].some((s) => {
+          const px = w.a[0] + dir[0] * um * 1000 + nn[0] * s * (w.t / 2 + 300), py = w.a[1] + dir[1] * um * 1000 + nn[1] * s * (w.t / 2 + 300);
+          return ROOMS.some((r) => r.f === fIdx && ['bath', 'wash'].includes(r.key) && px > r.rect[0] && px < r.rect[2] && py > r.rect[1] && py < r.rect[3]);
+        });
+      }
       fillOpening(g, op, t, side, w.ext, o);
     }
   }
@@ -474,8 +482,8 @@ export function buildWalls(ctx) {
       const main = op.mark === 'D1';
       const isLift = op.mark === 'LIFT';
       if (isLift) return; // landing doors, architraves and call buttons are built by lift.js
-      // frame (main entrance: black aluminium; others: wood)
-      const fm = main ? M.alu : M.doorVeneer;
+      // frame (main entrance: dark wood-grain aluminium; others: walnut)
+      const fm = main ? M.woodAlu : M.doorVeneer;
       grp.add(box(0.05, h, t + 0.04, fm, -w / 2 + 0.025, 0, 0));
       grp.add(box(0.05, h, t + 0.04, fm, w / 2 - 0.025, 0, 0));
       grp.add(box(w, 0.05, t + 0.04, fm, 0, h - 0.05, 0));
@@ -490,17 +498,23 @@ export function buildWalls(ctx) {
         for (const hingeStart of leaves) {
           const leafGeo = new THREE.BoxGeometry(leafW, h - 0.06, main ? 0.07 : 0.045);
           leafGeo.translate(hingeStart ? leafW / 2 : -leafW / 2, (h - 0.06) / 2, 0);
-          const leaf = new THREE.Mesh(leafGeo, main ? M.woodAlu : M.doorVeneer);
+          const leaf = new THREE.Mesh(leafGeo, main ? M.woodAlu : op.bath ? M.frosted : [M.doorVeneer, M.doorVeneer, M.doorVeneer, M.doorVeneer, M.fluted, M.fluted]);
+          if (op.bath) {
+            // slim black aluminium frame round the frosted pane
+            const lh = h - 0.06, lx = hingeStart ? leafW / 2 : -leafW / 2, f = 0.045;
+            leaf.add(box(leafW, f, 0.05, M.darkSteel, lx, 0, 0));
+            leaf.add(box(leafW, f, 0.05, M.darkSteel, lx, lh - f, 0));
+            leaf.add(box(f, lh, 0.05, M.darkSteel, lx - leafW / 2 + f / 2, 0, 0));
+            leaf.add(box(f, lh, 0.05, M.darkSteel, lx + leafW / 2 - f / 2, 0, 0));
+          }
           leaf.castShadow = leaf.receiveShadow = true;
           leaf.position.set(hingeStart ? -w / 2 + 0.05 : w / 2 - 0.05, 0, sw.s * (t / 2 - 0.03));
           const ang = main ? 1.25 : 1.48;
           leaf.rotation.y = hingeStart ? -sw.s * ang : sw.s * ang;
           const hx = hingeStart ? leafW - 0.1 : -leafW + 0.1;
           if (main) {
-            // aluminium wood-grain entrance door (owner's reference render): black reveal lines + long black pull
-            const cx = hingeStart ? leafW / 2 : -leafW / 2;
-            for (const yy of [0.62, 1.58]) for (const zz of [0.036, -0.036]) leaf.add(box(leafW - 0.02, 0.012, 0.004, M.darkSteel, cx, yy, zz));
-            for (const zz of [0.05, -0.05]) leaf.add(box(0.03, 1.6, 0.025, M.darkSteel, hingeStart ? leafW - 0.15 : -leafW + 0.15, (h - 1.6) / 2, zz * sw.s));
+            // long matt-black vertical pull bars near the meeting edge, both faces (owner's reference)
+            for (const zz of [0.06, -0.06]) leaf.add(box(0.035, 1.9, 0.03, M.darkSteel, hingeStart ? leafW - 0.16 : -leafW + 0.16, (h - 1.9) / 2, zz));
           }
           else for (const zz of [0.035, -0.035]) {
             // matt black lever + rose
@@ -512,6 +526,29 @@ export function buildWalls(ctx) {
           ctx.solids.push(leaf);
           grp.add(leaf);
           ctx.doors.push({ type: 'hinge', obj: leaf, prop: 'rotY', closed: 0, open: leaf.rotation.y, k: 1, isOpen: true, anchor: grp });
+        }
+      }
+      if (!ext && !main) {
+        // floor-to-ceiling walnut: wide casing on both faces and a flush panel over the door (owner's reference)
+        const top = (o.ffl - o.base) + (o.floorKey === 'gf' ? 3.12 : 3.02) - op.sill;
+        const cw = 0.07;
+        for (const s of [1, -1]) {
+          const z = s * (t / 2 + 0.028);
+          grp.add(box(cw, top, 0.025, M.doorVeneer, -w / 2 - cw / 2 + 0.02, 0, z));
+          grp.add(box(cw, top, 0.025, M.doorVeneer, w / 2 + cw / 2 - 0.02, 0, z));
+          if (top - h > 0.05) {
+            grp.add(box(w - 0.06, top - h, 0.02, M.doorVeneer, 0, h, s * (t / 2 + 0.024)));
+            grp.add(box(w - 0.06, 0.012, 0.03, M.darkSteel, 0, h - 0.006, s * (t / 2 + 0.02))); // shadow gap at the head
+          }
+        }
+      }
+      if (main) {
+        // slatted wood-grain fins either side of the entrance, on the outside face
+        const zf = (side || 1) * (t / 2 + 0.2);
+        for (const sx of [-1, 1]) {
+          const x0 = sx * (w / 2 + 0.05);
+          grp.add(box(0.36, 0.06, 0.08, M.woodAlu, x0 + sx * 0.18, h - 0.06, zf));
+          for (let k = 0; k < 6; k++) grp.add(box(0.035, h - 0.08, 0.07, M.woodAlu, x0 + sx * (0.03 + k * 0.06), 0.02, zf));
         }
       }
       grp.traverse((m) => { if (m.isMesh) m.castShadow = false; });

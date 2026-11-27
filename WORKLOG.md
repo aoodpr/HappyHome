@@ -549,3 +549,13 @@ on-screen approximations; a physical sample is the reference.
 - **Hob + hood:** moved further along the east run. The hood chimney now runs to the ceiling.
 - **Wall cabinets:** they now reach the ceiling (1.50 → 3.28 m), with door joints.
 - **Removed:** the island with its stools and plant, and the two pendant lights. The ceiling fan stays, now centred over the kitchen.
+
+#### 27. Doors from the owner's Instagram references
+- **Entrance D1 + boundary gate:** dark brown wood-grain aluminium (`M.woodAlu`).
+  - D1 has two leaves with long matt-black vertical pull bars (1.9 m) and slatted wood-grain fins either side on the outside.
+  - The gate leaf and its slatted side panel are in the same finish.
+- **Interior doors** (floor-to-ceiling walnut, as in the reference):
+  - The leaf face has fine vertical grooves every ~40 mm (`M.fluted`, one canvas texture, no extra meshes).
+  - A wide walnut casing on both faces and a flush walnut panel from the door head up to the ceiling, with a black shadow gap at the head.
+  - Black lever.
+- **Bathroom / wash-room doors:** a frosted glass leaf in a slim black aluminium frame. The door is detected by sampling the rooms on either side.

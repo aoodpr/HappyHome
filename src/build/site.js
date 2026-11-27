@@ -322,15 +322,15 @@ export function buildSite(ctx) {
     const slats = new THREE.Group();
     gate.add(box(gw - leafW, 0.05, 0.06, M.darkSteel, g0 + leafW + (gw - leafW) / 2, 0.02, fz));
     gate.add(box(gw - leafW, 0.05, 0.06, M.darkSteel, g0 + leafW + (gw - leafW) / 2, gh - 0.05, fz));
-    for (let x = g0 + leafW + 0.05; x < g1 - 0.02; x += 0.07) slats.add(box(0.035, gh - 0.06, 0.05, M.darkSteel, x, 0.03, fz));
+    for (let x = g0 + leafW + 0.05; x < g1 - 0.02; x += 0.07) slats.add(box(0.035, gh - 0.06, 0.05, M.woodAlu, x, 0.03, fz));
     gate.add(slats);
     // solid aluminium leaf (hinged at the pier), long black pull — opens in walk mode
     const leaf = new THREE.Group();
-    const lg = new THREE.Mesh(new THREE.BoxGeometry(leafW - 0.02, gh, 0.06).translate((leafW - 0.02) / 2, gh / 2, 0), M.darkSteel);
+    const lg = new THREE.Mesh(new THREE.BoxGeometry(leafW - 0.02, gh, 0.06).translate((leafW - 0.02) / 2, gh / 2, 0), M.woodAlu);
     lg.castShadow = true;
     leaf.add(lg);
-    leaf.add(box(0.025, 1.1, 0.03, M.alu, leafW - 0.18, 0.6, 0.05));
-    leaf.add(box(0.025, 1.1, 0.03, M.alu, leafW - 0.18, 0.6, -0.05));
+    leaf.add(box(0.03, 1.6, 0.03, M.darkSteel, leafW - 0.18, 0.35, 0.05));
+    leaf.add(box(0.03, 1.6, 0.03, M.darkSteel, leafW - 0.18, 0.35, -0.05));
     leaf.position.set(g0 + 0.01, 0, fz);
     leaf.traverse((o) => { if (o.isMesh) { o.userData.solid = true; ctx.solids.push(o); } });
     leaf.userData.dynamic = true;

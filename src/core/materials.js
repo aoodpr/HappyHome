@@ -60,9 +60,10 @@ export function createMaterials(T) {
     doorWood: tex(T.wood, { color: 0x8a5a35, roughness: 0.4 }),
     doorWhite: std({ color: 0xf1ede6, roughness: 0.5 }),
     // aluminium door with a wood-grain powder coat (main entrance): wood look, satin sheen
-    woodAlu: tex(T.wood, { color: 0x9c7048, roughness: 0.4, metalness: 0.12, normalScale: new THREE.Vector2(0.3, 0.3) }),
-    // interior doors: natural wood veneer, flush leaf (owner: wooden interior doors)
-    doorVeneer: tex(T.wood, { color: 0xb08258, roughness: 0.45, normalScale: new THREE.Vector2(0.35, 0.35) }),
+    // entrance door + gate: dark wood-grain aluminium (owner's Instagram reference)
+    woodAlu: tex(T.wood, { color: 0x4a3c33, roughness: 0.42, metalness: 0.1, normalScale: new THREE.Vector2(0.3, 0.3) }),
+    // interior doors: dark walnut — casing, frame and the flush panel above the door
+    doorVeneer: tex(T.wood, { color: 0x655447, roughness: 0.48, normalScale: new THREE.Vector2(0.35, 0.35) }),
     shutter: tex(T.slats, { color: 0xc9ccd0, roughness: 0.4, metalness: 0.6 }),
     white: std({ color: 0xf5f3ef, roughness: 0.9 }),
     // slight self-illumination stands in for bounced daylight inside rooms
@@ -123,6 +124,9 @@ export function createMaterials(T) {
     asphalt: 4, plywood: 2.44, wallTile: 1.2, travertine: 1.2, travertineFloor: 1.2, greyMarble: 1.2, neroMarble: 1.2, creamMarble: 1.2, lightOak: 1.8, walnut: 1.8, greige: 2, linenPanel: 2, navyPanel: 2, rebar: 1.2, doorWood: 1.8, woodAlu: 1.6, doorVeneer: 1.6, shutter: 1, gypsum: 2, coolRoof: 2,
   };
   for (const [k, v] of Object.entries(tiles)) M[k].userData.tile = v;
+  M.fluted = flutedWalnut(T.wood.map);
+  // bathroom doors: frosted (matt) glass in a slim black aluminium frame
+  M.frosted = new THREE.MeshStandardMaterial({ color: 0xe9eeee, roughness: 0.6, metalness: 0, transparent: true, opacity: 0.92, envMapIntensity: 0.9 });
   // exterior paints: ground bounce from the sand keeps Sadaf / Woodsmoke warm in shade
   warmBounce(M.texturePaint, [1.12, 1.0, 0.86]);
   warmBounce(M.trimStone, [1.12, 1.0, 0.86]);
@@ -135,4 +139,30 @@ export function pourMaterial(base) {
   m.userData.dry = base.color.clone();
   m.userData.wet = new THREE.Color(0x8f8a84);
   return m;
+}
+
+/**
+ * Door-leaf face: dark walnut grain with fine vertical grooves every ~40 mm (owner's
+ * reference). Mapped once across a leaf (BoxGeometry UVs), so no extra meshes per groove.
+ */
+function flutedWalnut(grain) {
+  const W = 512, H = 1024, c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const g = c.getContext('2d');
+  g.save(); g.translate(W, 0); g.rotate(Math.PI / 2); // grain runs vertically on the leaf
+  try { g.drawImage(grain.image, 0, 0, H, W); } catch { g.fillStyle = '#8a6a50'; g.fillRect(0, 0, H, W); }
+  g.restore();
+  g.globalCompositeOperation = 'multiply';
+  g.fillStyle = '#655447'; g.fillRect(0, 0, W, H);
+  g.globalCompositeOperation = 'source-over';
+  const n = 20, step = W / n;
+  for (let i = 0; i < n; i++) {
+    const x = i * step;
+    g.fillStyle = 'rgba(15,10,6,0.85)'; g.fillRect(x, 0, 3, H);           // groove shadow
+    g.fillStyle = 'rgba(255,235,210,0.10)'; g.fillRect(x + 3, 0, 2, H);    // lit edge
+  }
+  const map = new THREE.CanvasTexture(c);
+  map.colorSpace = THREE.SRGBColorSpace;
+  map.anisotropy = 8;
+  return new THREE.MeshStandardMaterial({ map, roughness: 0.5, metalness: 0 });
 }
