@@ -418,3 +418,29 @@ majlis and the hall"); improve the assets with Blender.
   - 14-stage sheet.
   - Console error sweep: no errors.
   - Day and dusk exterior / interior before-after renders.
+
+#### 18. Stair window W6 + stairwell gap (user report from phone)
+- **Gap between ground and first floor in the stairwell.**
+  - Cause: where the FF (and roof) slab is cut away for the stair, nothing
+    filled the 220 mm slab band between the GF wall head and the FF wall
+    foot. You could see through to the back of the façade, and the FF
+    skirting hung in mid-air above the gap.
+  - Fix, filling the band: `walls.js` now detects the stretches of each wall
+    that border the stair void and fills that band with blockwork and
+    plaster, at both the GF→FF and FF→roof levels.
+  - Fix, skirting: skirting is now built per face and skipped where the face
+    borders the open stairwell.
+- **Slab strip in front of the glass:** an 18 mm strip of the FF slab edge
+  crossed the window outside, because the notch for W6 stopped at x 1985.
+  The cast slab now uses an outline with the stair void as an inlet that
+  reaches the outer edge (`SLAB_FF.cut`). The original outline is kept for
+  façade-side tests.
+- **Edge beam in the window reveals:** the beam pieces split at W6 were
+  still lengthened by half their width and poked 95 mm into the opening as
+  grey blocks. They now stop at the jambs. Jamb reveal linings were added:
+  white outside, plaster inside.
+- **W6 is a fixed single pane:** the transom was removed.
+- **Checks:**
+  - Renders from inside and outside the stairwell.
+  - Console sweep: no errors.
+  - Walk test: off the top step onto FF +4.70; the half landing holds +2.6.

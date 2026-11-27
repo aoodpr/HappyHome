@@ -27,6 +27,7 @@ export function buildWalls(ctx) {
     rf: { ext: [8.8, 8.97], int: [8.8, 8.97], rc: [7.1, 7.3], plaster: [10.4, 10.55], facade: [11.4, 11.55] },
   };
   const outlines = { gf: GF_ENCLOSED, ff: SLAB_FF.outline, rf: null };
+  const STAIR_VOID = SLAB_FF.holes[1];
 
   FLOORS.forEach((floor) => {
     const win = W[floor.key];
@@ -62,7 +63,12 @@ export function buildWalls(ctx) {
     R(X0, sw.y1 - 60, X1, sw.y1, 0, h, M.alu);
     R(X0, sw.y0, X1, sw.y1, 0, 0.06, M.alu);
     R(X0, sw.y0, X1, sw.y1, h - 0.06, 0.06, M.alu);
-    R(X0 + 20, sw.y0, X1 - 20, sw.y1, h * 0.62, 0.05, M.alu); // transom
+    // fixed single pane — no transom (W6 is a fixed window)
+    // reveal linings on both jambs (hide the edge-beam ends): render-white outside, plaster inside
+    for (const [ya, yb] of [[sw.y0, sw.y0 + 12], [sw.y1 - 12, sw.y1]]) {
+      R(1880, ya, X0, yb, 0, h, M.white);
+      R(X1, ya, 2185, yb, 0, h, ctx.plasterMat);
+    }
     const gl = rectBox(2059, sw.y0 + 40, 2075, sw.y1 - 40, 0.04, h - 0.08, M.glass, { cast: false, receive: false });
     gl.userData.solid = true;
     ctx.solids.push(gl);
@@ -180,6 +186,27 @@ export function buildWalls(ctx) {
 
     const [b0, b1] = o.blockWin;
     const coreMat = o.rc ? o.rcMat : M.blocks;
+
+    // Where the first-floor slab is cut away for the stairwell, nothing fills the slab-thickness
+    // band between the GF wall head and the FF wall foot: find those stretches along this wall.
+    const nrm = [-dz / L, dx / L]; // local +Z in plan
+    const inStairVoid = (u, s) => {
+      const px = w.a[0] + dir[0] * u * 1000 + nrm[0] * s * (w.t / 2 + 150);
+      const py = w.a[1] + dir[1] * u * 1000 + nrm[1] * s * (w.t / 2 + 150);
+      return inPoly(px, py, STAIR_VOID);
+    };
+    const voidSpans = (u0, u1, test) => {
+      const spans = [];
+      const n = Math.max(1, Math.ceil((u1 - u0) / 0.05));
+      let start = null;
+      for (let i = 0; i <= n; i++) {
+        const u = u0 + ((u1 - u0) * Math.min(i + 0.5, n)) / n;
+        const hit = i < n && test(u);
+        if (hit && start === null) start = u0 + ((u1 - u0) * i) / n;
+        if (!hit && start !== null) { spans.push([start, u0 + ((u1 - u0) * i) / n]); start = null; }
+      }
+      return spans;
+    };
     for (const [u0, u1, y0, y1] of pieces) {
       const len = u1 - u0, h = y1 - y0;
       const core = box(len, h, t, coreMat, (u0 + u1) / 2, y0, 0);
@@ -193,11 +220,34 @@ export function buildWalls(ctx) {
       g.add(pl);
       TL.add(pl, { in: o.plasterWin, anim: 'rise' });
 
-      // Skirting board at the foot of the wall inside the house
+      // Skirting board at the foot of the wall inside the house (per face; none over the open stairwell)
       if (y0 < 0.001 && (o.floorKey === 'gf' || o.floorKey === 'ff')) {
-        const sk = box(len, 0.09, t + 0.05, skirtingMat, (u0 + u1) / 2, fflOff, 0, { cast: false });
-        g.add(sk);
-        TL.add(sk, { in: [12.3, 12.4], anim: 'show' });
+        for (const sd of [-1, 1]) {
+          const overVoid = (u) => o.floorKey === 'ff' && inStairVoid(u, sd);
+          const runs = [];
+          let a0 = u0;
+          for (const [v0, v1] of voidSpans(u0, u1, overVoid)) { if (v0 - a0 > 0.02) runs.push([a0, v0]); a0 = v1; }
+          if (u1 - a0 > 0.02) runs.push([a0, u1]);
+          for (const [r0, r1] of runs) {
+            const sk = box(r1 - r0, 0.09, 0.025, skirtingMat, (r0 + r1) / 2, fflOff, sd * (t / 2 + 0.0125), { cast: false });
+            g.add(sk);
+            TL.add(sk, { in: [12.3, 12.4], anim: 'show' });
+          }
+        }
+      }
+
+      // Stairwell: fill the slab band above the GF / FF wall head (blockwork + plaster both faces)
+      if ((o.floorKey === 'gf' || o.floorKey === 'ff') && o.slabAbove && y1 > o.H - 0.001) {
+        for (const [v0, v1] of voidSpans(u0, u1, (u) => inStairVoid(u, 1) || inStairVoid(u, -1))) {
+          const c = box(v1 - v0, SLAB_T, t, coreMat, (v0 + v1) / 2, o.H, 0);
+          g.add(c);
+          TL.add(c, { in: [b1 - 0.02, b1], anim: 'course', h: SLAB_T });
+          c.userData.solid = true;
+          ctx.solids.push(c);
+          const pp = box(v1 - v0, SLAB_T, t + 0.03, plasterMat, (v0 + v1) / 2, o.H, 0, { cast: false });
+          g.add(pp);
+          TL.add(pp, { in: o.plasterWin, anim: 'rise' });
+        }
       }
     }
 

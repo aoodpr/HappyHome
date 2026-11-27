@@ -261,12 +261,13 @@ export function buildStructure(ctx) {
     root.add(props);
     TL.add(props, { in: win.props, anim: 'rise', out: win.strip, outAnim: 'rise' });
 
-    const deck = slabMesh(def.outline, def.holes, base - 0.02, 0.02, M.plywood, { cast: false });
+    const cut = def.cut || def;
+    const deck = slabMesh(cut.outline, cut.holes, base - 0.02, 0.02, M.plywood, { cast: false });
     add(deck, { in: win.deck, anim: 'show', out: win.strip, outAnim: 'show' });
-    const rebar = slabMesh(def.outline, def.holes, base + 0.12, 0.004, M.rebar, { cast: false });
+    const rebar = slabMesh(cut.outline, cut.holes, base + 0.12, 0.004, M.rebar, { cast: false });
     add(rebar, { in: win.rebar, anim: 'show', out: [win.pour[1], win.pour[1] + 0.005], outAnim: 'show' });
 
-    const s = slabMesh(def.outline, def.holes, base, SLAB_T, mat);
+    const s = slabMesh(cut.outline, cut.holes, base, SLAB_T, mat);
     add(s, { in: win.pour, anim: 'pour', cure: win.cure });
     s.userData.walkable = true;
     ctx.walkables.push(s);
@@ -288,7 +289,8 @@ export function buildStructure(ctx) {
     const [lo, hi] = [Math.min(w.a[1], w.b[1]), Math.max(w.a[1], w.b[1])];
     const sw = STAIR_WINDOWS[0];
     if (sw.y1 < lo || sw.y0 > hi) return [w];
-    return [{ ...w, a: [2067, lo], b: [2067, sw.y0] }, { ...w, a: [2067, sw.y1], b: [2067, hi] }];
+    // beamAlong() adds half the beam width (95 mm) at each end — pull the cut ends back so they stop at the jambs
+    return [{ ...w, a: [2067, lo], b: [2067, sw.y0 - 95] }, { ...w, a: [2067, sw.y1 + 95], b: [2067, hi] }];
   }
 
   function flight(xFrom, xTo, yA, yB, z0, z1, n, mat) {
