@@ -331,3 +331,10 @@ majlis and the hall"); improve the assets with Blender.
   walnut backsplash with two LED-lit floating shelves of cups, espresso
   machine, grinder and kettle, plus a marble bistro table with two beige
   tub chairs.
+
+#### 13. Kitchen ceiling fan
+- New `ceilingFan()` prop: 1.32 m five-blade fan with walnut blades on black
+  brackets, matte-black motor with brass band and an opal light dome, on a
+  0.42 m downrod. Blades spin (~1.3 rev/s) while the fan is on screen.
+- Placed over the open floor between the island and the garden slider, clear
+  of the two island pendants (blades at ≈ 2.8 m).

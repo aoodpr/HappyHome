@@ -93,6 +93,7 @@ const LAYOUTS = {
     G('modern_ceiling_lamp_01', 12800, 2850, 0, { hang: 1.17 }),
     G('modern_ceiling_lamp_01', 13800, 2850, 0, { hang: 1.17 }),
     G('potted_plant_04', 13700, 2700, 0, { h: 0.93 }),
+    F(() => PR.ceilingFan(), 13400, 4350, 0, { ceiling: true }), // clear of the island pendants
   ],
   'gf-store': [F(() => PR.wardrobe(1.6, 2.2, 0.45), 10430, 455, 0)],
   'gf-outdoorSeating': [

@@ -642,3 +642,50 @@ export function coffeeCorner(L = 2.4) {
   for (const dx of [0.35, 0.45]) g.add(cylY(0.04, 0.08, P.ceramic, L / 4 + dx - 0.2, 0.905, 0.15, 12));
   return g;
 }
+
+/**
+ * Ceiling fan with walnut blades, matte-black motor, brass trim and an opal
+ * light dome. Origin at the ceiling; the blades spin while it's visible.
+ */
+export function ceilingFan({ span = 1.32, blades = 5, drop = 0.42 } = {}) {
+  const g = new THREE.Group();
+  const black = m('fanBlack', { color: 0x1b1b1c, roughness: 0.45, metalness: 0.5 });
+  const walnut = m('fanWalnut', { color: 0x6b4a33, roughness: 0.55 });
+  const opal = m('fanOpal', { color: 0xfff6e8, emissive: 0xffe2b8, emissiveIntensity: 0.9, roughness: 0.4 });
+  // canopy + downrod
+  g.add(at(new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.09, 0.07, 24), black), 0, -0.035, 0));
+  g.add(at(new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, drop, 8), black), 0, -drop / 2, 0));
+  // motor housing with brass band
+  const hub = new THREE.Group();
+  hub.position.y = -drop - 0.05;
+  hub.add(new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.15, 0.12, 32), black));
+  hub.add(at(new THREE.Mesh(new THREE.CylinderGeometry(0.152, 0.152, 0.015, 32), BRASS()), 0, -0.05, 0));
+  const dome = new THREE.Mesh(new THREE.SphereGeometry(0.11, 24, 12, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), opal);
+  dome.position.y = -0.06;
+  hub.add(dome);
+  g.add(hub);
+  // rotor: blades on black brackets, slightly pitched
+  const rotor = new THREE.Group();
+  rotor.position.y = -drop - 0.06;
+  const L = span / 2 - 0.12;
+  for (let i = 0; i < blades; i++) {
+    const arm = new THREE.Group();
+    arm.rotation.y = (i / blades) * Math.PI * 2;
+    arm.add(at(rbox(0.16, 0.012, 0.04, 0.005, black), 0.2, 0, 0));
+    const blade = at(rbox(L, 0.012, 0.15, 0.006, walnut), 0.2 + L / 2, -0.004, 0);
+    blade.rotation.x = 0.14; // pitch
+    arm.add(blade);
+    rotor.add(arm);
+  }
+  rotor.userData.dynamic = true;
+  // spin ~1.3 rev/s while rendered (onBeforeRender fires only for meshes)
+  let last = performance.now();
+  rotor.children[0].children[0].onBeforeRender = () => {
+    const now = performance.now();
+    rotor.rotation.y -= Math.min(0.1, (now - last) / 1000) * 8;
+    last = now;
+  };
+  g.add(rotor);
+  g.traverse((o) => { if (o.isMesh) { o.castShadow = false; o.userData.dynamic = true; } });
+  return g;
+}
