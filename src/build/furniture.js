@@ -155,23 +155,26 @@ const LAYOUTS = {
   ],
   // FF LIVING (pages 14–15): taupe L-sofa + ottoman, persian rug, walnut shelving by the TV
   'ff-familyLiving': [
-    // north end — sitting area by the big window W2, TV on the north wall
-    F(() => PR.rugStyled(3.4, 2.6, 'persian'), 10100, 7200),
-    G('modern_wooden_cabinet', 10600, 5700, 0, { sx: 0.8 }),
-    F(() => PR.tvWall(1.9), 10600, 5450, 0, { h: 1.15 }),
-    F(() => PR.modernSofa(3.0, { color: 'taupe', pillows: 4 }), 10200, 8450, 180),
-    F(() => PR.modernSofa(2.0, { color: 'taupe', pillows: 2 }), 8400, 7400, 90),
-    G('ottoman_01', 10100, 7200, 90, { tint: 0x8c7a68 }),
-    F(() => withLamp(PR.sideTable()), 8400, 6100),
-    G('potted_plant_01', 11350, 9100, 0),
+    // Layout from sheet 4 + owner's mark-up: L-sofa along the big window W2 (east) and the
+    // north wall, TV unit centred on the south wall, coffee corner on the east wall past the window.
+    F(() => PR.rugStyled(3.4, 3.0, 'persian'), 10000, 7900),
+    F(() => PR.modernSofa(3.6, { color: 'taupe', pillows: 4 }), 11180, 7950, -90),   // along the window
+    F(() => PR.modernSofa(2.2, { color: 'taupe', pillows: 2 }), 9550, 5900, 0),      // north wall
+    F(() => withLamp(PR.sideTable()), 11200, 5800),
+    G('ottoman_01', 9900, 7900, 90, { tint: 0x8c7a68 }),
     F(() => PR.shelving(1.6, 2.6, 0.35), 7560, 6250, 90),
-    // south end — coffee corner (counter with uppers, coffee machine, bistro table)
-    F(() => PR.coffeeCorner(2.4), 11345, 10900, -90),
-    F(() => PR.marbleTable(0.75, 0.75, 0.74), 9900, 10900),
-    F(() => PR.tubChair('beige'), 9300, 10900, 90),
-    F(() => PR.tubChair('beige'), 10500, 10900, -90),
-    F(() => PR.rugStyled(2.2, 2.0, 'cream'), 9900, 10900),
-    G('potted_plant_02', 7650, 12000, 0),
+    F(() => withLamp(PR.sideTable()), 8100, 5800),
+    // TV wall (south)
+    G('modern_wooden_cabinet', 10000, 12150, 180, { sx: 0.9 }),
+    F(() => PR.tvWall(1.9), 10000, 12330, 180, { h: 1.15 }),
+    G('potted_plant_01', 11300, 10050, 0),
+    // coffee corner on the east wall beyond the window
+    F(() => PR.coffeeCorner(1.8), 11345, 11300, -90),
+    // bistro table by the stair side
+    F(() => PR.marbleTable(0.75, 0.75, 0.74), 8300, 9700),
+    F(() => PR.tubChair('beige'), 7750, 9700, 90),
+    F(() => PR.tubChair('beige'), 8850, 9700, -90),
+    G('potted_plant_02', 7650, 12100, 0),
   ],
   'ff-lobby': [G('potted_plant_01', 9100, 2450, 0), G('potted_plant_02', 7600, 2450, 0)],
   'ff-lobby2': [

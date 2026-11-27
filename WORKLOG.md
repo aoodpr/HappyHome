@@ -513,3 +513,13 @@ on-screen approximations; a physical sample is the reference.
   - the lift front, which has door openings.
 
   No other changes were needed. Note: the drawing does show a wall along x 9658 by the porch. It was opened here because the site photo shows a column and beam.
+
+#### 23. First-floor family living re-laid out (sheet 4 + owner's mark-up); garage side door removed
+- **South wall of the living room** (TV wall): it now runs x 8872 → 11743, as drawn on sheet 4 (was 9655). This leaves a 1.5 m opening to the lobby, as on site.
+- **Furniture**, following the drawn layout:
+  - 3.6 m sofa along the big window W2, facing the room.
+  - 2.2 m sofa on the north wall.
+  - TV and media unit centred on the south wall, with the walnut feature panel moved behind it.
+  - Coffee corner (1.8 m) on the east wall past the window.
+  - Bistro table on the stair side.
+- **Garage:** the side door in the back wall is removed. The site photo shows a solid wall with the DB panel.
