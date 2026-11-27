@@ -207,7 +207,7 @@ export function curtain(w, h, dark = false) {
 
 /* ---------------- kitchen ------------------------------------------- */
 /** Base cabinet run of length L along X (front +Z), optional sink/cooktop positions (x). */
-export function counterRun(L, { sink = null, hob = null, d = 0.62, uppers = true } = {}) {
+export function counterRun(L, { sink = null, hob = null, dw = null, d = 0.62, uppers = true, top = 2.22 } = {}) {
   const g = new THREE.Group();
   g.add(blk(L, 0.1, d - 0.06, P.rubber, 0, 0, -0.03));
   g.add(blk(L, 0.78, d - 0.02, P.lacquer, 0, 0.1, 0));
@@ -230,6 +230,12 @@ export function counterRun(L, { sink = null, hob = null, d = 0.62, uppers = true
     tap.position.set(sink, 0.91, -d / 2 + 0.1);
     g.add(tap);
   }
+  if (dw !== null) {
+    // integrated stainless dishwasher front with a bar handle
+    g.add(blk(0.6, 0.76, 0.024, P.steel, dw, 0.11, d / 2 + 0.004));
+    g.add(blk(0.45, 0.02, 0.03, P.chrome, dw, 0.8, d / 2 + 0.03));
+    g.add(blk(0.6, 0.06, 0.008, P.blackGlass, dw, 0.83, d / 2 + 0.017));
+  }
   if (hob !== null) {
     g.add(blk(0.78, 0.008, 0.5, P.blackGlass, hob, 0.91, 0));
     for (const [x, z] of [[-0.2, -0.1], [0.2, -0.1], [-0.2, 0.12], [0.2, 0.12]]) {
@@ -247,13 +253,17 @@ export function counterRun(L, { sink = null, hob = null, d = 0.62, uppers = true
       segs.push([start, hob - gapW / 2], [hob + gapW / 2, L / 2]);
       const hood = new THREE.Group();
       hood.add(blk(0.9, 0.12, 0.5, P.steel, 0, 1.6, -d / 2 + 0.25));
-      hood.add(blk(0.3, 0.8, 0.25, P.steel, 0, 1.72, -d / 2 + 0.13));
+      hood.add(blk(0.3, top - 1.72, 0.25, P.steel, 0, 1.72, -d / 2 + 0.13)); // chimney up to the ceiling
       hood.position.x = hob;
       g.add(hood);
     } else segs.push([start, L / 2]);
     for (const [a, b] of segs) {
       if (b - a < 0.3) continue;
-      g.add(blk(b - a, 0.72, 0.35, P.lacquerGrey, (a + b) / 2, 1.5, -d / 2 + 0.175));
+      g.add(blk(b - a, top - 1.5, 0.35, P.lacquerGrey, (a + b) / 2, 1.5, -d / 2 + 0.175));
+      // door joints on the tall uppers
+      const m = Math.max(1, Math.round((b - a) / 0.6));
+      for (let i = 1; i < m; i++) g.add(blk(0.004, top - 1.52, 0.004, P.rubber, a + ((b - a) * i) / m, 1.51, -d / 2 + 0.352));
+      if (top - 1.5 > 1.1) g.add(blk(b - a, 0.004, 0.004, P.rubber, (a + b) / 2, 2.3, -d / 2 + 0.352));
       g.add(blk(b - a, 0.02, 0.36, P.lampShade, (a + b) / 2, 1.49, -d / 2 + 0.18));
     }
     // splashback
@@ -262,8 +272,10 @@ export function counterRun(L, { sink = null, hob = null, d = 0.62, uppers = true
   return g;
 }
 
-export function fridge() {
+export function fridge(top = 0) {
   const g = new THREE.Group();
+  // tall housing above the fridge, flush with the wall cabinets
+  if (top > 2.1) g.add(blk(0.94, top - 2.02, 0.7, P.lacquerGrey, 0, 2.02, -0.02));
   g.add(blk(0.9, 2.0, 0.7, P.steel, 0, 0, 0));
   g.add(blk(0.004, 1.96, 0.01, P.rubber, 0, 0.02, 0.352));
   for (const x of [-0.04, 0.04]) g.add(blk(0.02, 0.9, 0.04, P.chrome, x, 0.75, 0.37));

@@ -542,3 +542,10 @@ on-screen approximations; a physical sample is the reference.
   - the shelving unit by the stair;
   - the bistro table and the two tub chairs;
   - the side table that stood in the opening.
+
+#### 26. Kitchen re-arranged (owner's mark-up)
+- **Fridge:** moved to the far (south) end of the east run, with a tall housing above it up to the ceiling.
+- **Dishwasher:** a stainless integrated one now stands where the fridge was, at the west end of the sink run; the sink moved next to it.
+- **Hob + hood:** moved further along the east run. The hood chimney now runs to the ceiling.
+- **Wall cabinets:** they now reach the ceiling (1.50 → 3.28 m), with door joints.
+- **Removed:** the island with its stools and plant, and the two pendant lights. The ceiling fan stays, now centred over the kitchen.

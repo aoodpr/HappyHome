@@ -86,14 +86,12 @@ const LAYOUTS = {
     F(() => PR.artwork(1.6, 1.0, 0), 7390, 12500, 90, { h: 1.6 }),
   ],
   'gf-kitchen': [
-    F(() => PR.counterRun(2.95, { sink: 0.3 }), 14275, 540, 0),
-    F(() => PR.counterRun(3.8, { hob: -0.95 }), 15440, 2750, -90),
-    F(() => PR.fridge(), 12330, 590, 0),
-    F(() => PR.island(2.4, 1.0), 13300, 2850, 0),
-    G('modern_ceiling_lamp_01', 12800, 2850, 0, { hang: 1.17 }),
-    G('modern_ceiling_lamp_01', 13800, 2850, 0, { hang: 1.17 }),
-    G('potted_plant_04', 13700, 2700, 0, { h: 0.93 }),
-    F(() => PR.ceilingFan(), 13400, 4350, 0, { ceiling: true }), // clear of the island pendants
+    // owner's mark-up: dishwasher where the fridge was, sink beside it, fridge at the far (south)
+    // end of the east run, hob + hood moved along, wall cabinets up to the ceiling, no island
+    F(() => PR.counterRun(3.9, { sink: -0.85, dw: -1.6, top: 3.28 }), 13805, 540, 0),
+    F(() => PR.counterRun(3.34, { hob: 0.25, top: 3.28 }), 15440, 2520, -90),
+    F(() => PR.fridge(3.28), 15390, 4700, -90),
+    F(() => PR.ceilingFan(), 13600, 3000, 0, { ceiling: true }),
   ],
   'gf-store': [F(() => PR.wardrobe(1.6, 2.2, 0.45), 10430, 455, 0)],
   'gf-outdoorSeating': [
