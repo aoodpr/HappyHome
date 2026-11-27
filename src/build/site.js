@@ -13,30 +13,49 @@ export function buildSite(ctx) {
 
   /* ---------- ground with a hole for the foundation pit --------------- */
   {
+    // Four tessellated strips around the pit (not one 400 m polygon): very long
+    // triangles lose depth precision and their edges bleed through walls as dotted lines.
     const [ax, az] = toScene(1200, 30), [bx, bz] = toScene(16000, 21391);
-    const outer = new THREE.Shape([[-200, -200], [200, -200], [200, 200], [-200, 200]].map(([x, y]) => new THREE.Vector2(x, y)));
-    outer.holes.push(new THREE.Path([[ax, -az], [ax, -bz], [bx, -bz], [bx, -az]].map(([x, y]) => new THREE.Vector2(x, y))));
-    const g = new THREE.ShapeGeometry(outer);
-    g.rotateX(-Math.PI / 2);
-    worldUV(g, 3);
-    const ground = new THREE.Mesh(g, M.sand);
-    ground.receiveShadow = true;
-    ground.userData.walkable = true;
-    ctx.walkables.push(always(ground));
+    const E = 200;
+    const strip = (x0, z0, x1, z1) => {
+      const w = x1 - x0, d = z1 - z0;
+      const g = new THREE.PlaneGeometry(w, d, Math.max(1, Math.ceil(w / 8)), Math.max(1, Math.ceil(d / 8)));
+      g.rotateX(-Math.PI / 2);
+      g.translate((x0 + x1) / 2, 0, (z0 + z1) / 2);
+      worldUV(g, 3);
+      const m = new THREE.Mesh(g, M.sand);
+      m.receiveShadow = true;
+      m.userData.walkable = true;
+      ctx.walkables.push(always(m));
+    };
+    strip(-E, -E, E, az);
+    strip(-E, bz, E, E);
+    strip(-E, az, ax, bz);
+    strip(bx, az, E, bz);
   }
 
   /* ---------- street (Road 5554) ------------------------------------- */
   const front = toScene(0, PLOT.y1)[1];
+  // street pieces are split every ~8 m for the same depth-precision reason as the ground
+  const longBox = (w, h, d, mat, x, y, z, opts) => {
+    const m = box(w, h, d, mat, x, y, z, opts);
+    const g = new THREE.BoxGeometry(w, h, d, Math.ceil(w / 8), 1, Math.max(1, Math.ceil(d / 8)));
+    g.translate(0, h / 2, 0);
+    worldUV(g, mat.userData.tile || 1, [x, y, z]);
+    m.geometry.dispose();
+    m.geometry = g;
+    return m;
+  };
   {
-    const walk = box(400, 0.15, 2.2, M.pavers, 0, 0, front + 1.1);
+    const walk = longBox(400, 0.15, 2.2, M.pavers, 0, 0, front + 1.1);
     walk.receiveShadow = true;
     ctx.walkables.push(always(walk));
-    always(box(400, 0.18, 0.18, M.kerb, 0, 0, front + 2.2));
-    const road = box(400, 0.02, 11, M.asphalt, 0, -0.01, front + 7.8, { cast: false });
+    always(longBox(400, 0.18, 0.18, M.kerb, 0, 0, front + 2.2));
+    const road = longBox(400, 0.02, 11, M.asphalt, 0, -0.01, front + 7.8, { cast: false });
     ctx.walkables.push(always(road));
     for (let x = -190; x < 200; x += 6) always(box(3, 0.025, 0.15, M.lineWhite, x, 0, front + 7.8, { cast: false }));
-    always(box(400, 0.18, 0.18, M.kerb, 0, 0, front + 13.4));
-    const walk2 = box(400, 0.15, 2.2, M.pavers, 0, 0, front + 14.6);
+    always(longBox(400, 0.18, 0.18, M.kerb, 0, 0, front + 13.4));
+    const walk2 = longBox(400, 0.15, 2.2, M.pavers, 0, 0, front + 14.6);
     ctx.walkables.push(always(walk2));
     // street lights
     for (let x = -36; x <= 36; x += 24) {
@@ -81,6 +100,8 @@ export function buildSite(ctx) {
   neighbour(-1, 34, 16, 12, 2, M.neighbour, 13);
   neighbour(19, 34, 14, 12, 2, M.neighbour2, 15);
   neighbour(-20, 34, 14, 12, 2, M.neighbour2, 17);
+  // When the neighbours are hidden a soft tree backdrop takes their place.
+  ctx.backTrees = backgroundTrees(root, M);
 
   // Existing boundary walls shared with neighbours (sides + back)
   const [lx] = toScene(-25, 0), [rx] = toScene(PLOT.x1, 0);
@@ -364,6 +385,45 @@ function palmBark(M) {
   barkMat = new THREE.MeshStandardMaterial({ map: t, roughness: 1, color: 0xffffff });
   void M;
   return barkMat;
+}
+
+/** Clumps of broadleaf trees around the plot, like the backdrop in the final renders. */
+export function backgroundTrees(root, M) {
+  const g = new THREE.Group();
+  g.name = 'backgroundTrees';
+  const r = rng(321);
+  const leafA = new THREE.MeshStandardMaterial({ color: 0x55703c, roughness: 0.95 });
+  const leafB = new THREE.MeshStandardMaterial({ color: 0x435f31, roughness: 0.95 });
+  // lumpy foliage blob: a subdivided sphere pushed in/out by a cheap noise so it reads as leaf clusters
+  const blob = (rad) => {
+    const geo = new THREE.IcosahedronGeometry(rad, 3);
+    const p = geo.attributes.position, v = new THREE.Vector3();
+    const k = r() * 10;
+    for (let i = 0; i < p.count; i++) {
+      v.fromBufferAttribute(p, i);
+      const n = Math.sin(v.x * 3.1 + k) * Math.sin(v.y * 2.7 + k * 0.7) * Math.sin(v.z * 3.3 - k);
+      v.multiplyScalar(1 + 0.16 * n + (r() - 0.5) * 0.05);
+      p.setXYZ(i, v.x, v.y * 0.85, v.z);
+    }
+    geo.computeVertexNormals();
+    return geo;
+  };
+  const spots = [[-14, -16], [-8, -18], [-1, -19], [6, -18], [13, -17], [-17, -6], [-18, 4], [17, -8], [18, 2], [-19, 8], [19, 7.5]];
+  for (const [x, z] of spots) {
+    const t = new THREE.Group();
+    const s = 0.8 + r() * 0.6;
+    t.add(cyl(0.18 * s, 3.2 * s, M.palmTrunk, 0, 0, 0, 8));
+    for (let i = 0; i < 6; i++) {
+      const c = new THREE.Mesh(blob((1.3 + r() * 0.9) * s), r() > 0.5 ? leafA : leafB);
+      c.position.set((r() - 0.5) * 2.4 * s, (3.6 + r() * 2.2) * s, (r() - 0.5) * 2.4 * s);
+      c.castShadow = true;
+      t.add(c);
+    }
+    t.position.set(x + (r() - 0.5) * 2, 0, z + (r() - 0.5) * 2);
+    g.add(t);
+  }
+  root.add(g);
+  return g;
 }
 
 function makePalm(M) {

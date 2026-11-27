@@ -24,7 +24,7 @@ export function createMaterials(T) {
     sand: tex(T.sand, { roughness: 1 }),
     gravel: tex(T.gravel, { roughness: 1 }),
     grass: tex(T.grass, { roughness: 1 }),
-    pavers: tex(T.pavers, { roughness: 0.85 }),
+    pavers: tex(T.pavers, { roughness: 0.85, color: 0xa9a7a2 }), // grey cobble / pavers (final renders)
     asphalt: tex(T.asphalt, { roughness: 0.95 }),
     plywood: tex(T.plywood, { roughness: 0.8 }),
     rebar: std({ map: T.rebar.map, alphaTest: 0.5, side: THREE.DoubleSide, roughness: 0.6, metalness: 0.4 }),

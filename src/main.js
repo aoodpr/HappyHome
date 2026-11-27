@@ -146,6 +146,7 @@ async function init() {
   const setNeighbours = (on) => {
     state.neighbours = on;
     ctx.neighbours.visible = on;
+    if (ctx.backTrees) ctx.backTrees.visible = !on;
     $('neighboursToggle').checked = on;
   };
   $('neighboursToggle').addEventListener('change', (e) => setNeighbours(e.target.checked));
@@ -315,7 +316,8 @@ async function init() {
     const inside = state.cut === 'all';
     // When standing inside, hide labels of rooms hidden behind walls (raycast, throttled).
     const now = performance.now();
-    if (inside && floor >= 0 && now - lastOcclusion > 300) {
+    // recompute at once when the camera enters a floor, so labels never flash through walls
+    if (inside && floor >= 0 && (now - lastOcclusion > 300 || floor !== lastFloor)) {
       lastOcclusion = now;
       const solids = ctx.solids.filter((o) => o.visible && o.parent?.visible !== false);
       for (const l of labels) {
@@ -327,11 +329,12 @@ async function init() {
         l.userData.occluded = occluder.intersectObjects(solids, false).length > 0;
       }
     }
+    lastFloor = floor;
     for (const l of labels) {
       l.visible = state.labels && built && l.userData.room.f === floor && !(inside && l.userData.occluded);
     }
   }
-  let lastOcclusion = 0;
+  let lastOcclusion = 0, lastFloor = -2;
   const occluder = new THREE.Raycaster();
   occluder.layers.enableAll();
 

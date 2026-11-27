@@ -387,3 +387,34 @@ majlis and the hall"); improve the assets with Blender.
 - A walker standing in the cabin rides with it. Tested: walk in at GF, press
   "first floor" → cabin and walker reach +4.70, doors open, walk out into
   the first-floor lobby.
+
+#### 17. Realism pass + overall review
+- **Tone mapping:** ACES → Khronos *PBR Neutral* (exposure 0.62 day / 0.95
+  dusk). Material colours now read true (stone, travertine, oak); the sky is
+  blue instead of washed-out grey. AgX was tried and rejected (too flat).
+- **High preset:** N8AO quality *High* and slightly stronger; a subtle
+  high-threshold bloom so lamps and LED coves glow (stronger at dusk); 1024 px
+  textures for the close-up finishes (stone, marbles, travertine, oak), while
+  the rest stay at 512 px. Startup cost is about +1 s instead of +3 s if every
+  texture were 1024 px.
+- **Site:** grey paving to match the final renders; soft broadleaf-tree
+  backdrop (noise-displaced foliage blobs) around the plot. It shows when the
+  neighbouring villas are hidden (the default) and swaps out when they are
+  shown.
+- **Fixed: dotted line through rooms.**
+  - What it was: a dotted line ran across the office, living room, washrooms
+    and stair landing.
+  - How it was found: bisecting the scene by hiding meshes.
+  - Cause: the 400 m road / pavement boxes and the 400 m ground polygon.
+    Their long triangle edges lost depth precision and bled through the walls.
+  - Fix: the ground is now four strips around the pit, and the street pieces
+    are boxes; both are tessellated every ~8 m. Verified the line is gone in
+    all affected rooms.
+- **Fixed:** room labels could flash through walls for a frame when the
+  camera jumped onto a floor; occlusion is now recomputed immediately on a
+  floor change.
+- **Review:**
+  - Room-by-room sweep: 35 rooms × 2 views.
+  - 14-stage sheet.
+  - Console error sweep: no errors.
+  - Day and dusk exterior / interior before-after renders.

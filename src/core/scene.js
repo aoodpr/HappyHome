@@ -9,7 +9,7 @@ import { N8AOPass } from 'n8ao';
 
 /** Quality presets: desktop defaults to high, touch devices (iPad) to medium. */
 export const QUALITY = {
-  high: { pixelRatio: 2, shadowMap: 4096, ao: true, aoMode: 'Medium', halfRes: false, smaa: true },
+  high: { pixelRatio: 2, shadowMap: 4096, ao: true, aoMode: 'High', halfRes: false, smaa: true, bloom: true },
   medium: { pixelRatio: 1.5, shadowMap: 2048, ao: true, aoMode: 'Low', halfRes: true, smaa: false },
   low: { pixelRatio: 1, shadowMap: 1024, ao: false, aoMode: 'Performance', halfRes: true, smaa: false },
 };
@@ -25,8 +25,9 @@ export class Stage3D {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance', stencil: false });
     this.renderer.setSize(container.clientWidth, container.clientHeight);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 0.55;
+    // Khronos PBR Neutral: keeps material colours true (ACES/AgX wash them out) with a soft highlight roll-off
+    this.renderer.toneMapping = THREE.NeutralToneMapping;
+    this.renderer.toneMappingExposure = 0.62;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.localClippingEnabled = false;
@@ -99,7 +100,7 @@ export class Stage3D {
     this.hemi.intensity = dusk ? 0.22 : 0.6;
     this._buildEnv(dusk ? 0x2a2622 : 0xa9a49b);
     this.scene.environmentIntensity = dusk ? 0.35 : 0.75;
-    this.renderer.toneMappingExposure = dusk ? 0.9 : 0.55;
+    this.renderer.toneMappingExposure = dusk ? 0.95 : 0.62;
     this.scene.fog.color.setHex(dusk ? 0x5c5866 : 0xcfd8de);
     this._buildComposer();
   }
@@ -143,7 +144,7 @@ export class Stage3D {
       ao.configuration.gammaCorrection = false;
       ao.configuration.aoRadius = 1.6;
       ao.configuration.distanceFalloff = 0.6;
-      ao.configuration.intensity = 2.2;
+      ao.configuration.intensity = 2.6;
       ao.configuration.halfRes = q.halfRes;
       ao.setQualityMode(q.aoMode);
       composer.addPass(ao);
@@ -152,8 +153,10 @@ export class Stage3D {
       composer.addPass(new RenderPass(this.scene, this.camera));
       this.aoPass = null;
     }
-    if (this.timeOfDay === 'dusk' && q.pixelRatio > 1) {
-      composer.addPass(new UnrealBloomPass(new THREE.Vector2(w, h), 0.55, 0.5, 0.9));
+    const dusk = this.timeOfDay === 'dusk';
+    if (q.bloom || (dusk && q.pixelRatio > 1)) {
+      // subtle glow on lamps / LEDs only (high threshold), stronger at dusk
+      composer.addPass(new UnrealBloomPass(new THREE.Vector2(w, h), dusk ? 0.55 : 0.18, 0.45, dusk ? 0.9 : 1.05));
     }
     composer.addPass(new OutputPass());
     if (q.smaa) composer.addPass(new SMAAPass(w * this.renderer.getPixelRatio(), h * this.renderer.getPixelRatio()));

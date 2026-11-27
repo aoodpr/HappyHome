@@ -358,6 +358,8 @@ export const TILE = {
 
 export function createTextures(renderer, quality = 'high') {
   const N = quality === 'low' ? 256 : 512;
+  // close-up interior / façade finishes get 1024 px on desktop 'high'; the rest stays 512 to keep start-up fast
+  const H = quality === 'high' ? 1024 : N;
   const an = Math.min(8, renderer.capabilities.getMaxAnisotropy());
   const T = {};
   T.concrete = toTextures(concrete(N), an);
@@ -365,10 +367,10 @@ export function createTextures(renderer, quality = 'high') {
   T.plaster = toTextures(plaster(N, 0xe6e1d7, 0.05), an);
   T.paint = toTextures(plaster(N, 0xf4efe6, 0.03), an);
   T.render = toTextures(plaster(N, 0xe8dcc6, 0.08), an);
-  T.stone = toTextures(stone(N), an);
-  T.marble = toTextures(marble(N), an);
+  T.stone = toTextures(stone(H), an);
+  T.marble = toTextures(marble(H), an);
   T.porcelain = toTextures(plaster(N, 0xd4cfc6, 0.04), an);
-  T.wood = toTextures(wood(N), an);
+  T.wood = toTextures(wood(H), an);
   T.soil = toTextures(ground(N, 0x9c7a55, 201, 0.25), an);
   T.sand = toTextures(ground(N, 0xd8c29a, 211, 0.12), an);
   T.gravel = toTextures(ground(N, 0xb9ad9a, 221, 0.35), an);
@@ -379,10 +381,10 @@ export function createTextures(renderer, quality = 'high') {
   T.rebar = rebarGrid(N);
   T.slats = toTextures(slats(256), an);
   T.wallTiles = toTextures(wallTiles(N), an);
-  T.travertine = toTextures(travertine(N), an);
-  T.greyMarble = toTextures(veinedMarble(N, 0x8c8a87, 0xd6d3cf, 151, 0.55, 1.2), an);
-  T.neroMarble = toTextures(veinedMarble(N, 0x232222, 0xbdb6ac, 161, 0.7, 1.2), an);
-  T.creamMarble = toTextures(veinedMarble(N, 0xe9e2d6, 0xb8ab98, 171, 0.35, 0.6), an);
+  T.travertine = toTextures(travertine(H), an);
+  T.greyMarble = toTextures(veinedMarble(H, 0x8c8a87, 0xd6d3cf, 151, 0.55, 1.2), an);
+  T.neroMarble = toTextures(veinedMarble(H, 0x232222, 0xbdb6ac, 161, 0.7, 1.2), an);
+  T.creamMarble = toTextures(veinedMarble(H, 0xe9e2d6, 0xb8ab98, 171, 0.35, 0.6), an);
   return T;
 }
 
